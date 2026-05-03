@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wim Strydom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #12100e;
+  color: #e8dcc8;
+  font-family: 'EB Garamond', Georgia, serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  padding: 48px 32px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.hello {
+  font-size: clamp(72px, 14vw, 128px);
+  font-weight: 400;
+  line-height: 1;
+  color: #f0e8d4;
+  margin-bottom: 64px;
+  letter-spacing: -1px;
+}
+
+.contents-label {
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  opacity: 0.32;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(232,220,200,0.12);
+  margin-bottom: 8px;
+}
+
+.link-list {
+  list-style: none;
+}
+
+.link-list li {
+  border-bottom: 1px solid rgba(232,220,200,0.07);
+}
+
+.link-list a,
+.link-list span {
+  display: block;
+  padding: 13px 0;
+  font-size: 20px;
+  line-height: 1;
+  text-decoration: none;
+  transition: color 0.18s;
+}
+
+.link-list a {
+  color: #e8dcc8;
+}
+
+.link-list a:hover {
+  color: #c8a96e;
+}
+
+.link-list .coming-soon {
+  color: rgba(232,220,200,0.28);
+  font-style: italic;
+  font-size: 18px;
+  cursor: default;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.coming-soon-tag {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  font-style: normal;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1 class="hello">Hello</h1>
+  <span class="contents-label">Contents</span>
+  <div class="divider"></div>
+  <ul class="link-list">
+    <li><a href="Philosophy Page.html">Philosophy</a></li>
+    <li><span class="coming-soon">Roulette <span class="coming-soon-tag">coming soon</span></span></li>
+    <li><span class="coming-soon">Narratives <span class="coming-soon-tag">coming soon</span></span></li>
+    <li><span class="coming-soon">PF Dashboard <span class="coming-soon-tag">coming soon</span></span></li>
+  </ul>
+</div>
+</body>
+</html>
