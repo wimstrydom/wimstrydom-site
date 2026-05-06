@@ -66,6 +66,8 @@ header {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
+  grid-column: 2;
+  grid-row: 1 / 3;
 }
 
 /* ── LAYOUT ── */
@@ -94,11 +96,21 @@ header {
   font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
   opacity: 0.55; color: var(--ink);
 }
-.text-col {
-  padding: 60px 64px 100px 56px;
+.text-pre-col,
+.text-prose-col {
   border-right: 1px solid var(--ink-ghost);
   position: relative;
   z-index: 2;
+}
+.text-pre-col {
+  padding: 60px 64px 0 56px;
+  grid-column: 1;
+  grid-row: 1;
+}
+.text-prose-col {
+  padding: 0 64px 100px 56px;
+  grid-column: 1;
+  grid-row: 2;
 }
 
 .page-eyebrow {
@@ -190,16 +202,30 @@ header {
 @media (max-width: 860px) {
   header { padding: 0 24px; }
   .page-layout { grid-template-columns: 1fr; }
-  .text-col { padding: 36px 24px 60px; border-right: none; }
+  .text-pre-col {
+    padding: 36px 24px 0;
+    border-right: none;
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .text-prose-col {
+    padding: 24px 24px 60px;
+    border-right: none;
+    grid-column: auto;
+    grid-row: auto;
+  }
   .diagram-col {
-    position: relative; top: auto; height: 320px;
+    position: relative; top: auto; height: 640px;
     border-top: 1px solid var(--ink-ghost);
+    grid-column: auto;
+    grid-row: auto;
   }
   .page-title { font-size: 36px; }
 }
 @media (max-width: 480px) {
   .page-title { font-size: 30px; }
-  .text-col { padding: 28px 18px 48px; }
+  .text-pre-col { padding: 28px 18px 0; }
+  .text-prose-col { padding: 20px 18px 48px; }
 }
 </style>
 </head>
@@ -212,13 +238,34 @@ header {
 
 <div class="page-layout">
 
-  <!-- ── LEFT: TEXT ── -->
-  <div class="text-col">
+  <!-- ── HEADER TEXT ── -->
+  <div class="text-pre-col">
 
     <span class="page-eyebrow">I am a massive nerd</span>
     <h1 class="page-title">The weird gravity of spin-station transit</h1>
     <p class="page-intro">It started on the Northern Line, somewhere between Battersea Power Station (Station) and Goodge Street Station.</p>
     <div class="page-divider"></div>
+
+  </div><!-- /text-pre-col -->
+
+  <!-- ── DIAGRAM ── -->
+  <div class="diagram-col" id="diagram-col">
+    <span class="diagram-label">Rotating station</span>
+    <canvas id="station-canvas"></canvas>
+    <div class="diagram-legend">
+      <div class="legend-row">
+        <div class="legend-dash spin"></div>
+        <span>Spinward service</span>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dash anti"></div>
+        <span>Anti-spinward service</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROSE ── -->
+  <div class="text-prose-col">
 
     <div class="prose">
 
@@ -256,23 +303,7 @@ header {
       <span class="cta-note">Adjust parameters, see the felt-gravity<br>profile update live.</span>
     </div>
 
-  </div><!-- /text-col -->
-
-  <!-- ── RIGHT: DIAGRAM ── -->
-  <div class="diagram-col" id="diagram-col">
-    <span class="diagram-label">Rotating station</span>
-    <canvas id="station-canvas"></canvas>
-    <div class="diagram-legend">
-      <div class="legend-row">
-        <div class="legend-dash spin"></div>
-        <span>Spinward service</span>
-      </div>
-      <div class="legend-row">
-        <div class="legend-dash anti"></div>
-        <span>Anti-spinward service</span>
-      </div>
-    </div>
-  </div>
+  </div><!-- /text-prose-col -->
 
 </div><!-- /page-layout -->
 
