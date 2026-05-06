@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Man of Means and Ends — Wim Strydom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #12100e;
+  --ink:         #e8dcc8;
+  --ink-dim:     rgba(232,220,200,0.55);
+  --ink-faint:   rgba(232,220,200,0.28);
+  --ink-ghost:   rgba(232,220,200,0.1);
+  --gold:        #c8a96e;
+  --gold-dim:    rgba(200,169,110,0.38);
+  --serif:       'EB Garamond', Georgia, serif;
+  --header-h:    56px;
+  --rail-w:      230px;
+  --content-max: 680px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ── PROGRESS BAR ── */
+#progress-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--gold);
+  transform-origin: left;
+  transform: scaleX(0);
+  z-index: 200;
+  opacity: 0.65;
+  transition: transform 0.1s linear;
+}
+
+/* ── HEADER ── */
+header {
+  position: sticky; top: 0; z-index: 100;
+  height: var(--header-h);
+  background: rgba(18,16,14,0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ink-ghost);
+  display: flex; align-items: center;
+  padding: 0 48px;
+  justify-content: space-between;
+}
+.wordmark {
+  font-size: 19px; letter-spacing: 0.22em; text-transform: uppercase;
+  opacity: 0.85; font-weight: 400; text-decoration: none; color: var(--ink);
+}
+.header-date { font-size: 13px; font-style: italic; opacity: 0.28; }
+
+/* ── OUTER WRAPPER ── */
+.page-outer {
+  display: flex;
+}
+
+/* ── RAIL ── */
+.rail {
+  width: var(--rail-w);
+  flex-shrink: 0;
+  padding: 52px 32px 52px 48px;
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  border-right: 1px solid var(--ink-ghost);
+  scrollbar-width: none;
+  background: var(--bg);
+  z-index: 50;
+  transition: opacity 0.3s;
+}
+.rail::-webkit-scrollbar { display: none; }
+.rail.hidden { opacity: 0; pointer-events: none; }
+
+.rail-label {
+  font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase;
+  opacity: 0.28; margin-bottom: 22px; display: block;
+}
+
+.rail-item {
+  display: flex; align-items: baseline; gap: 10px;
+  width: 100%; text-align: left; background: none; border: none;
+  font-family: var(--serif); font-size: 13.5px;
+  color: var(--ink-dim); padding: 6px 0; cursor: pointer;
+  line-height: 1.35; transition: color 0.2s;
+  text-decoration: none;
+}
+.rail-item:hover { color: var(--ink); }
+.rail-item.active { color: var(--gold); font-style: italic; }
+.rail-item.h3 { padding-left: 16px; font-size: 13px; }
+.rail-num {
+  font-size: 10px; opacity: 0.38; letter-spacing: 0.1em;
+  flex-shrink: 0; font-style: normal;
+}
+
+.rail-divider { height: 1px; background: var(--ink-ghost); margin: 18px 0; }
+
+.rail-back {
+  display: block; width: 100%; text-align: left; background: none; border: none;
+  font-family: var(--serif); font-size: 13px; font-style: italic;
+  color: var(--ink-faint); padding: 6px 0; cursor: pointer;
+  transition: color 0.2s; text-decoration: none;
+}
+.rail-back:hover { color: var(--ink-dim); }
+
+/* ── CONTENT ── */
+.content {
+  max-width: var(--content-max);
+  padding: 60px 48px 140px;
+  min-width: 0;
+  margin-left: calc(var(--rail-w) + max(0px, (100vw - var(--rail-w) - var(--content-max) - 96px) / 2));
+}
+
+/* When rail is hidden (no headings), centre without offset */
+.content.no-rail {
+  margin-left: max(0px, (100vw - var(--content-max) - 96px) / 2);
+}
+
+/* ── PAGE HEADER ── */
+.page-eyebrow {
+  font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase;
+  opacity: 0.3; margin-bottom: 28px; display: block;
+}
+.page-title {
+  font-size: 52px; font-weight: 400; line-height: 1.08;
+  color: #f0e8d4; margin-bottom: 28px; letter-spacing: -0.3px;
+  text-wrap: pretty;
+}
+.page-intro {
+  font-size: 18px; font-style: italic; line-height: 1.78;
+  border-left: 2px solid var(--gold-dim);
+  padding-left: 20px; margin-bottom: 14px;
+  color: #e4d8c0;
+}
+.page-meta {
+  font-size: 14px; font-style: italic; opacity: 0.38;
+  margin-bottom: 52px; line-height: 1.6;
+}
+.page-divider {
+  height: 1px; background: var(--ink-ghost); margin-bottom: 52px;
+}
+
+/* ── STORY BODY ── */
+#story-body {
+  font-size: 18px;
+  line-height: 1.92;
+  color: rgba(232,220,200,0.90);
+}
+
+#story-body p {
+  margin-bottom: 1.5em;
+  text-align: justify;
+  text-wrap: pretty;
+}
+#story-body p:last-child { margin-bottom: 0; }
+
+#story-body h2 {
+  font-size: 26px; font-weight: 400;
+  color: #f0e8d4;
+  margin-top: 2.6em; margin-bottom: 0.75em;
+  line-height: 1.2;
+  scroll-margin-top: 80px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ink-ghost);
+}
+
+#story-body h3 {
+  font-size: 19px; font-weight: 400; font-style: italic;
+  color: rgba(240,232,212,0.7);
+  margin-top: 2em; margin-bottom: 0.6em;
+  line-height: 1.3;
+  scroll-margin-top: 80px;
+}
+
+#story-body h4, #story-body h5, #story-body h6 {
+  font-size: 16px; font-weight: 500;
+  color: rgba(240,232,212,0.6);
+  margin-top: 1.6em; margin-bottom: 0.5em;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  font-style: normal;
+  scroll-margin-top: 80px;
+}
+
+#story-body em { color: var(--gold); font-style: italic; }
+#story-body strong { color: #f0e8d4; font-weight: 500; }
+
+#story-body a {
+  color: var(--gold); text-decoration: none;
+  border-bottom: 1px solid var(--gold-dim);
+  transition: opacity 0.18s;
+}
+#story-body a:hover { opacity: 0.72; }
+
+#story-body hr {
+  border: none;
+  border-top: 1px solid var(--ink-ghost);
+  margin: 3em auto;
+  width: 40%;
+}
+
+#story-body blockquote {
+  border-left: 2px solid var(--gold-dim);
+  padding: 2px 0 2px 20px;
+  margin: 1.6em 0;
+  color: rgba(232,220,200,0.72);
+  font-style: italic;
+}
+#story-body blockquote p { text-align: left; }
+
+#story-body ul, #story-body ol {
+  padding-left: 1.6em;
+  margin-bottom: 1.4em;
+}
+#story-body li {
+  margin-bottom: 0.4em;
+  line-height: 1.72;
+}
+
+#story-body code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85em;
+  background: rgba(232,220,200,0.07);
+  padding: 0.1em 0.35em;
+  border-radius: 2px;
+}
+#story-body pre {
+  background: rgba(232,220,200,0.05);
+  border: 1px solid var(--ink-ghost);
+  padding: 1.2em 1.4em;
+  overflow-x: auto;
+  margin-bottom: 1.4em;
+  border-radius: 2px;
+}
+#story-body pre code {
+  background: none; padding: 0;
+}
+
+/* ── STORY FOOTER ── */
+.story-footer {
+  margin-top: 72px;
+  padding-top: 36px;
+  border-top: 1px solid var(--ink-ghost);
+  font-size: 14px; font-style: italic;
+  color: var(--ink-faint);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-back {
+  color: var(--gold); text-decoration: none; font-style: italic;
+  border-bottom: 1px solid var(--gold-dim);
+  transition: opacity 0.18s; font-size: 16px;
+}
+.footer-back:hover { opacity: 0.72; }
+
+/* ── LOADING / ERROR STATES ── */
+.state-msg {
+  padding: 48px 0;
+  font-size: 18px; font-style: italic;
+  color: var(--ink-faint);
+  line-height: 1.7;
+}
+.state-msg a { color: var(--gold); }
+
+/* ── MOBILE ── */
+@media (max-width: 860px) {
+  header { padding: 0 24px; }
+  .rail { display: none; }
+  .content, .content.no-rail {
+    padding: 36px 24px 90px;
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 100%;
+  }
+  .page-title { font-size: 38px; }
+}
+@media (max-width: 480px) {
+  .page-title { font-size: 32px; }
+  .content, .content.no-rail { padding: 28px 18px 72px; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header>
+  <a href="../../" class="wordmark">Wim Strydom</a>
+  <span class="header-date" id="header-date"></span>
+</header>
+
+<div class="page-outer" id="top">
+
+  <nav class="rail hidden" id="rail">
+    <span class="rail-label">In this story</span>
+    <div id="rail-links"></div>
+    <div class="rail-divider"></div>
+    <a href="../" class="rail-back">← all writing</a>
+  </nav>
+
+  <main class="content no-rail" id="content">
+    <div class="state-msg" id="loading-msg">Loading…</div>
+  </main>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// MARKDOWN PARSER
+// ─────────────────────────────────────────────────────────────────────────────
+
+function parseMarkdown(md) {
+  const lines = md.split('\n');
+  let html = '';
+  let i = 0;
+
+  function inlineFormat(text) {
+    text = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, t, u) => {
+      const safe = u.replace(/"/g, '&quot;');
+      return `<a href="${safe}">${t}</a>`;
+    });
+
+    text = text.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+    text = text.replace(/_([^_\n]+)_/g, '<em>$1</em>');
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    return text;
+  }
+
+  function slugify(text) {
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-');
+  }
+
+  const headings = [];
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    if (line.trim() === '') { i++; continue; }
+
+    const hMatch = line.match(/^(#{1,6})\s+(.+)$/);
+    if (hMatch) {
+      const level = hMatch[1].length;
+      const text = hMatch[2].trim();
+      const id = slugify(text);
+      headings.push({ level, text, id });
+      const tag = `h${level}`;
+      html += `<${tag} id="${id}">${inlineFormat(text)}</${tag}>\n`;
+      i++; continue;
+    }
+
+    if (/^(\-{3,}|\*{3,}|_{3,})$/.test(line.trim())) {
+      html += '<hr>\n';
+      i++; continue;
+    }
+
+    if (line.startsWith('>')) {
+      let bqLines = [];
+      while (i < lines.length && (lines[i].startsWith('>') || lines[i].trim() === '')) {
+        bqLines.push(lines[i].replace(/^>\s?/, ''));
+        i++;
+      }
+      const inner = parseMarkdown(bqLines.join('\n')).html;
+      html += `<blockquote>${inner}</blockquote>\n`;
+      continue;
+    }
+
+    if (/^[\-\*\+]\s+/.test(line)) {
+      html += '<ul>\n';
+      while (i < lines.length && /^[\-\*\+]\s+/.test(lines[i])) {
+        html += `<li>${inlineFormat(lines[i].replace(/^[\-\*\+]\s+/, ''))}</li>\n`;
+        i++;
+      }
+      html += '</ul>\n';
+      continue;
+    }
+
+    if (/^\d+\.\s+/.test(line)) {
+      html += '<ol>\n';
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i])) {
+        html += `<li>${inlineFormat(lines[i].replace(/^\d+\.\s+/, ''))}</li>\n`;
+        i++;
+      }
+      html += '</ol>\n';
+      continue;
+    }
+
+    if (line.startsWith('```')) {
+      const lang = line.slice(3).trim();
+      let codeLines = [];
+      i++;
+      while (i < lines.length && !lines[i].startsWith('```')) {
+        codeLines.push(
+          lines[i]
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+        );
+        i++;
+      }
+      i++;
+      html += `<pre><code${lang ? ` class="language-${lang}"` : ''}>${codeLines.join('\n')}</code></pre>\n`;
+      continue;
+    }
+
+    let paraLines = [];
+    while (
+      i < lines.length &&
+      lines[i].trim() !== '' &&
+      !lines[i].match(/^#{1,6}\s/) &&
+      !lines[i].startsWith('>') &&
+      !lines[i].startsWith('```') &&
+      !/^[\-\*\+]\s+/.test(lines[i]) &&
+      !/^\d+\.\s+/.test(lines[i]) &&
+      !/^(\-{3,}|\*{3,}|_{3,})$/.test(lines[i].trim())
+    ) {
+      paraLines.push(lines[i]);
+      i++;
+    }
+    if (paraLines.length > 0) {
+      html += `<p>${inlineFormat(paraLines.join(' '))}</p>\n`;
+    }
+  }
+
+  return { html, headings };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FRONT MATTER PARSER
+// ─────────────────────────────────────────────────────────────────────────────
+
+function parseFrontMatter(raw) {
+  const meta = {};
+  let body = raw;
+
+  const fmMatch = raw.match(/^---\r?\n([\s\S]+?)\r?\n---\r?\n([\s\S]*)$/);
+  if (fmMatch) {
+    const yamlBlock = fmMatch[1];
+    body = fmMatch[2];
+    yamlBlock.split('\n').forEach(line => {
+      const m = line.match(/^(\w+):\s*(.+)$/);
+      if (m) meta[m[1].trim()] = m[2].trim().replace(/^["']|["']$/g, '');
+    });
+  }
+
+  return { meta, body };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EXTRACT TITLE FROM CONTENT
+// ─────────────────────────────────────────────────────────────────────────────
+
+function extractTitleFromBody(body) {
+  const lines = body.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^#\s+(.+)$/);
+    if (m) {
+      const title = m[1].trim();
+      lines.splice(i, 1);
+      return { title, body: lines.join('\n') };
+    }
+  }
+  return { title: null, body };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EXTRACT SUBTITLE (first italic-only paragraph)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function extractSubtitle(body) {
+  const lines = body.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line === '') continue;
+    if (/^\*[^*].+[^*]\*$/.test(line) || /^_[^_].+[^_]_$/.test(line)) {
+      const subtitle = line.replace(/^\*|\*$|^_|_$/g, '');
+      lines.splice(i, 1);
+      return { subtitle, body: lines.join('\n') };
+    }
+    break;
+  }
+  return { subtitle: null, body };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATE DISPLAY
+// ─────────────────────────────────────────────────────────────────────────────
+
+function formatDate(dateStr) {
+  if (!dateStr) {
+    const now = new Date();
+    return now.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+  }
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr;
+  return d.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD RAIL NAV
+// ─────────────────────────────────────────────────────────────────────────────
+
+function buildRail(headings) {
+  const rail = document.getElementById('rail');
+  const railLinks = document.getElementById('rail-links');
+  const content = document.getElementById('content');
+
+  const navHeadings = headings.filter(h => h.level === 2 || h.level === 3);
+
+  if (navHeadings.length === 0) {
+    rail.classList.add('hidden');
+    content.classList.add('no-rail');
+    return;
+  }
+
+  rail.classList.remove('hidden');
+  content.classList.remove('no-rail');
+
+  let h2Count = 0;
+  navHeadings.forEach(h => {
+    if (h.level === 2) h2Count++;
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.className = 'rail-item' + (h.level === 3 ? ' h3' : '');
+    a.dataset.id = h.id;
+
+    if (h.level === 2) {
+      const num = document.createElement('span');
+      num.className = 'rail-num';
+      num.textContent = String(h2Count).padStart(2, '0');
+      a.appendChild(num);
+    }
+
+    const label = document.createElement('span');
+    label.textContent = h.text;
+    a.appendChild(label);
+
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.getElementById(h.id);
+      if (target) {
+        const top = target.getBoundingClientRect().top + window.scrollY - 82;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+
+    railLinks.appendChild(a);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ACTIVE RAIL ITEM (scroll-based)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function updateRailActive() {
+  const items = document.querySelectorAll('.rail-item[data-id]');
+  if (!items.length) return;
+
+  const headerH = 82;
+  let activeId = null;
+
+  items.forEach(item => {
+    const el = document.getElementById(item.dataset.id);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top;
+    if (top <= headerH + 40) activeId = item.dataset.id;
+  });
+
+  items.forEach(item => {
+    item.classList.toggle('active', item.dataset.id === activeId);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PROGRESS BAR
+// ─────────────────────────────────────────────────────────────────────────────
+
+const bar = document.getElementById('progress-bar');
+function updateProgress() {
+  const doc = document.documentElement;
+  const scrolled = doc.scrollTop || document.body.scrollTop;
+  const total = doc.scrollHeight - doc.clientHeight;
+  bar.style.transform = `scaleX(${total > 0 ? scrolled / total : 0})`;
+}
+
+window.addEventListener('scroll', () => {
+  updateProgress();
+  updateRailActive();
+}, { passive: true });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOAD AND RENDER
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function loadStory(src) {
+  const content = document.getElementById('content');
+
+  let raw;
+  try {
+    const res = await fetch(src);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    raw = await res.text();
+  } catch (err) {
+    content.innerHTML = `
+      <div class="state-msg">
+        <p>Could not load <em>${src}</em>.</p>
+        <p style="margin-top:12px; font-size:15px;">
+          Make sure the file exists and is accessible from this page.<br>
+          If you're opening this file locally, try serving it from a local server.
+        </p>
+      </div>`;
+    document.title = 'Error — Wim Strydom';
+    return;
+  }
+
+  let { meta, body } = parseFrontMatter(raw);
+
+  // Apply defaults for this story
+  if (!meta.title) meta.title = 'A Man of Means and Ends';
+  if (!meta.date)  meta.date  = '2026-05-06';
+  if (!meta.eyebrow) meta.eyebrow = 'Short Fiction';
+
+  // Strip a leading standalone **Title** line to avoid duplicating the page title
+  body = body.replace(/^\*\*[^*\n]+\*\*\n+/, '');
+
+  if (!meta.subtitle) {
+    const extracted = extractSubtitle(body);
+    meta.subtitle = extracted.subtitle;
+    body = extracted.body;
+  }
+
+  const { html: storyHtml, headings } = parseMarkdown(body);
+
+  const pageTitle = meta.title;
+  document.title = `${pageTitle} — Wim Strydom`;
+
+  document.getElementById('header-date').textContent = formatDate(meta.date);
+
+  const hasHeadings = headings.filter(h => h.level === 2 || h.level === 3).length > 0;
+  buildRail(headings);
+
+  const eyebrow = meta.eyebrow;
+  const dateDisplay = meta.date
+    ? new Date(meta.date).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+    : '';
+
+  content.innerHTML = `
+    <span class="page-eyebrow">${eyebrow}</span>
+    <h1 class="page-title">${pageTitle}</h1>
+    ${meta.subtitle ? `<p class="page-intro">${meta.subtitle}</p>` : ''}
+    ${dateDisplay ? `<p class="page-meta">${dateDisplay}</p>` : ''}
+    ${!hasHeadings ? '<div class="page-divider"></div>' : ''}
+    <div id="story-body">${storyHtml}</div>
+    <div class="story-footer">
+      <a href="../" class="footer-back">← all writing</a>
+      <span>Wim Strydom</span>
+    </div>
+  `;
+
+  updateRailActive();
+  updateProgress();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ENTRY POINT
+// ─────────────────────────────────────────────────────────────────────────────
+
+(function init() {
+  const params = new URLSearchParams(window.location.search);
+  const storySrc = params.get('story') || 'A_Man_of_Means_and_Ends.md';
+  loadStory(storySrc);
+})();
+</script>
+</body>
+</html>

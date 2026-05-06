@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wim Strydom</title>
+<title>Narratives — Wim Strydom</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
@@ -27,8 +27,19 @@ body {
   max-width: 480px;
 }
 
-.hello {
-  font-size: clamp(72px, 14vw, 128px);
+.back {
+  display: block;
+  font-size: 13px;
+  font-style: italic;
+  color: rgba(232,220,200,0.32);
+  text-decoration: none;
+  margin-bottom: 56px;
+  transition: color 0.18s;
+}
+.back:hover { color: rgba(232,220,200,0.65); }
+
+.heading {
+  font-size: clamp(60px, 12vw, 108px);
   font-weight: 400;
   line-height: 1;
   color: #f0e8d4;
@@ -36,7 +47,7 @@ body {
   letter-spacing: -1px;
 }
 
-.contents-label {
+.stories-label {
   font-size: 11px;
   letter-spacing: 0.26em;
   text-transform: uppercase;
@@ -59,54 +70,39 @@ body {
   border-bottom: 1px solid rgba(232,220,200,0.07);
 }
 
-.link-list a,
-.link-list span {
+.link-list a {
   display: block;
   padding: 13px 0;
   font-size: 20px;
   line-height: 1;
   text-decoration: none;
+  color: #e8dcc8;
   transition: color 0.18s;
 }
+.link-list a:hover { color: #c8a96e; }
 
-.link-list a {
-  color: #e8dcc8;
-}
-
-.link-list a:hover {
-  color: #c8a96e;
-}
-
-.link-list .coming-soon {
-  color: rgba(232,220,200,0.28);
+.story-meta {
+  font-size: 13px;
   font-style: italic;
-  font-size: 18px;
-  cursor: default;
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-}
-
-.coming-soon-tag {
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  opacity: 0.5;
-  font-style: normal;
+  opacity: 0.38;
+  margin-top: 3px;
+  display: block;
 }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1 class="hello">Hello</h1>
-  <span class="contents-label">Contents</span>
+  <a href="../" class="back">← Wim Strydom</a>
+  <h1 class="heading">Narratives</h1>
+  <span class="stories-label">Stories</span>
   <div class="divider"></div>
   <ul class="link-list">
-    <li><a href="/philosophy">Philosophy</a></li>
-    <li><a href="/spin-station">Spin Station</a></li>
-    <li><span class="coming-soon">Roulette <span class="coming-soon-tag">coming soon</span></span></li>
-    <li><a href="/narratives">Narratives</a></li>
-    <li><span class="coming-soon">PF Dashboard <span class="coming-soon-tag">coming soon</span></span></li>
+    <li>
+      <a href="a-man-of-means-and-ends/">
+        A Man of Means and Ends
+        <span class="story-meta">Short Fiction · May 2026</span>
+      </a>
+    </li>
   </ul>
 </div>
 </body>

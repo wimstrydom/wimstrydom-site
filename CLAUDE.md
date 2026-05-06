@@ -17,13 +17,15 @@ Plain HTML/CSS/JS — no framework, no build step. Each page is a self-contained
 ## Site structure
 
 ```
-index.html              Home page — "Hello" + contents list
-philosophy/index.html   Philosophy page (live)
+index.html                                              Home page — "Hello" + contents list
+philosophy/index.html                                   Philosophy page (live)
+narratives/index.html                                   Narratives index — list of stories
+narratives/<slug>/index.html                            Individual story page
+narratives/<slug>/<Story_Title>.md                      Story content (Markdown)
 ```
 
 Planned pages (coming soon, linked from home but not yet built):
 - `roulette/` — interactive calculator of some kind
-- `narratives/` — blog/essay content
 - `pf-dashboard/` — personal finance dashboard
 
 ## Pages
@@ -51,3 +53,43 @@ The text in `philosophy/index.html` is authored by Wim and is **not to be edited
 1. Create a directory (e.g. `narratives/`) with an `index.html` inside
 2. Update the link in `index.html` — change the `<span class="coming-soon">` to an `<a>` matching the existing Philosophy link style
 3. Follow the design system above — reuse the header/wordmark pattern from `philosophy/index.html`
+
+## Adding a new story to Narratives
+
+Given a `.md` file for a new story, follow these steps:
+
+**1. Create the story directory and copy the file**
+
+Use a short kebab-case slug based on the title (e.g. `a-man-of-means-and-ends`):
+```
+narratives/<slug>/
+narratives/<slug>/<Original_Filename>.md
+```
+
+**2. Create `narratives/<slug>/index.html`**
+
+Copy `narratives/a-man-of-means-and-ends/index.html` verbatim, then change only these three things:
+- `<title>` tag — update to `Story Title — Wim Strydom`
+- The three meta defaults in `loadStory` — `meta.title`, `meta.date`, `meta.eyebrow`
+- The default filename in the `init` function — `storySrc` fallback string
+
+The `meta.date` should reflect when the story was written or provided; use `YYYY-MM-DD` format. `meta.eyebrow` is almost always `'Short Fiction'` unless told otherwise.
+
+The leading-bold-title strip (`body = body.replace(...)`) stays in place — it handles `.md` files that open with a `**Title**` line.
+
+**3. Add the story to `narratives/index.html`**
+
+Append a new `<li>` to the `.link-list`, following the existing pattern:
+```html
+<li>
+  <a href="<slug>/">
+    Story Title
+    <span class="story-meta">Short Fiction · Month YYYY</span>
+  </a>
+</li>
+```
+Add it above any older entries so the list stays newest-first.
+
+**4. Content rules**
+
+The `.md` file is authored by Wim — reproduce it exactly as written, no edits or paraphrasing. Do not add front matter to the markdown file; metadata is set in the HTML.
