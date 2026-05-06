@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Why does this exist? — Wim Strydom</title>
+<title>The weird gravity of spin-station transit? — Wim Strydom</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
@@ -71,7 +71,7 @@ header {
 /* ── LAYOUT ── */
 .page-layout {
   display: grid;
-  grid-template-columns: minmax(0, 600px) 1fr;
+  grid-template-columns: 50vw 1fr;
   align-items: start;
 }
 
@@ -260,7 +260,7 @@ header {
 
   <!-- ── RIGHT: DIAGRAM ── -->
   <div class="diagram-col" id="diagram-col">
-    <span class="diagram-label">Rotating station — schematic</span>
+    <span class="diagram-label">Rotating station</span>
     <canvas id="station-canvas"></canvas>
     <div class="diagram-legend">
       <div class="legend-row">
@@ -470,13 +470,6 @@ function draw(ts) {
 
   // ── Annotation arrows (screen space, fixed) ──
   drawAnnotations();
-
-  // ── Left edge vignette ──
-  const vignette = ctx.createLinearGradient(0, 0, W * 0.28, 0);
-  vignette.addColorStop(0, 'rgba(18,16,14,0.85)');
-  vignette.addColorStop(1, 'rgba(18,16,14,0)');
-  ctx.fillStyle = vignette;
-  ctx.fillRect(0, 0, W, H);
 
   requestAnimationFrame(draw);
 }
