@@ -6,33 +6,16 @@
 <title>The weird gravity of spin-station transit — Wim Strydom</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --bg:        #12100e;
-  --ink:       #e8dcc8;
-  --ink-dim:   rgba(232,220,200,0.55);
-  --ink-faint: rgba(232,220,200,0.28);
-  --ink-ghost: rgba(232,220,200,0.1);
-  --gold:      #c8a96e;
-  --gold-dim:  rgba(200,169,110,0.38);
-  --red:       #c4705a;
-  --blue:      #6a9fb5;
-  --serif:     'EB Garamond', Georgia, serif;
-  --header-h:  56px;
+  --header-h: 56px;
 }
 
-html { scroll-behavior: smooth; }
-
 body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--serif);
   font-size: 18px;
   line-height: 1;
-  -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -41,19 +24,19 @@ body {
 header {
   position: sticky; top: 0; z-index: 100;
   height: var(--header-h);
-  background: rgba(18,16,14,0.94);
+  background: var(--bg-glass);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--ink-ghost);
+  border-bottom: 1px solid var(--ink-faint);
   display: flex; align-items: center;
   padding: 0 48px;
   justify-content: space-between;
 }
 .wordmark {
   font-size: 19px; letter-spacing: 0.22em; text-transform: uppercase;
-  opacity: 0.85; font-weight: 400; text-decoration: none; color: var(--ink);
+  font-weight: 400; text-decoration: none; color: var(--ink);
 }
-.header-date { font-size: 13px; font-style: italic; opacity: 0.28; }
+.header-date { font-size: 13px; font-style: italic; color: var(--ink-dim); }
 
 /* ── RIGHT: DIAGRAM COLUMN ── */
 .diagram-col {
@@ -89,16 +72,16 @@ header {
   font-size: 13px; font-style: italic; color: var(--ink-dim);
 }
 .legend-dash { width: 22px; height: 1.5px; flex-shrink: 0; }
-.legend-dash.spin { background: #e0705a; }
-.legend-dash.anti { background: #5aabcf; }
+.legend-dash.spin { background: var(--red); }
+.legend-dash.anti { background: var(--blue); }
 .diagram-label {
   position: absolute; top: 28px; left: 28px;
   font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
-  opacity: 0.55; color: var(--ink);
+  color: var(--ink-dim);
 }
 .text-pre-col,
 .text-prose-col {
-  border-right: 1px solid var(--ink-ghost);
+  border-right: 1px solid var(--ink-faint);
   position: relative;
   z-index: 2;
 }
@@ -115,46 +98,46 @@ header {
 
 .page-eyebrow {
   font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase;
-  opacity: 0.3; margin-bottom: 28px; display: block;
+  color: var(--ink-dim); margin-bottom: 28px; display: block;
 }
 .page-title {
   font-size: 50px; font-weight: 400; line-height: 1.08;
-  color: #f0e8d4; margin-bottom: 32px; letter-spacing: -0.3px;
+  color: var(--ink-bright); margin-bottom: 32px; letter-spacing: -0.3px;
 }
 .page-intro {
   font-size: 18px; font-style: italic; line-height: 1.78;
   border-left: 2px solid var(--gold-dim);
   padding-left: 20px; margin-bottom: 44px;
-  color: #e4d8c0;
+  color: var(--ink);
 }
-.page-divider { height: 1px; background: var(--ink-ghost); margin-bottom: 40px; }
+.page-divider { height: 1px; background: var(--ink-faint); margin-bottom: 40px; }
 
 /* body prose */
-.prose { font-size: 17.5px; line-height: 1.92; color: rgba(232,220,200,0.88); }
+.prose { font-size: 17.5px; line-height: 1.92; color: var(--ink); }
 .prose p { margin-bottom: 22px; }
 .prose p:last-child { margin-bottom: 0; }
 .prose em { color: var(--gold); font-style: italic; }
-.prose strong { color: #f0e8d4; font-weight: 500; }
+.prose strong { color: var(--ink-bright); font-weight: 500; }
 .prose a {
   color: var(--gold); text-decoration: none;
   border-bottom: 1px solid var(--gold-dim);
-  transition: opacity 0.18s;
+  transition: color 0.18s;
 }
-.prose a:hover { opacity: 0.72; }
+.prose a:hover { color: var(--gold-dim); }
 
 /* pull-out physics note */
 .physics-aside {
-  border-left: 2px solid rgba(200,169,110,0.25);
+  border-left: 2px solid var(--gold-dim);
   padding: 18px 20px;
   margin: 28px 0;
-  background: rgba(200,169,110,0.04);
+  background: var(--gold-tint);
 }
 .physics-aside-label {
   font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
-  opacity: 0.35; margin-bottom: 10px; display: block;
+  color: var(--ink-dim); margin-bottom: 10px; display: block;
 }
 .physics-aside p {
-  font-size: 16px; line-height: 1.82; color: rgba(232,220,200,0.72);
+  font-size: 16px; line-height: 1.82; color: var(--ink-dim);
   margin-bottom: 10px;
 }
 .physics-aside p:last-child { margin-bottom: 0; }
@@ -163,17 +146,17 @@ header {
 /* spinward / anti labels in text */
 .label-spin {
   font-style: normal; font-size: 0.92em; letter-spacing: 0.04em;
-  color: var(--red); border-bottom: 1px solid rgba(196,112,90,0.3);
+  color: var(--red); border-bottom: 1px solid var(--red-dim);
 }
 .label-anti {
   font-style: normal; font-size: 0.92em; letter-spacing: 0.04em;
-  color: var(--blue); border-bottom: 1px solid rgba(106,159,181,0.3);
+  color: var(--blue); border-bottom: 1px solid var(--blue-dim);
 }
 
 /* CTA */
 .cta-row {
   margin-top: 48px; padding-top: 40px;
-  border-top: 1px solid var(--ink-ghost);
+  border-top: 1px solid var(--ink-faint);
   display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
 }
 .cta-btn {
@@ -190,11 +173,11 @@ header {
   letter-spacing: 0.04em;
 }
 .cta-btn:hover {
-  background: rgba(200,169,110,0.08);
+  background: var(--gold-tint);
   border-color: var(--gold);
 }
 .cta-note {
-  font-size: 14px; font-style: italic; color: var(--ink-faint);
+  font-size: 14px; font-style: italic; color: var(--ink-dim);
   line-height: 1.5;
 }
 
@@ -216,7 +199,7 @@ header {
   }
   .diagram-col {
     position: relative; top: auto; height: 640px;
-    border-top: 1px solid var(--ink-ghost);
+    border-top: 1px solid var(--ink-faint);
     grid-column: auto;
     grid-row: auto;
   }
@@ -280,7 +263,7 @@ header {
         <p>On a rotating station, your "gravity" comes entirely from the fact that the hull is constantly accelerating you inward. I.e. you're being flung outward, the hull pushes back, and that push feels like weight. The faster the station spins and/or the larger its radius, the stronger the gravity.</p>
         <p>Now put a train on the inside of that hull, travelling around the circumference. The train runs along a circular track — either <em class="label-spin">spinward</em> (in the same direction the station rotates) or <em class="label-anti">anti-spinward</em> (against it). Because gravity here is really just due to spin — <em>v² / r</em> — the train's speed adds directly to or subtracts from the total velocity that generates your felt weight.</p>
         <p>Travel <em class="label-spin">spinward</em> and you're moving faster relative to the inertial frame. Your effective centripetal acceleration goes up. You feel <strong>heavier</strong> — potentially significantly so. Travel <em class="label-anti">anti-spinward</em> and you're moving slower. Your effective gravity <strong>drops</strong>. Go fast enough anti-spinward and you could match the rim speed in reverse, achieving genuine weightlessness mid-journey. </p>
-  
+
         <p>  Small side joke: While writing this with Claude, it suggested that <em>"faster still, and "down" flips: you'd float up toward what was the ceiling and find yourself stuck there."</em> Which I thought was hilarious. You wouldn't Gravity would just come back as you'd still be spinning in a circle, just in the other direction.</p>
        </div>
 
@@ -311,7 +294,7 @@ header {
 // ─────────────────────────────────────────────────
 // STATION ANIMATION
 // Semi-circle (centre off right). Slowly rotates.
-// 5 spinward (red) + 5 anti-spinward (blue) carriages,
+// 5 spinward + 5 anti-spinward carriages,
 // evenly spaced, always visible — no fade cycle.
 // Curved annotation arrows drawn in screen space (not rotating).
 // ─────────────────────────────────────────────────
@@ -326,10 +309,17 @@ const N_CARRIAGES        = 5;
 const STATION_ROTATION_PERIOD = 56000;  // ms
 const CARRIAGE_PERIOD    = 50000;       // ms for one full lap
 
-// Colours — bright versions
-const C_INK  = 'rgba(232,220,200,';
-const C_RED  = '#e0705a';
-const C_BLUE = '#5aabcf';
+// Design token mirrors — update if style.css tokens change
+const C_BG   = '#12100e';             // --bg
+const C_INK  = 'rgba(232,220,200,';   // --ink
+const C_RED  = '#e0705a';             // --red
+const C_BLUE = '#5aabcf';             // --blue
+
+// Opacity variants snapped to nearest design tokens
+const C_RED_TRACK  = 'rgba(224,112,90,0.55)';   // --red-dim
+const C_RED_DOT    = C_RED;                      // --red (solid)
+const C_BLUE_TRACK = 'rgba(90,171,207,0.55)';   // --blue-dim
+const C_BLUE_DOT   = C_BLUE;                    // --blue (solid)
 
 // ── SIZING ───────────────────────────────────────
 let W, H, R, CX, CY;
@@ -342,7 +332,6 @@ function resize() {
   canvas.height = Math.round(H * devicePixelRatio);
   canvas.style.width  = W + 'px';
   canvas.style.height = H + 'px';
-  // Transform applied fresh in draw() — do NOT set it here
 
   R  = H * 0.78;
   // Keep the left edge of the arc 120px from the left of the diagram column,
@@ -357,24 +346,16 @@ function stopAngle(i) {
 }
 
 // ── CARRIAGES ────────────────────────────────────
-// Each carriage has a fixed angular offset so they're evenly spaced.
-// They orbit continuously — no fade/restart.
-// progress is a global 0..1 value (one full lap).
-
 function easeInOut(t) {
-  // Applied per-segment: t is 0..1 within a segment
   return t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t;
 }
 
-// Given a raw 0..1 position around the loop, compute the track angle
-// with per-segment easing.
 function carriageAngleFromRaw(raw, dir) {
   const segF   = raw * N_STOPS;
   const segIdx = Math.floor(segF) % N_STOPS;
   const segT   = easeInOut(segF - Math.floor(segF));
   const a0 = stopAngle(segIdx);
   const a1 = stopAngle((segIdx + 1) % N_STOPS);
-  // Ensure a1 > a0 for interpolation
   const a1w = a1 < a0 ? a1 + Math.PI * 2 : a1;
   return a0 + (a1w - a0) * segT;
 }
@@ -382,7 +363,7 @@ function carriageAngleFromRaw(raw, dir) {
 // ── DRAW ─────────────────────────────────────────
 let lastTime = null;
 let stationAngle = 0;
-let lapProgress  = 0; // shared, 0..1
+let lapProgress  = 0;
 
 function draw(ts) {
   if (!lastTime) lastTime = ts;
@@ -392,7 +373,6 @@ function draw(ts) {
   stationAngle += (dt / STATION_ROTATION_PERIOD) * Math.PI * 2;
   lapProgress   = (lapProgress + dt / CARRIAGE_PERIOD) % 1;
 
-  // Reset transform each frame to avoid compounding scale from ResizeObserver
   const dpr = devicePixelRatio;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, W, H);
@@ -408,7 +388,7 @@ function draw(ts) {
   // Outer hull
   ctx.beginPath();
   ctx.arc(0, 0, R, 0, Math.PI * 2);
-  ctx.strokeStyle = C_INK + '0.45)';
+  ctx.strokeStyle = C_INK + '0.55)';   // --ink-dim
   ctx.lineWidth = 2.5;
   ctx.stroke();
 
@@ -433,23 +413,23 @@ function draw(ts) {
   // Central hub
   ctx.beginPath();
   ctx.arc(0, 0, R * 0.18, 0, Math.PI * 2);
-  ctx.strokeStyle = C_INK + '0.2)';
+  ctx.strokeStyle = C_INK + '0.1)';   // --ink-faint
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
-  // Anti-spinward track (blue, dashed)
+  // Anti-spinward track (dashed)
   ctx.beginPath();
   ctx.arc(0, 0, R_ANTI, 0, Math.PI * 2);
-  ctx.strokeStyle = 'rgba(90,171,207,0.45)';
+  ctx.strokeStyle = C_BLUE_TRACK;
   ctx.lineWidth = 1.5;
   ctx.setLineDash([5, 7]);
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // Spinward track (red, dashed)
+  // Spinward track (dashed)
   ctx.beginPath();
   ctx.arc(0, 0, R_SPIN, 0, Math.PI * 2);
-  ctx.strokeStyle = 'rgba(224,112,90,0.45)';
+  ctx.strokeStyle = C_RED_TRACK;
   ctx.lineWidth = 1.5;
   ctx.setLineDash([5, 7]);
   ctx.stroke();
@@ -464,24 +444,24 @@ function draw(ts) {
     ctx.beginPath();
     ctx.moveTo(rx * (R - 5), ry * (R - 5));
     ctx.lineTo(rx * (R + 5), ry * (R + 5));
-    ctx.strokeStyle = C_INK + '0.4)';
+    ctx.strokeStyle = C_INK + '0.55)';   // --ink-dim
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
     // Spin stop dot
     ctx.beginPath();
     ctx.arc(rx * R_SPIN, ry * R_SPIN, 3.5, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(224,112,90,0.7)';
+    ctx.fillStyle = C_RED_DOT;
     ctx.fill();
 
     // Anti stop dot
     ctx.beginPath();
     ctx.arc(rx * R_ANTI, ry * R_ANTI, 3.5, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(90,171,207,0.7)';
+    ctx.fillStyle = C_BLUE_DOT;
     ctx.fill();
   }
 
-  // Spinward carriages (red) — increasing angle
+  // Spinward carriages — increasing angle
   for (let i = 0; i < N_CARRIAGES; i++) {
     const offset = i / N_CARRIAGES;
     const raw    = ((lapProgress + offset) % 1 + 1) % 1;
@@ -489,11 +469,11 @@ function draw(ts) {
     drawPill(angle, R_SPIN, C_RED, 1);
   }
 
-  // Anti-spinward carriages (blue) — decreasing angle (use reversed progress)
+  // Anti-spinward carriages — decreasing angle (reversed progress)
   for (let i = 0; i < N_CARRIAGES; i++) {
     const offset  = i / N_CARRIAGES;
     const raw     = ((1 - lapProgress + offset) % 1 + 1) % 1;
-    const angle   = carriageAngleFromRaw(raw, 1); // same angle calc, direction reversed by reversed progress
+    const angle   = carriageAngleFromRaw(raw, 1);
     drawPill(angle, R_ANTI, C_BLUE, -1);
   }
 
@@ -516,11 +496,9 @@ function drawPill(angle, trackR, color, dir) {
   ctx.translate(cx, cy);
   ctx.rotate(tangentAngle);
 
-  // Glow
   ctx.shadowColor = color;
   ctx.shadowBlur = 6;
 
-  // Body
   ctx.beginPath();
   ctx.moveTo(-pillW/2 + rad, -rad);
   ctx.lineTo( pillW/2 - rad, -rad);
@@ -534,28 +512,23 @@ function drawPill(angle, trackR, color, dir) {
 
   ctx.shadowBlur = 0;
 
-  // Window strip
-  ctx.fillStyle = 'rgba(18,16,14,0.5)';
-  ctx.globalAlpha = 0.8;
+  // Window strip — dark overlay cuts into carriage body
+  ctx.fillStyle = C_BG;              // --bg
+  ctx.globalAlpha = 0.55;
   ctx.fillRect(-pillW/2 + rad, -rad*0.35, pillW - rad*2, rad*0.7);
 
   ctx.restore();
 }
 
 // ── ANNOTATION ARROWS ───────────────────────────
-// Drawn in screen space so they don't rotate with the station.
-// Red curved arrow near top of visible arc = "Increased gravity" (spinward)
-// Blue curved arrow near bottom = "Decreased gravity" (anti-spinward)
-
 function drawAnnotations() {
   const R_SPIN_S = R - 8;
-  const R_ANTI_S = R - 24;
   const annotR_spin = R_SPIN_S - 36;
   const annotR_anti = R_SPIN_S - 36;
   const textR_spin  = annotR_spin - 16;
   const textR_anti  = annotR_anti - 16;
 
-  // Top: ANTI-spinward = decreased gravity (blue), going counter-clockwise
+  // Top: ANTI-spinward = decreased gravity, going counter-clockwise
   drawCurvedArrow({
     cx: CX, cy: CY,
     r: annotR_anti,
@@ -574,7 +547,7 @@ function drawAnnotations() {
     fontSize: 11,
   });
 
-  // Bottom: SPINWARD = increased gravity (red), going clockwise
+  // Bottom: SPINWARD = increased gravity, going clockwise
   drawCurvedArrow({
     cx: CX, cy: CY,
     r: annotR_spin,
@@ -598,14 +571,12 @@ function drawCurvedArrow({ cx, cy, r, startAngle, endAngle, color, ccw }) {
   ctx.save();
   ctx.globalAlpha = 0.82;
 
-  // Arc stroke
   ctx.beginPath();
   ctx.arc(cx, cy, r, startAngle, endAngle, ccw);
   ctx.strokeStyle = color;
   ctx.lineWidth = 1.6;
   ctx.stroke();
 
-  // Arrowhead at endAngle
   const ex = cx + Math.cos(endAngle) * r;
   const ey = cy + Math.sin(endAngle) * r;
   const headLen = 10;
@@ -625,7 +596,6 @@ function drawCurvedArrow({ cx, cy, r, startAngle, endAngle, color, ccw }) {
   ctx.restore();
 }
 
-// Draw text curved along an arc, character by character
 function drawCurvedText({ cx, cy, r, text, midAngle, color, ccw, fontSize }) {
   ctx.save();
   ctx.font = `italic ${fontSize || 11}px "EB Garamond", Georgia, serif`;
@@ -634,14 +604,11 @@ function drawCurvedText({ cx, cy, r, text, midAngle, color, ccw, fontSize }) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  // Measure total arc span needed
   const chars = text.split('');
   const charWidths = chars.map(c => ctx.measureText(c).width);
   const totalWidth = charWidths.reduce((a, b) => a + b, 0) + (chars.length - 1) * 1.5;
-  // Convert width to angle
   const totalAngle = totalWidth / r;
 
-  // Start angle: centred on midAngle
   let startA = midAngle - totalAngle / 2 * (ccw ? -1 : 1);
 
   let cumulativeAngle = 0;
@@ -652,7 +619,6 @@ function drawCurvedText({ cx, cy, r, text, midAngle, color, ccw, fontSize }) {
 
     ctx.save();
     ctx.translate(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
-    // Rotate to follow the arc tangent; flip for bottom arc so text reads correctly
     const textRot = a + (ccw ? -Math.PI/2 : Math.PI/2);
     ctx.rotate(textRot);
     ctx.fillText(chars[i], 0, 0);
