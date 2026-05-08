@@ -1,0 +1,22 @@
+:root {
+  --bg:         #12100e;
+  --ink:        #e8dcc8;
+  --ink-bright: #f0e8d4;
+  --ink-dim:    rgba(232,220,200,0.55);
+  --ink-faint:  rgba(232,220,200,0.10);
+  --gold:       #c8a96e;
+  --gold-dim:   rgba(200,169,110,0.38);
+  --bg-glass:   rgba(18,16,14,0.94);
+  --serif:      'EB Garamond', Georgia, serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif);
+  -webkit-font-smoothing: antialiased;
+}

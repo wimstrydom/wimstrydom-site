@@ -6,23 +6,18 @@
 <title>Narratives — Wim Strydom</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
-  background: #12100e;
-  color: #e8dcc8;
-  font-family: 'EB Garamond', Georgia, serif;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  -webkit-font-smoothing: antialiased;
 }
 
 .container {
-  padding: 48px 48px;
+  padding: 48px 32px;
   width: 100%;
   max-width: 480px;
 }
@@ -31,18 +26,18 @@ body {
   display: block;
   font-size: 13px;
   font-style: italic;
-  color: rgba(232,220,200,0.32);
+  color: var(--ink-dim);
   text-decoration: none;
   margin-bottom: 56px;
   transition: color 0.18s;
 }
-.back:hover { color: rgba(232,220,200,0.65); }
+.back:hover { color: var(--ink); }
 
 .heading {
   font-size: clamp(60px, 12vw, 108px);
   font-weight: 400;
   line-height: 1;
-  color: #f0e8d4;
+  color: var(--ink-bright);
   margin-bottom: 64px;
   letter-spacing: -1px;
 }
@@ -51,14 +46,14 @@ body {
   font-size: 11px;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  opacity: 0.32;
+  color: var(--ink-dim);
   display: block;
   margin-bottom: 16px;
 }
 
 .divider {
   height: 1px;
-  background: rgba(232,220,200,0.12);
+  background: var(--ink-faint);
   margin-bottom: 8px;
 }
 
@@ -67,7 +62,7 @@ body {
 }
 
 .link-list li {
-  border-bottom: 1px solid rgba(232,220,200,0.07);
+  border-bottom: 1px solid var(--ink-faint);
 }
 
 .link-list a {
@@ -76,15 +71,15 @@ body {
   font-size: 20px;
   line-height: 1;
   text-decoration: none;
-  color: #e8dcc8;
+  color: var(--ink);
   transition: color 0.18s;
 }
-.link-list a:hover { color: #c8a96e; }
+.link-list a:hover { color: var(--gold); }
 
 .story-meta {
   font-size: 13px;
   font-style: italic;
-  opacity: 0.38;
+  color: var(--ink-dim);
   margin-top: 3px;
   display: block;
 }
