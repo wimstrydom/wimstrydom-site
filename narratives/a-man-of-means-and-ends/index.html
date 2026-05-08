@@ -126,12 +126,12 @@ header {
   max-width: var(--content-max);
   padding: 60px 48px 140px;
   min-width: 0;
-  margin-left: calc(var(--rail-w) + max(0px, (100vw - var(--rail-w) - var(--content-max) - 96px) / 2));
+  margin-left: calc(var(--rail-w) + max(0px, (100vw - var(--rail-w) - var(--content-max)) / 2));
 }
 
 /* When rail is hidden (no headings), centre without offset */
 .content.no-rail {
-  margin-left: max(0px, (100vw - var(--content-max) - 96px) / 2);
+  margin-left: max(0px, (100vw - var(--content-max)) / 2);
 }
 
 /* ── PAGE HEADER ── */
