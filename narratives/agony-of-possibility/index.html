@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agony of Possibility — Wim Strydom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #12100e;
+  --ink:         #e8dcc8;
+  --ink-dim:     rgba(232,220,200,0.55);
+  --ink-faint:   rgba(232,220,200,0.28);
+  --ink-ghost:   rgba(232,220,200,0.1);
+  --gold:        #c8a96e;
+  --gold-dim:    rgba(200,169,110,0.38);
+  --serif:       'EB Garamond', Georgia, serif;
+  --header-h:    56px;
+  --rail-w:      230px;
+  --content-max: 680px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ── PROGRESS BAR ── */
+#progress-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--gold);
+  transform-origin: left;
+  transform: scaleX(0);
+  z-index: 200;
+  opacity: 0.65;
+  transition: transform 0.1s linear;
+}
+
+/* ── HEADER ── */
+header {
+  position: sticky; top: 0; z-index: 100;
+  height: var(--header-h);
+  background: rgba(18,16,14,0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ink-ghost);
+  display: flex; align-items: center;
+  padding: 0 48px;
+  justify-content: space-between;
+}
+.wordmark {
+  font-size: 19px; letter-spacing: 0.22em; text-transform: uppercase;
+  opacity: 0.85; font-weight: 400; text-decoration: none; color: var(--ink);
+}
+.header-date { font-size: 13px; font-style: italic; opacity: 0.28; }
+
+/* ── OUTER WRAPPER ── */
+.page-outer {
+  display: flex;
+}
+
+/* ── RAIL ── */
+.rail {
+  width: var(--rail-w);
+  flex-shrink: 0;
+  padding: 52px 32px 52px 48px;
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+  border-right: 1px solid var(--ink-ghost);
+  scrollbar-width: none;
+  background: var(--bg);
+  z-index: 50;
+  transition: opacity 0.3s;
+}
+.rail::-webkit-scrollbar { display: none; }
+.rail.hidden { opacity: 0; pointer-events: none; }
+
+.rail-label {
+  font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase;
+  opacity: 0.28; margin-bottom: 22px; display: block;
+}
+
+.rail-item {
+  display: flex; align-items: baseline; gap: 10px;
+  width: 100%; text-align: left; background: none; border: none;
+  font-family: var(--serif); font-size: 13.5px;
+  color: var(--ink-dim); padding: 6px 0; cursor: pointer;
+  line-height: 1.35; transition: color 0.2s;
+  text-decoration: none;
+}
+.rail-item:hover { color: var(--ink); }
+.rail-item.active { color: var(--gold); font-style: italic; }
+.rail-item.h3 { padding-left: 16px; font-size: 13px; }
+.rail-num {
+  font-size: 10px; opacity: 0.38; letter-spacing: 0.1em;
+  flex-shrink: 0; font-style: normal;
+}
+
+.rail-divider { height: 1px; background: var(--ink-ghost); margin: 18px 0; }
+
+.rail-back {
+  display: block; width: 100%; text-align: left; background: none; border: none;
+  font-family: var(--serif); font-size: 13px; font-style: italic;
+  color: var(--ink-faint); padding: 6px 0; cursor: pointer;
+  transition: color 0.2s; text-decoration: none;
+}
+.rail-back:hover { color: var(--ink-dim); }
+
+/* ── CONTENT ── */
+.content {
+  max-width: var(--content-max);
+  padding: 60px 48px 140px;
+  min-width: 0;
+  margin-left: calc(var(--rail-w) + max(0px, (100vw - var(--rail-w) - var(--content-max)) / 2));
+}
+
+.content.no-rail {
+  margin-left: max(0px, (100vw - var(--content-max)) / 2);
+}
+
+/* ── PAGE HEADER ── */
+.page-eyebrow {
+  font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase;
+  opacity: 0.3; margin-bottom: 28px; display: block;
+}
+.page-title {
+  font-size: 52px; font-weight: 400; line-height: 1.08;
+  color: #f0e8d4; margin-bottom: 28px; letter-spacing: -0.3px;
+  text-wrap: pretty;
+}
+.page-intro {
+  font-size: 18px; font-style: italic; line-height: 1.78;
+  border-left: 2px solid var(--gold-dim);
+  padding-left: 20px; margin-bottom: 14px;
+  color: #e4d8c0;
+}
+.page-meta {
+  font-size: 14px; font-style: italic; opacity: 0.38;
+  margin-bottom: 52px; line-height: 1.6;
+}
+.page-divider {
+  height: 1px; background: var(--ink-ghost); margin-bottom: 52px;
+}
+
+/* ── POEM BODY ── */
+#story-body {
+  font-size: 20px;
+  line-height: 2;
+  color: rgba(232,220,200,0.90);
+}
+
+#story-body p {
+  margin-bottom: 2.2em;
+  text-align: left;
+}
+#story-body p:last-child { margin-bottom: 0; }
+
+/* ── STORY FOOTER ── */
+.story-footer {
+  margin-top: 72px;
+  padding-top: 36px;
+  border-top: 1px solid var(--ink-ghost);
+  font-size: 14px; font-style: italic;
+  color: var(--ink-faint);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-back {
+  color: var(--gold); text-decoration: none; font-style: italic;
+  border-bottom: 1px solid var(--gold-dim);
+  transition: opacity 0.18s; font-size: 16px;
+}
+.footer-back:hover { opacity: 0.72; }
+
+/* ── LOADING / ERROR STATES ── */
+.state-msg {
+  padding: 48px 0;
+  font-size: 18px; font-style: italic;
+  color: var(--ink-faint);
+  line-height: 1.7;
+}
+.state-msg a { color: var(--gold); }
+
+/* ── MOBILE ── */
+@media (max-width: 860px) {
+  header { padding: 0 24px; }
+  .page-outer { padding: 0 24px; }
+  .rail { display: none; }
+  .content, .content.no-rail {
+    padding: 36px 24px 90px;
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 100%;
+  }
+  .page-title { font-size: 38px; }
+}
+@media (max-width: 480px) {
+  .page-title { font-size: 32px; }
+  .content, .content.no-rail { padding: 28px 20px 72px; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header>
+  <a href="../../" class="wordmark">Wim Strydom</a>
+  <span class="header-date" id="header-date"></span>
+</header>
+
+<div class="page-outer" id="top">
+
+  <nav class="rail hidden" id="rail">
+    <span class="rail-label">In this poem</span>
+    <div id="rail-links"></div>
+    <div class="rail-divider"></div>
+    <a href="../" class="rail-back">← all writing</a>
+  </nav>
+
+  <main class="content no-rail" id="content">
+    <div class="state-msg" id="loading-msg">Loading…</div>
+  </main>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// FRONT MATTER PARSER
+// ─────────────────────────────────────────────────────────────────────────────
+
+function parseFrontMatter(raw) {
+  const meta = {};
+  let body = raw;
+
+  const fmMatch = raw.match(/^---\r?\n([\s\S]+?)\r?\n---\r?\n([\s\S]*)$/);
+  if (fmMatch) {
+    const yamlBlock = fmMatch[1];
+    body = fmMatch[2];
+    yamlBlock.split('\n').forEach(line => {
+      const m = line.match(/^(\w+):\s*(.+)$/);
+      if (m) meta[m[1].trim()] = m[2].trim().replace(/^["']|["']$/g, '');
+    });
+  }
+
+  return { meta, body };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POEM RENDERER
+// Groups text by 2+ blank lines (stanzas), joins lines within with <br>
+// ─────────────────────────────────────────────────────────────────────────────
+
+function renderPoem(body) {
+  // Split into stanza blocks by two or more consecutive blank lines
+  const stanzaBlocks = body.split(/\n{3,}/);
+  let html = '';
+  stanzaBlocks.forEach(block => {
+    const trimmed = block.trim();
+    if (!trimmed) return;
+    // Lines within a stanza may be separated by single blank lines
+    const lines = trimmed.split(/\n+/).map(l => l.trim()).filter(Boolean);
+    if (lines.length > 0) {
+      html += `<p>${lines.join('<br>')}</p>\n`;
+    }
+  });
+  return html;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATE DISPLAY
+// ─────────────────────────────────────────────────────────────────────────────
+
+function formatDate(dateStr) {
+  if (!dateStr) {
+    const now = new Date();
+    return now.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+  }
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr;
+  return d.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PROGRESS BAR
+// ─────────────────────────────────────────────────────────────────────────────
+
+const bar = document.getElementById('progress-bar');
+function updateProgress() {
+  const doc = document.documentElement;
+  const scrolled = doc.scrollTop || document.body.scrollTop;
+  const total = doc.scrollHeight - doc.clientHeight;
+  bar.style.transform = `scaleX(${total > 0 ? scrolled / total : 0})`;
+}
+
+window.addEventListener('scroll', updateProgress, { passive: true });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOAD AND RENDER
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function loadStory(src) {
+  const content = document.getElementById('content');
+
+  let raw;
+  try {
+    const res = await fetch(src);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    raw = await res.text();
+  } catch (err) {
+    content.innerHTML = `
+      <div class="state-msg">
+        <p>Could not load <em>${src}</em>.</p>
+        <p style="margin-top:12px; font-size:15px;">
+          Make sure the file exists and is accessible from this page.<br>
+          If you're opening this file locally, try serving it from a local server.
+        </p>
+      </div>`;
+    document.title = 'Error — Wim Strydom';
+    return;
+  }
+
+  let { meta, body } = parseFrontMatter(raw);
+
+  // Apply defaults for this poem
+  if (!meta.title)   meta.title   = 'Agony of Possibility';
+  if (!meta.date)    meta.date    = '2026-05-08';
+  if (!meta.eyebrow) meta.eyebrow = 'Poetry';
+
+  // Strip a leading # Title line
+  body = body.replace(/^#[^\n]*\n+/, '');
+
+  const poemHtml = renderPoem(body);
+
+  const pageTitle = meta.title;
+  document.title = `${pageTitle} — Wim Strydom`;
+
+  document.getElementById('header-date').textContent = formatDate(meta.date);
+
+  const eyebrow = meta.eyebrow;
+  const dateDisplay = meta.date
+    ? new Date(meta.date).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+    : '';
+
+  content.innerHTML = `
+    <span class="page-eyebrow">${eyebrow}</span>
+    <h1 class="page-title">${pageTitle}</h1>
+    ${dateDisplay ? `<p class="page-meta">${dateDisplay}</p>` : ''}
+    <div class="page-divider"></div>
+    <div id="story-body">${poemHtml}</div>
+    <div class="story-footer">
+      <a href="../" class="footer-back">← all writing</a>
+      <span>Wim Strydom</span>
+    </div>
+  `;
+
+  updateProgress();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ENTRY POINT
+// ─────────────────────────────────────────────────────────────────────────────
+
+(function init() {
+  const params = new URLSearchParams(window.location.search);
+  const storySrc = params.get('story') || '/narratives/agony-of-possibility/Agony_of_Possibility.md';
+  loadStory(storySrc);
+})();
+</script>
+</body>
+</html>
