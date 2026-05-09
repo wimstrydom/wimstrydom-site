@@ -1,42 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DC8TCGZT0C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DC8TCGZT0C');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The weird gravity of spin-station transit — Wim Strydom</title>
+<meta name="description" content="An essay on the strange physics of transit aboard a rotating space station — why a simple train journey produces wildly varying felt gravity.">
+<meta property="og:title" content="The weird gravity of spin-station transit — Wim Strydom">
+<meta property="og:description" content="An essay on the strange physics of transit aboard a rotating space station — why a simple train journey produces wildly varying felt gravity.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://wimstrydom.com/spin-station">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
 <style>
-:root {
-  --header-h: 56px;
-}
-
-body {
-  font-size: 18px;
-  line-height: 1;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* ── HEADER ── */
-header {
-  position: sticky; top: 0; z-index: 100;
-  height: var(--header-h);
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--ink-faint);
-  display: flex; align-items: center;
-  padding: 0 48px;
-  justify-content: space-between;
-}
-.wordmark {
-  font-size: 19px; letter-spacing: 0.22em; text-transform: uppercase;
-  font-weight: 400; text-decoration: none; color: var(--ink);
-}
-.header-date { font-size: 13px; font-style: italic; color: var(--ink-dim); }
+body { overflow-x: hidden; }
 
 /* ── RIGHT: DIAGRAM COLUMN ── */
 .diagram-col {
@@ -96,85 +82,15 @@ header {
   grid-row: 2;
 }
 
-.page-eyebrow {
-  font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase;
-  color: var(--ink-dim); margin-bottom: 28px; display: block;
-}
-.page-title {
-  font-size: 50px; font-weight: 400; line-height: 1.08;
-  color: var(--ink-bright); margin-bottom: 32px; letter-spacing: -0.3px;
-}
-.page-intro {
-  font-size: 18px; font-style: italic; line-height: 1.78;
-  border-left: 2px solid var(--gold-dim);
-  padding-left: 20px; margin-bottom: 44px;
-  color: var(--ink);
-}
-.page-divider { height: 1px; background: var(--ink-faint); margin-bottom: 40px; }
-
-/* body prose */
-.prose { font-size: 17.5px; line-height: 1.92; color: var(--ink); }
-.prose p { margin-bottom: 22px; }
-.prose p:last-child { margin-bottom: 0; }
-.prose em { color: var(--gold); font-style: italic; }
-.prose strong { color: var(--ink-bright); font-weight: 500; }
-.prose a {
-  color: var(--gold); text-decoration: none;
-  border-bottom: 1px solid var(--gold-dim);
-  transition: color 0.18s;
-}
-.prose a:hover { color: var(--gold-dim); }
-
-/* pull-out physics note */
-.physics-aside {
-  border-left: 2px solid var(--gold-dim);
-  padding: 18px 20px;
-  margin: 28px 0;
-  background: var(--gold-tint);
-}
-.physics-aside-label {
-  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--ink-dim); margin-bottom: 10px; display: block;
-}
-.physics-aside p {
-  font-size: 16px; line-height: 1.82; color: var(--ink-dim);
-  margin-bottom: 10px;
-}
-.physics-aside p:last-child { margin-bottom: 0; }
-.physics-aside em { color: var(--gold); }
-
-/* spinward / anti labels in text */
-.label-spin {
-  font-style: normal; font-size: 0.92em; letter-spacing: 0.04em;
-  color: var(--red); border-bottom: 1px solid var(--red-dim);
-}
-.label-anti {
-  font-style: normal; font-size: 0.92em; letter-spacing: 0.04em;
-  color: var(--blue); border-bottom: 1px solid var(--blue-dim);
-}
+.page-title { font-size: 50px; }
+.page-intro { margin-bottom: 44px; }
+.page-divider { margin-bottom: 40px; }
 
 /* CTA */
 .cta-row {
   margin-top: 48px; padding-top: 40px;
   border-top: 1px solid var(--ink-faint);
   display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
-}
-.cta-btn {
-  display: inline-block;
-  background: none;
-  border: 1px solid var(--gold-dim);
-  color: var(--gold);
-  font-family: var(--serif);
-  font-size: 17px; font-style: italic;
-  padding: 12px 28px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-  letter-spacing: 0.04em;
-}
-.cta-btn:hover {
-  background: var(--gold-tint);
-  border-color: var(--gold);
 }
 .cta-note {
   font-size: 14px; font-style: italic; color: var(--ink-dim);
@@ -234,7 +150,7 @@ header {
   <!-- ── DIAGRAM ── -->
   <div class="diagram-col" id="diagram-col">
     <span class="diagram-label">Rotating station</span>
-    <canvas id="station-canvas"></canvas>
+    <canvas id="station-canvas" aria-label="Animated diagram of a rotating space station with spinward and anti-spinward transit tracks" role="img"></canvas>
     <div class="diagram-legend">
       <div class="legend-row">
         <div class="legend-dash spin"></div>
@@ -250,7 +166,7 @@ header {
   <!-- ── PROSE ── -->
   <div class="text-prose-col">
 
-    <div class="prose">
+    <div class="body-text">
 
       <p>I commute by tube. Like most people on the London Underground, I do something to pass the time — usually a mix of doom-scrolling, listening to music, and reading. Recently, I've been re-working my way through <em>The Expanse</em>, James S.A. Corey's sprawling solar system sci-fi series, which is notable among other things for taking its physics unusually seriously.</p>
 
@@ -258,14 +174,14 @@ header {
 
       <p>So there I was, trying to ignore the iconic demonic screeching of the Northern Line, and I started thinking: <em>how would people get around inside these spin stations?</em> In the books they refer to transit systems. A train, a tram, or something like that. And the moment I asked that question, it immediately brought up another — <em>what would happen to gravity on board a carriage?</em></p>
 
-      <div class="physics-aside">
-        <span class="physics-aside-label">The physics, briefly</span>
+      <div class="callout">
+        <span class="callout-label">The physics, briefly</span>
         <p>On a rotating station, your "gravity" comes entirely from the fact that the hull is constantly accelerating you inward. I.e. you're being flung outward, the hull pushes back, and that push feels like weight. The faster the station spins and/or the larger its radius, the stronger the gravity.</p>
-        <p>Now put a train on the inside of that hull, travelling around the circumference. The train runs along a circular track — either <em class="label-spin">spinward</em> (in the same direction the station rotates) or <em class="label-anti">anti-spinward</em> (against it). Because gravity here is really just due to spin — <em>v² / r</em> — the train's speed adds directly to or subtracts from the total velocity that generates your felt weight.</p>
-        <p>Travel <em class="label-spin">spinward</em> and you're moving faster relative to the inertial frame. Your effective centripetal acceleration goes up. You feel <strong>heavier</strong> — potentially significantly so. Travel <em class="label-anti">anti-spinward</em> and you're moving slower. Your effective gravity <strong>drops</strong>. Go fast enough anti-spinward and you could match the rim speed in reverse, achieving genuine weightlessness mid-journey. </p>
+        <p>Now put a train on the inside of that hull, travelling around the circumference. The train runs along a circular track — either <em class="label-red">spinward</em> (in the same direction the station rotates) or <em class="label-blue">anti-spinward</em> (against it). Because gravity here is really just due to spin — <em>v² / r</em> — the train's speed adds directly to or subtracts from the total velocity that generates your felt weight.</p>
+        <p>Travel <em class="label-red">spinward</em> and you're moving faster relative to the inertial frame. Your effective centripetal acceleration goes up. You feel <strong>heavier</strong> — potentially significantly so. Travel <em class="label-blue">anti-spinward</em> and you're moving slower. Your effective gravity <strong>drops</strong>. Go fast enough anti-spinward and you could match the rim speed in reverse, achieving genuine weightlessness mid-journey. </p>
 
         <p>  Small side joke: While writing this with Claude, it suggested that <em>"faster still, and "down" flips: you'd float up toward what was the ceiling and find yourself stuck there."</em> Which I thought was hilarious. You wouldn't Gravity would just come back as you'd still be spinning in a circle, just in the other direction.</p>
-       </div>
+      </div>
 
       <p>On top of the strange counter-acting or amplifying effect of speeding along inside the ring, any accelerating vehicle produces its own inertial force; the sensation of being pushed back into your seat as it pulls away, or thrown forward when it brakes. On Earth, these forces are small compared to normal gravity (usually a fraction of 1g), so they're noticeable but not dramatic. You lean a little, or bump someone on the tube and both of you pretend like nothing happened, but nothing falls over (unless too many pints were involved).</p>
 
@@ -279,7 +195,7 @@ header {
 
       <p>Want to see the graphs? The link is below, feel free to play around! You can adjust the station diameter, target gravity, train speed, acceleration, and stop spacing, and watch the felt-gravity profile update in real time for both spinward and anti-spinward journeys.</p>
 
-    </div><!-- /prose -->
+    </div><!-- /body-text -->
 
     <div class="cta-row">
       <a href="../spin-station-calculator/" class="cta-btn">Open the calculator →</a>

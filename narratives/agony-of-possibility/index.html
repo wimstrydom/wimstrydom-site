@@ -1,68 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DC8TCGZT0C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DC8TCGZT0C');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agony of Possibility — Wim Strydom</title>
+<meta name="description" content="A poem by Wim Strydom.">
+<meta property="og:title" content="Agony of Possibility — Wim Strydom">
+<meta property="og:description" content="A poem by Wim Strydom.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://wimstrydom.com/narratives/agony-of-possibility">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
-<style>
-:root { --content-max: 680px; }
-
-/* ── POEM OVERRIDES ── */
-.content { padding: 60px 48px 140px; }
-.page-eyebrow { margin-bottom: 28px; }
-.page-title { font-size: 52px; margin-bottom: 28px; text-wrap: pretty; }
-
-/* ── POEM BODY ── */
-#story-body {
-  font-size: 20px;
-  line-height: 2;
-  color: var(--ink);
-}
-
-#story-body p {
-  margin-bottom: 2.2em;
-  text-align: left;
-}
-#story-body p:last-child { margin-bottom: 0; }
-
-/* ── STORY FOOTER ── */
-.story-footer {
-  margin-top: 72px;
-  padding-top: 36px;
-  border-top: 1px solid var(--ink-faint);
-  font-size: 13px; font-style: italic;
-  color: var(--ink-dim);
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 12px;
-}
-.footer-back {
-  color: var(--gold); text-decoration: none; font-style: italic;
-  border-bottom: 1px solid var(--gold-dim);
-  transition: opacity 0.18s; font-size: 16px;
-}
-.footer-back:hover { opacity: 0.72; }
-
-/* ── LOADING / ERROR STATES ── */
-.state-msg {
-  padding: 48px 0;
-  font-size: 18px; font-style: italic;
-  color: var(--ink-dim);
-  line-height: 1.7;
-}
-.state-msg a { color: var(--gold); }
-
-@media (max-width: 860px) {
-  .content, .content.no-rail { padding: 36px 24px 90px; }
-  .page-title { font-size: 38px; }
-}
-@media (max-width: 480px) {
-  .page-title { font-size: 32px; }
-}
-</style>
 </head>
 <body>
 
@@ -211,7 +169,7 @@ async function loadStory(src) {
     <h1 class="page-title">${pageTitle}</h1>
     ${dateDisplay ? `<p class="page-meta">${dateDisplay}</p>` : ''}
     <div class="page-divider"></div>
-    <div id="story-body">${poemHtml}</div>
+    <div id="story-body" class="poem">${poemHtml}</div>
     <div class="story-footer">
       <a href="../" class="footer-back">← all writing</a>
       <span>Wim Strydom</span>

@@ -46,6 +46,7 @@ All design tokens live in `/style.css`, which every page links to via `<link rel
 - No raw hex or rgba colour values anywhere in page files. Always use a token.
 - No `--ink-ghost`, `--ink-rule`, or any other ink variant — only the four ink tokens above.
 - Never use the CSS `opacity` property to express colour intensity. Use the appropriate token instead (`--ink-dim`, `--gold-dim`, etc.). Raw opacity creates fragmented one-off tones that fall outside the token system. The only legitimate use of `opacity` is for non-colour purposes such as transition effects on interactive states.
+- **Pre-existing opacity exceptions** (do not replicate, do not remove): `.wordmark { opacity: 0.85 }` and `#progress-bar { opacity: 0.65 }` predate this rule. No token exists at those exact values and they are load-bearing design choices — leave them as-is.
 - **JS canvas/chart mirrors:** `spin-station/index.html` and `spin-station-calculator/index.html` contain JS colour constants (canvas and Plotly) that mirror design tokens as hardcoded strings — those APIs cannot read CSS variables. If you update any token in `style.css`, update the matching JS constants in both files too. Each constant is annotated with its corresponding token name.
 
 ### Typography
@@ -87,11 +88,17 @@ Page title specifics: `line-height: 1.08; letter-spacing: -0.3px; margin-bottom:
 
 **Blockquote:** `border-left: 2px solid var(--gold-dim); padding: 2px 0 2px 20px; margin: 1.6em 0; color: var(--ink-dim); font-style: italic`. Paragraphs inside: `text-align: left`.
 
+**Callout (`.callout`):** `border-left: 2px solid var(--gold-dim); padding: 18px 20px; margin: 28px 0; background: var(--gold-tint)`. Label (`.callout-label`): `font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-dim)`. Body paragraphs: `font-size: 16px; line-height: 1.44; color: var(--ink); text-align: justify`. Used for asides and pull-out notes in essay prose.
+
 **Horizontal rule:** `border: none; border-top: 1px solid var(--ink-faint); margin: 3em auto; width: 40%`.
 
 **Lists:** `padding-left: 1.6em; margin-bottom: 1.4em`. Items: `line-height: 1.72; margin-bottom: 0.4em`.
 
-**Page divider (`.page-divider`):** `height: 1px; background: var(--ink-faint); margin-bottom: 52px`.
+**Page meta (`.page-meta`):** `font-size: 13px; font-style: italic; color: var(--ink-dim); margin-bottom: 52px; line-height: 1.6`. Used for the date line below the page title on narrative pages.
+
+**Page divider (`.page-divider`):** `height: 1px; background: var(--ink-faint); margin-bottom: 56px`.
+
+**Body text utility (`.body-text`):** A layout utility class for inline prose fragments within page layouts (philosophy Q&A answers, spin-station essay body). Provides: 18px / 1.44, justified paragraphs, inline elements (em, strong, a), blockquote, hr, lists. Distinct from the content archetypes (`.prose`, `.poem`) which are for full markdown-rendered documents.
 
 ### Layout and structure
 
@@ -100,9 +107,9 @@ Page title specifics: `line-height: 1.08; letter-spacing: -0.3px; margin-bottom:
 - `--rail-w: 230px` — fixed left rail width
 - `--content-max: 750px` — unified max readable width for philosophy and prose narratives
 
-Poetry pages (`agony-of-possibility`) may override `--content-max` locally (currently `680px`) to suit narrower poem lines.
+The `.poem` archetype (via `.content.no-rail:has(.poem)`) overrides `--content-max` to `680px` and adjusts padding automatically — no local overrides needed on poem pages. The `.no-rail` scope prevents the rule from accidentally applying to pages like the style guide that contain a `.poem` demo element.
 
-**Content padding** (defined in `style.css`): `52px 48px 120px` (desktop) → `36px 24px 80px` (≤860px) → `28px 20px 72px` (≤480px). Poetry pages may override the desktop padding.
+**Content padding** (defined in `style.css`): `52px 48px 120px` (desktop) → `36px 24px 80px` (≤860px) → `28px 20px 72px` (≤480px). The `.poem` archetype sets its own larger padding: `60px 48px 140px` desktop → `36px 24px 90px` (≤860px).
 
 **Header padding:** `0 48px` desktop → `0 24px` at ≤860px.
 
@@ -124,6 +131,7 @@ spin-station-calculator/index.html                      Spin Station calculator 
 narratives/index.html                                   Narratives index — two sections: Stories and Poems
 narratives/<slug>/index.html                            Individual narrative page
 narratives/<slug>/<Title>.md                            Narrative content (Markdown)
+style-guide/index.html                                  Design system style guide — colour tokens, typography, components, spacing
 ```
 
 Planned pages (coming soon, linked from home but not yet built):
@@ -162,9 +170,52 @@ Two-section list page. "Stories" section (Short Fiction) and "Poems" section (Po
 ### Individual narrative pages
 Each narrative lives at `narratives/<slug>/index.html` and renders its `.md` file client-side. Template: copy `narratives/a-man-of-means-and-ends/index.html`. Shared features: sticky header with wordmark, left rail with section nav, reading progress bar.
 
+Narrative pages carry **no formatting CSS** in their `<style>` block — all rendering is handled by content archetypes defined globally in `style.css` (see Content archetypes section below). The only CSS a narrative page should ever add locally is non-formatting layout overrides specific to that one page.
+
+## Content archetypes
+
+Content archetypes are self-contained CSS classes defined in `style.css` that provide complete rendering for a content type. Individual narrative pages set the archetype class on the rendered content div and need zero formatting CSS of their own.
+
+### `.prose` — short fiction / essay
+
+Applied to markdown-rendered narrative documents. Covers: base text (18px / 1.44), paragraphs (justified), inline elements (em, strong, a), blockquote, hr, lists, and headings (h2–h6) and code/pre blocks.
+
+```html
+<div id="story-body" class="prose">${storyHtml}</div>
+```
+
+### `.poem` — poetry
+
+Applied to poem documents. Covers: base text (20px / line-height 2), stanza paragraphs (left-aligned, 2.2em gap), inline elements. Also narrows the content column: `.content.no-rail:has(.poem)` sets `--content-max: 680px`, larger desktop padding, and poem-specific `.page-title` sizing — no `:root` override needed. The `.no-rail` scope ensures this only fires on narrative pages, not on pages like the style guide that contain poem demos.
+
+```html
+<div id="story-body" class="poem">${poemHtml}</div>
+```
+
+### Adding a new archetype
+
+If a new content type is needed (e.g. `.recipe`), add a complete self-contained archetype section to `style.css` after the existing archetypes. Do not put any of its rules in the page file.
+
 ## Content rules
 
 The text in `philosophy/index.html` is authored by Wim and is **not to be edited or paraphrased**. Reproduce it exactly as written. This applies to all future content pages — treat user-supplied copy as law.
+
+## Analytics
+
+Every page includes Google Analytics (GA4, measurement ID `G-DC8TCGZT0C`). The snippet goes immediately after `<head>`, before `<meta charset>`:
+
+```html
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DC8TCGZT0C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DC8TCGZT0C');
+</script>
+```
+
+This must be included in every new page and narrative without exception.
 
 ## Adding new pages
 
@@ -173,6 +224,7 @@ The text in `philosophy/index.html` is authored by Wim and is **not to be edited
 3. Always link `/style.css` in the `<head>` — this provides all tokens and the global reset
 4. Use only design tokens (never raw hex/rgba values) for all colours in the page's inline `<style>` block
 5. Reuse the header/wordmark pattern from `philosophy/index.html`
+6. Include the Google Analytics snippet (see Analytics section above)
 
 ## Adding a new narrative
 
@@ -188,10 +240,11 @@ narratives/<slug>/<Original_Filename>.md
 
 **2. Create `narratives/<slug>/index.html`**
 
-Copy `narratives/a-man-of-means-and-ends/index.html` verbatim, then change only these three things:
+Copy `narratives/a-man-of-means-and-ends/index.html` verbatim (the GA snippet is already in the template). Then change only these things:
 - `<title>` tag — update to `Narrative Title — Wim Strydom`
 - The three meta defaults in `loadStory` — `meta.title`, `meta.date`, `meta.eyebrow`
 - The default filename in the `init` function — `storySrc` fallback string
+- The archetype class on the `#story-body` div — `class="prose"` for fiction, `class="poem"` for poetry
 
 The `meta.date` should reflect when the piece was written or provided; use `YYYY-MM-DD` format.
 
@@ -200,6 +253,8 @@ Set `meta.eyebrow` based on type:
 - Poetry → `'Poetry'`
 
 The leading-bold-title strip (`body = body.replace(...)`) stays in place — it handles `.md` files that open with a `**Title**` line.
+
+Do not add any formatting CSS to the page's `<style>` block — all rendering is handled by the archetype class (see Content archetypes). Poetry pages need no local `--content-max` override; `.content:has(.poem)` handles it.
 
 **3. Add the narrative to `narratives/index.html`**
 

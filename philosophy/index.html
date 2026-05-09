@@ -1,9 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DC8TCGZT0C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DC8TCGZT0C');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Philosophical Positions — Wim Strydom</title>
+<meta name="description" content="My working philosophical positions on metaphysics, free will, consciousness, epistemology, moral philosophy, and the meaning of life.">
+<meta property="og:title" content="My Philosophical Positions — Wim Strydom">
+<meta property="og:description" content="My working philosophical positions on metaphysics, free will, consciousness, epistemology, moral philosophy, and the meaning of life.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://wimstrydom.com/philosophy">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
@@ -53,21 +66,6 @@
 .section-body.open { grid-template-rows: 1fr; }
 .section-body-inner { overflow: hidden; }
 .section-body-pad { padding-top: 30px; }
-
-/* ── BODY TEXT ── */
-.body-text {
-  font-size: 18px; line-height: 1.44;
-  color: var(--ink);
-}
-.body-text p { margin-bottom: 18px; text-align: justify; }
-.body-text p:last-child { margin-bottom: 0; }
-.body-text em { color: var(--gold); font-style: italic; }
-.body-text a {
-  color: var(--gold); text-decoration: none;
-  border-bottom: 1px solid var(--gold-dim);
-  transition: opacity 0.18s;
-}
-.body-text a:hover { opacity: 0.72; }
 
 /* ── Q&A ── */
 .qa-group { margin-top: 40px; }

@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DC8TCGZT0C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DC8TCGZT0C');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style Guide — Wim Strydom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+/* ── STYLE GUIDE LAYOUT ── */
+.sg-section {
+  margin-bottom: 80px;
+  scroll-margin-top: 76px;
+}
+.sg-section-title {
+  font-size: 27px; font-weight: 400; color: var(--ink-bright);
+  margin-bottom: 36px; padding-bottom: 12px;
+  border-bottom: 1px solid var(--ink-faint);
+  line-height: 1.2;
+}
+.sg-group { margin-bottom: 44px; }
+.sg-group:last-child { margin-bottom: 0; }
+.sg-label {
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--ink-dim); margin-bottom: 14px; display: block;
+}
+
+/* ── COLOUR SWATCHES ── */
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+.swatch { border-radius: 3px; overflow: hidden; border: 1px solid var(--ink-faint); }
+.swatch-color { height: 56px; }
+.swatch-info { padding: 9px 11px; }
+.swatch-name { font-size: 12.5px; color: var(--ink); display: block; margin-bottom: 3px; }
+.swatch-value { font-size: 11px; color: var(--ink-dim); }
+
+/* ── TYPE SPECIMENS ── */
+.type-specimen {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--ink-faint);
+}
+.type-specimen:last-child { border-bottom: none; padding-bottom: 0; }
+.specimen-label {
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--ink-dim); margin-bottom: 18px; display: block;
+}
+
+/* ── BODY TEXT (demo only) ── */
+
+/* ── DEMO FRAMES ── */
+.demo-frame {
+  border: 1px solid var(--ink-faint);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.demo-frame-pad { padding: 24px 28px; }
+
+/* ── RAIL DEMO ── */
+.rail-demo {
+  border: 1px solid var(--ink-faint);
+  border-radius: 3px;
+  padding: 24px 28px;
+  max-width: 230px;
+}
+
+/* ── TOKEN CODE INLINE ── */
+.tok {
+  font-family: var(--serif);
+  font-size: inherit;
+  color: var(--ink-dim);
+}
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+
+<header>
+  <a class="wordmark" href="/">Wim Strydom</a>
+</header>
+
+<div class="page-outer">
+
+  <nav class="rail" id="rail">
+    <span class="rail-label">Style Guide</span>
+    <a class="rail-item active" href="#colours">Colours</a>
+    <a class="rail-item" href="#typography">Typography</a>
+    <a class="rail-item" href="#archetypes">Archetypes</a>
+    <a class="rail-item" href="#components">Components</a>
+    <a class="rail-item" href="#interactive">Interactive</a>
+    <a class="rail-item" href="#data">Data display</a>
+    <a class="rail-item" href="#navigation">Navigation</a>
+    <a class="rail-item" href="#layout">Spacing &amp; Layout</a>
+    <div class="rail-divider"></div>
+    <a class="rail-back" href="/">← Home</a>
+  </nav>
+
+  <main class="content">
+
+    <span class="page-eyebrow">Design System</span>
+    <h1 class="page-title">Style Guide</h1>
+    <p class="page-intro">A living reference for the visual language of this site. All tokens, type styles, and components — exactly as they appear in production.</p>
+    <div class="page-divider"></div>
+
+
+    <!-- ════════════════════════════════════════
+         COLOURS
+    ════════════════════════════════════════ -->
+    <section class="sg-section" id="colours">
+      <h2 class="sg-section-title">Colour Tokens</h2>
+
+      <div class="sg-group">
+        <span class="sg-label">Backgrounds</span>
+        <div class="swatch-grid">
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--bg);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--bg</span>
+              <span class="swatch-value">#12100e</span>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--bg-glass);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--bg-glass</span>
+              <span class="swatch-value">rgba(18,16,14, 0.94)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Ink — text hierarchy</span>
+        <div class="swatch-grid">
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--ink-bright);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--ink-bright</span>
+              <span class="swatch-value">#f0e8d4 · headings</span>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--ink);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--ink</span>
+              <span class="swatch-value">#e8dcc8 · body</span>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--ink-dim);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--ink-dim</span>
+              <span class="swatch-value">rgba(232,220,200, 0.55) · minimum text</span>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--ink-faint);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--ink-faint</span>
+              <span class="swatch-value">rgba(232,220,200, 0.10) · borders only</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Gold — accent, links, active states</span>
+        <div class="swatch-grid">
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--gold);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--gold</span>
+              <span class="swatch-value">#c8a96e</span>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--gold-dim);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--gold-dim</span>
+              <span class="swatch-value">rgba(200,169,110, 0.55)</span>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--gold-tint);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--gold-tint</span>
+              <span class="swatch-value">rgba(200,169,110, 0.10)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Data Accent A — Red</span>
+        <div class="swatch-grid">
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--red);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--red</span>
+              <span class="swatch-value">#e0705a</span>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--red-dim);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--red-dim</span>
+              <span class="swatch-value">rgba(224,112,90, 0.55)</span>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--red-tint);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--red-tint</span>
+              <span class="swatch-value">rgba(224,112,90, 0.10)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Data Accent B — Blue</span>
+        <div class="swatch-grid">
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--blue);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--blue</span>
+              <span class="swatch-value">#5aabcf</span>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--blue-dim);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--blue-dim</span>
+              <span class="swatch-value">rgba(90,171,207, 0.55)</span>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--blue-tint);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--blue-tint</span>
+              <span class="swatch-value">rgba(90,171,207, 0.10)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Data Accent C — Green</span>
+        <div class="swatch-grid">
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--green);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--green</span>
+              <span class="swatch-value">#7aab78</span>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--green-dim);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--green-dim</span>
+              <span class="swatch-value">rgba(122,171,120, 0.55)</span>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--green-tint);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--green-tint</span>
+              <span class="swatch-value">rgba(122,171,120, 0.10)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Data Accent D — Amber / caution</span>
+        <div class="swatch-grid">
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--amber);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--amber</span>
+              <span class="swatch-value">#c4933a</span>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--amber-dim);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--amber-dim</span>
+              <span class="swatch-value">rgba(196,147,58, 0.55)</span>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background: var(--amber-tint);"></div>
+            <div class="swatch-info">
+              <span class="swatch-name">--amber-tint</span>
+              <span class="swatch-value">rgba(196,147,58, 0.10)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Colour usage rules</span>
+        <div class="body-text">
+          <ul>
+            <li>Text is never below <span class="tok">--ink-dim</span>. Use <span class="tok">--ink-dim</span>, <span class="tok">--ink</span>, or <span class="tok">--ink-bright</span> for all text.</li>
+            <li><span class="tok">--ink-faint</span> is never used for text — only borders, dividers, and structural hairlines.</li>
+            <li>No raw hex or rgba colour values anywhere in page files. Always use a token.</li>
+            <li>Never use the CSS <span class="tok">opacity</span> property to express colour intensity. Use the appropriate dim or tint token instead.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ════════════════════════════════════════
+         TYPOGRAPHY
+    ════════════════════════════════════════ -->
+    <section class="sg-section" id="typography">
+      <h2 class="sg-section-title">Typography</h2>
+
+      <p style="font-size: 13px; font-style: italic; color: var(--ink-dim); margin-bottom: 36px;">Font: EB Garamond · weights 400 and 500 only (no 600) · all sizes in px</p>
+
+      <div class="type-specimen">
+        <span class="specimen-label">Page Title (.page-title) · 56px / 40px / 34px responsive · weight 400 · line-height 1.08 · letter-spacing −0.3px · --ink-bright</span>
+        <h1 class="page-title" style="margin-bottom: 0;">The Manuscript</h1>
+      </div>
+
+      <div class="type-specimen">
+        <span class="specimen-label">Section Heading (h2) · 26–27px · weight 400 · line-height 1.2 · --ink-bright</span>
+        <h2 style="font-size: 27px; font-weight: 400; color: var(--ink-bright); line-height: 1.2; margin: 0;">Philosophy of Mind</h2>
+      </div>
+
+      <div class="type-specimen">
+        <span class="specimen-label">Sub-heading (h3) · 19px · weight 400 · italic · --ink</span>
+        <h3 style="font-size: 19px; font-weight: 400; font-style: italic; color: var(--ink); margin: 0;">On the nature of consciousness</h3>
+      </div>
+
+      <div class="type-specimen">
+        <span class="specimen-label">Minor Heading (h4–h6) · 16px · weight 500 · uppercase · letter-spacing 0.05em · --ink-dim</span>
+        <h4 style="font-size: 16px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-dim); margin: 0;">Further Reading</h4>
+      </div>
+
+      <div class="type-specimen">
+        <span class="specimen-label">Body Text · 18px · line-height 1.44 · --ink · paragraphs justified · 18px bottom margin</span>
+        <div class="body-text">
+          <p>This is body text at its default size and weight. The prose runs at eighteen pixels with a comfortable line-height of 1.44, rendered in EB Garamond at four hundred weight. The colour is <span class="tok">--ink</span>, which sits just a shade warmer than white, warm and tactile against the near-black background.</p>
+          <p>A second paragraph to demonstrate spacing. Paragraphs carry an eighteen-pixel bottom margin; the last paragraph in any block carries none — the parent container provides outer spacing.</p>
+        </div>
+      </div>
+
+      <div class="type-specimen">
+        <span class="specimen-label">Inline elements — em · strong · a</span>
+        <div class="body-text">
+          <p>This sentence contains <em>an emphasised phrase in gold italic</em>, some <strong>strong text in bright ink at weight 500</strong>, and <a href="#">a link with a fine gold underline</a> that fades on hover.</p>
+        </div>
+      </div>
+
+      <div class="type-specimen">
+        <span class="specimen-label">Page Eyebrow (.page-eyebrow) · 11px · letter-spacing 0.26em · uppercase · --ink-dim · margin-bottom 30px</span>
+        <span class="page-eyebrow" style="margin-bottom: 0;">Short Fiction</span>
+      </div>
+
+      <div class="type-specimen">
+        <span class="specimen-label">Page Intro (.page-intro) · 18px · italic · line-height 1.78 · 2px --gold-dim left border · padding-left 20px</span>
+        <p class="page-intro" style="margin-bottom: 0;">An introductory passage sits in this italic block with a faint gold left border. It functions as a lede — setting tone before the body text begins.</p>
+      </div>
+
+      <div class="type-specimen">
+        <span class="specimen-label">Page Meta (.page-meta) · 13px · italic · --ink-dim · line-height 1.6</span>
+        <p class="page-meta" style="margin-bottom: 0;">Short Fiction · Written May 2026</p>
+      </div>
+
+      <div class="type-specimen">
+        <span class="specimen-label">Blockquote · italic · --ink-dim · 2px --gold-dim left border · padding-left 20px · paragraphs left-aligned</span>
+        <div class="body-text">
+          <blockquote>
+            <p>The unexamined life is not worth living.</p>
+          </blockquote>
+        </div>
+      </div>
+
+      <div class="type-specimen">
+        <span class="specimen-label">Callout block (.callout) · gold-tint background · gold-dim left border · 10px uppercase label · 16px justified body text</span>
+        <div class="callout">
+          <span class="callout-label">The physics, briefly</span>
+          <p>On a rotating station, your "gravity" comes entirely from the fact that the hull is constantly accelerating you inward — you're being flung outward, the hull pushes back, and that push feels like weight.</p>
+          <p>Now put a train on the inside. Travel <em>spinward</em> and your effective centripetal acceleration goes up. You feel <strong>heavier</strong>. Travel anti-spinward and your gravity <strong>drops</strong>.</p>
+        </div>
+      </div>
+
+      <div class="type-specimen">
+        <span class="specimen-label">Unordered list · padding-left 1.6em · item line-height 1.72 · item margin-bottom 0.4em</span>
+        <div class="body-text">
+          <ul>
+            <li>Free will and determinism</li>
+            <li>The hard problem of consciousness</li>
+            <li>Epistemic justification and belief</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="type-specimen">
+        <span class="specimen-label">Horizontal Rule (hr) · 1px --ink-faint · width 40% · margin 3em auto</span>
+        <div class="body-text">
+          <hr>
+        </div>
+      </div>
+
+      <div class="type-specimen">
+        <span class="specimen-label">Wordmark · 19px · letter-spacing 0.22em · uppercase · weight 400 · --ink · opacity 0.85</span>
+        <a class="wordmark" href="#" style="display: inline-block;">Wim Strydom</a>
+      </div>
+    </section>
+
+
+    <!-- ════════════════════════════════════════
+         CONTENT ARCHETYPES
+    ════════════════════════════════════════ -->
+    <section class="sg-section" id="archetypes">
+      <h2 class="sg-section-title">Content Archetypes</h2>
+
+      <p style="font-size: 13px; font-style: italic; color: var(--ink-dim); margin-bottom: 36px;">Self-contained CSS classes defined in style.css that provide complete rendering for a markdown content type. Set the class on the rendered content div — no page-level formatting CSS needed.</p>
+
+      <div class="sg-group">
+        <span class="sg-label">.prose — short fiction / essay · 18px / 1.44 · justified · includes h2–h6 · blockquote · hr · lists · code / pre</span>
+        <div class="demo-frame demo-frame-pad">
+          <div class="prose">
+            <p>This is body prose at eighteen pixels, justified, with a line-height of 1.44. The archetype handles all markdown-generated elements — paragraphs, <em>emphasis in gold italic</em>, <strong>strong text at weight 500</strong>, and <a href="#">links with a fine gold underline</a>.</p>
+            <h2>Section Heading</h2>
+            <p>A second paragraph follows the section heading. The last paragraph in a block carries no bottom margin — the container provides outer spacing.</p>
+            <blockquote>
+              <p>A blockquote sits here — italic, dimmed, with a gold left border. Paragraphs inside are left-aligned.</p>
+            </blockquote>
+            <p>Prose continues after the blockquote. The archetype also covers h3–h6, hr, lists, and <code>inline code</code>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">.poem — poetry · 20px / line-height 2 · left-aligned · 2.2em stanza gap · .content.no-rail:has(.poem) narrows column to 680px with larger padding</span>
+        <div class="demo-frame demo-frame-pad">
+          <div class="poem">
+            <p>The first stanza opens here,<br>its lines joined by a single break,<br>unhurried in the silence.</p>
+            <p>The second stanza follows<br>after two blank lines in the source —<br>rendered here as a wide gap between stanzas.</p>
+            <p>A third, brief.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Narrative page components — shared by all narrative pages · .story-footer · .footer-back · .state-msg</span>
+        <div class="demo-frame">
+          <div style="padding: 24px 28px;">
+            <div class="state-msg" style="padding: 16px 0;">Loading… <span style="font-size: 14px; color: var(--ink-dim);">(error state uses same class with different message)</span></div>
+          </div>
+          <div style="padding: 24px 28px; border-top: 1px solid var(--ink-faint);">
+            <div class="story-footer" style="margin-top: 0; padding-top: 0; border-top: none;">
+              <a href="#" class="footer-back">← all writing</a>
+              <span>Wim Strydom</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ════════════════════════════════════════
+         COMPONENTS
+    ════════════════════════════════════════ -->
+    <section class="sg-section" id="components">
+      <h2 class="sg-section-title">Components</h2>
+
+      <div class="sg-group">
+        <span class="sg-label">Header — sticky · 56px · --bg-glass · backdrop blur · 1px --ink-faint border-bottom</span>
+        <div class="demo-frame">
+          <div style="background: var(--bg-glass); height: 56px; display: flex; align-items: center; padding: 0 48px; border-bottom: 1px solid var(--ink-faint); justify-content: space-between;">
+            <span class="wordmark">Wim Strydom</span>
+            <span class="header-date">May 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Progress Bar — 2px · --gold · opacity 0.65 · scaleX transform · fixed top of viewport</span>
+        <div class="demo-frame demo-frame-pad">
+          <div style="background: var(--gold); height: 2px; width: 62%; border-radius: 1px;"></div>
+          <p style="font-size: 13px; font-style: italic; color: var(--ink-dim); margin-top: 14px; margin-bottom: 0;">Reading progress shown above — gold, 2px, fixed to top of viewport on live pages.</p>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Page Divider (.page-divider) · 1px height · --ink-faint · margin-bottom 52–56px</span>
+        <div class="page-divider" style="margin-bottom: 0;"></div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Rail section label (.rail-label) · 10px · letter-spacing 0.24em · uppercase · --ink-dim</span>
+        <div class="rail-demo">
+          <span class="rail-label" style="margin-bottom: 0;">Contents</span>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Rail nav items (.rail-item) — default · hover · active · h3 indent variant</span>
+        <div class="rail-demo">
+          <span class="rail-label">Sections</span>
+          <button class="rail-item">Metaphysics</button>
+          <button class="rail-item" style="color: var(--ink);">Philosophy of Mind <span style="font-size: 10px; color: var(--ink-dim); font-style: normal; margin-left: 6px;">hover</span></button>
+          <button class="rail-item active">Epistemology <span style="font-size: 10px; color: var(--ink-dim); font-style: normal; margin-left: 6px;">active</span></button>
+          <button class="rail-item h3">Hard problem</button>
+          <div class="rail-divider"></div>
+          <button class="rail-btn">expand all</button>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Rail back link (.rail-back) · 13px · italic · --ink-dim · hover --ink</span>
+        <div class="rail-demo">
+          <a class="rail-back" href="#">← Home</a>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ════════════════════════════════════════
+         INTERACTIVE
+    ════════════════════════════════════════ -->
+    <section class="sg-section" id="interactive">
+      <h2 class="sg-section-title">Interactive Components</h2>
+
+      <div class="sg-group">
+        <span class="sg-label">CTA Button (.cta-btn) · 17px · italic · gold border · gold-tint hover · used for primary actions</span>
+        <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+          <a href="#" class="cta-btn">Open the calculator →</a>
+          <a href="#" class="cta-btn" style="padding: 8px 20px; font-size: 15px;">Compact variant</a>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Ghost Button (.ghost-btn) · 12px · italic · ink-faint border · gold hover · used for secondary / export actions</span>
+        <div style="display: flex; gap: 8px; flex-direction: column; max-width: 200px;">
+          <button class="ghost-btn">↓ Export CSV</button>
+          <button class="ghost-btn">⌁ Copy permalink</button>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Toggle (.toggle) · 32×17px track · gold thumb when active · aria-pressed drives state</span>
+        <div style="display: flex; flex-direction: column; gap: 12px; max-width: 280px;">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--ink-faint);">
+            <span class="toggle-label">Smooth acceleration</span>
+            <button class="toggle" aria-pressed="true">
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              <span class="toggle-state">on</span>
+            </button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--ink-faint);">
+            <span class="toggle-label">Show baseline</span>
+            <button class="toggle" aria-pressed="false">
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              <span class="toggle-state">off</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Slider (.slider) · 1px --ink-faint track · 12px --gold thumb · scales on hover</span>
+        <div style="max-width: 300px; padding: 8px 0;">
+          <input type="range" class="slider" min="0" max="100" value="40">
+        </div>
+        <div style="max-width: 300px; display: flex; justify-content: space-between; font-size: 11px; font-style: italic; color: var(--ink-dim); margin-top: 5px;">
+          <span>50 m</span><span>50,000 m</span>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Styled Select (.styled-select) · transparent · ink-faint border · custom SVG chevron · gold-dim hover</span>
+        <div style="max-width: 200px;">
+          <select class="styled-select">
+            <option>Tycho Station</option>
+            <option>Ceres (Mars g)</option>
+            <option>Custom</option>
+          </select>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ════════════════════════════════════════
+         DATA DISPLAY
+    ════════════════════════════════════════ -->
+    <section class="sg-section" id="data">
+      <h2 class="sg-section-title">Data Display</h2>
+
+      <div class="sg-group">
+        <span class="sg-label">Inline data labels (.label-red/blue/green/amber) · 0.92em · normal style · dim-border underline · ties inline text to data accent</span>
+        <div class="body-text">
+          <p>The train runs along a circular track — either <em class="label-red">spinward</em> (in the same direction the station rotates) or <em class="label-blue">anti-spinward</em> (against it). A <em class="label-green">baseline</em> service operates at the midpoint, while <em class="label-amber">caution zones</em> are flagged during acceleration.</p>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Readout panel (.readout-group / .readout-row / .readout-key / .readout-val) · key-value metric display</span>
+        <div style="max-width: 320px;">
+          <div class="readout-group">
+            <span class="readout-group-label">Station parameters</span>
+            <div class="readout-row">
+              <span class="readout-key">Station diameter</span>
+              <span class="readout-val">1,800 <span class="val-sub">m</span></span>
+            </div>
+            <div class="readout-row">
+              <span class="readout-key">Rotation period</span>
+              <span class="readout-val">60.2 <span class="val-sub">s</span></span>
+            </div>
+            <div class="readout-row">
+              <span class="readout-key">Rim speed</span>
+              <span class="readout-val">187.4 <span class="val-sub">km/h</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Alert (.alert) · red-tint error (default) · amber-tint warning (.alert.warn) · icon + text</span>
+        <div style="max-width: 480px;">
+          <div class="alert">
+            <span class="alert-icon">⛔</span>
+            <span class="alert-text"><strong>Weightlessness achieved.</strong> Anti-spinward speed exceeds station rim speed — passengers experience true zero-g mid-journey.</span>
+          </div>
+          <div class="alert warn">
+            <span class="alert-icon">⚠</span>
+            <span class="alert-text"><strong>High lateral g-force.</strong> Gravity vector tilts 28° during spinward acceleration — consider grab handles.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Status dot (.status-dot) · 10px · coloured fill · matching glow box-shadow · three states</span>
+        <div style="display: flex; gap: 24px; align-items: center; padding: 8px 0; flex-wrap: wrap;">
+          <span style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-style: italic; color: var(--ink-dim);">
+            <span class="status-dot green"></span> Comfortable
+          </span>
+          <span style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-style: italic; color: var(--ink-dim);">
+            <span class="status-dot amber"></span> Moderate
+          </span>
+          <span style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-style: italic; color: var(--ink-dim);">
+            <span class="status-dot red"></span> Uncomfortable
+          </span>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Data table (.data-table) · 13.5px · 10px uppercase headers · ink-faint borders · tabular numerics</span>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Phase</th>
+                <th class="num">Duration</th>
+                <th class="num">Peak g</th>
+                <th class="num">Δ gravity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="phase-name">Acceleration</td>
+                <td class="num">54 s</td>
+                <td class="num val-em">1.42 g</td>
+                <td class="num">+42%</td>
+              </tr>
+              <tr>
+                <td class="phase-name">Cruise</td>
+                <td class="num">82 s</td>
+                <td class="num">1.33 g</td>
+                <td class="num">+33%</td>
+              </tr>
+              <tr>
+                <td class="phase-name">Deceleration</td>
+                <td class="num">54 s</td>
+                <td class="num muted">1.18 g</td>
+                <td class="num muted">+18%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ════════════════════════════════════════
+         NAVIGATION PATTERNS
+    ════════════════════════════════════════ -->
+    <section class="sg-section" id="navigation">
+      <h2 class="sg-section-title">Navigation Patterns</h2>
+
+      <div class="sg-group">
+        <span class="sg-label">Index link list · 20px · --ink default · --gold hover · 1px --ink-faint border-bottom per item</span>
+        <div class="demo-frame" style="padding: 0 24px; max-width: 400px;">
+          <ul style="list-style: none;">
+            <li style="border-bottom: 1px solid var(--ink-faint);">
+              <a href="#" style="display: block; padding: 13px 0; font-size: 20px; line-height: 1; text-decoration: none; color: var(--ink); transition: color 0.18s;">Philosophy</a>
+            </li>
+            <li style="border-bottom: 1px solid var(--ink-faint);">
+              <a href="#" style="display: block; padding: 13px 0; font-size: 20px; line-height: 1; text-decoration: none; color: var(--gold);">Spin Station <span style="font-size: 11px; color: var(--ink-dim); font-style: italic;">(hover)</span></a>
+            </li>
+            <li>
+              <span style="display: flex; align-items: baseline; gap: 12px; padding: 13px 0; font-size: 20px; font-style: italic; color: var(--ink-dim); cursor: default;">
+                Roulette
+                <span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-dim); font-style: normal;">coming soon</span>
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Narrative list entry · title 20px + meta 13px italic --ink-dim</span>
+        <div class="demo-frame" style="padding: 0 24px; max-width: 400px;">
+          <ul style="list-style: none;">
+            <li style="border-bottom: 1px solid var(--ink-faint);">
+              <a href="#" style="display: block; padding: 13px 0; font-size: 20px; line-height: 1; text-decoration: none; color: var(--ink); transition: color 0.18s;">
+                A Man of Means and Ends
+                <span style="font-size: 13px; font-style: italic; color: var(--ink-dim); margin-top: 3px; display: block;">Short Fiction · May 2026</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Back link · 13px · italic · --ink-dim · hover --ink</span>
+        <a href="#" style="font-size: 13px; font-style: italic; color: var(--ink-dim); text-decoration: none; transition: color 0.18s; display: inline-block;">← Wim Strydom</a>
+      </div>
+    </section>
+
+
+    <!-- ════════════════════════════════════════
+         SPACING & LAYOUT
+    ════════════════════════════════════════ -->
+    <section class="sg-section" id="layout">
+      <h2 class="sg-section-title">Spacing &amp; Layout</h2>
+
+      <div class="sg-group">
+        <span class="sg-label">Shell CSS variables (defined in style.css, shared by all pages)</span>
+        <div class="body-text">
+          <ul>
+            <li><span class="tok">--header-h: 56px</span> — sticky header height</li>
+            <li><span class="tok">--rail-w: 230px</span> — fixed left rail width</li>
+            <li><span class="tok">--content-max: 750px</span> — max readable width for prose pages</li>
+            <li><span class="tok">--serif: 'EB Garamond', Georgia, serif</span> — shared font stack</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Content padding (responsive)</span>
+        <div class="body-text">
+          <ul>
+            <li>Desktop: <span class="tok">52px 48px 120px</span></li>
+            <li>≤860px: <span class="tok">36px 24px 80px</span></li>
+            <li>≤480px: <span class="tok">28px 20px 72px</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Responsive breakpoints</span>
+        <div class="body-text">
+          <ul>
+            <li><strong>≤860px</strong> — rail hidden, header padding collapses, page title → 40px</li>
+            <li><strong>≤480px</strong> — page title → 34px, content padding tightens further</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Key spacing values</span>
+        <div class="body-text">
+          <ul>
+            <li>Paragraph bottom margin: <span class="tok">18px</span></li>
+            <li>Paragraph line-height: <span class="tok">1.44</span></li>
+            <li>Section spacing: <span class="tok">64–80px</span></li>
+            <li>Page divider bottom margin: <span class="tok">52–56px</span></li>
+            <li>Page title bottom margin: <span class="tok">26px</span></li>
+            <li>Page eyebrow bottom margin: <span class="tok">30px</span></li>
+            <li>Rail padding: <span class="tok">52px 32px 52px 48px</span></li>
+            <li>Header padding: <span class="tok">0 48px</span> desktop · <span class="tok">0 24px</span> at ≤860px</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sg-group">
+        <span class="sg-label">Special notes</span>
+        <div class="body-text">
+          <ul>
+            <li>The <span class="tok">.poem</span> archetype sets <span class="tok">--content-max: 680px</span> and larger padding via <span class="tok">.content:has(.poem)</span> — no local <span class="tok">:root</span> override needed on poem pages.</li>
+            <li>Canvas and Plotly chart colours must be hardcoded JS constants — update them manually when any palette token changes.</li>
+            <li>EB Garamond: weights 400 and 500 only. Do not add weight 600.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Progress bar
+  const bar = document.getElementById('progress-bar');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = h.scrollTop / (h.scrollHeight - h.clientHeight);
+    bar.style.transform = `scaleX(${pct})`;
+  }, { passive: true });
+
+  // Rail active state driven by scroll position
+  const sections = document.querySelectorAll('.sg-section');
+  const railItems = document.querySelectorAll('.rail-item[href^="#"]');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        railItems.forEach(i => i.classList.remove('active'));
+        const link = document.querySelector(`.rail-item[href="#${e.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-15% 0px -75% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
