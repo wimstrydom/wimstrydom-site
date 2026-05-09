@@ -47,7 +47,7 @@ All design tokens live in `/style.css`, which every page links to via `<link rel
 - No `--ink-ghost`, `--ink-rule`, or any other ink variant — only the four ink tokens above.
 - Never use the CSS `opacity` property to express colour intensity. Use the appropriate token instead (`--ink-dim`, `--gold-dim`, etc.). Raw opacity creates fragmented one-off tones that fall outside the token system. The only legitimate use of `opacity` is for non-colour purposes such as transition effects on interactive states.
 - **Pre-existing opacity exceptions** (do not replicate, do not remove): `.wordmark { opacity: 0.85 }` and `#progress-bar { opacity: 0.65 }` predate this rule. No token exists at those exact values and they are load-bearing design choices — leave them as-is.
-- **JS canvas/chart mirrors:** `spin-station/index.html` and `spin-station-calculator/index.html` contain JS colour constants (canvas and Plotly) that mirror design tokens as hardcoded strings — those APIs cannot read CSS variables. If you update any token in `style.css`, update the matching JS constants in both files too. Each constant is annotated with its corresponding token name.
+- **JS canvas/chart mirrors:** `explorations/spin-station/index.html` and `explorations/spin-station-calculator/index.html` contain JS colour constants (canvas and Plotly) that mirror design tokens as hardcoded strings — those APIs cannot read CSS variables. If you update any token in `style.css`, update the matching JS constants in both files too. Each constant is annotated with its corresponding token name.
 
 ### Typography
 
@@ -121,32 +121,49 @@ The `.poem` archetype (via `.content.no-rail:has(.poem)`) overrides `--content-m
 
 **Rail nav items:** `font-size: 13.5px; line-height: 1.35; color: var(--ink-dim)`; active → `color: var(--gold); font-style: italic`. Rail section label: `font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase`.
 
+## Terminology
+
+The site is structured around five **books** — the top-level groupings named Definitions, Narratives, Explorations, Instruments, and Salivations. Each book is a mode of engagement. Sections within a book are called **chapters**.
+
 ## Site structure
 
 ```
-index.html                                              Home page — "Hello" + contents list
-philosophy/index.html                                   Philosophy page (live)
-spin-station/index.html                                 Spin Station essay page (live)
-spin-station-calculator/index.html                      Spin Station calculator (live)
-narratives/index.html                                   Narratives index — two sections: Stories and Poems
+index.html                                              Homepage — Meridian layout (no header/rail)
+scope.md                                                Site scope & roadmap document
+
+definitions/index.html                                  Book 01 — Definitions (placeholder, Philosophy chapter live)
+definitions/philosophy/index.html                       Philosophy chapter — full dedicated page
+
+narratives/index.html                                   Book 02 — Narratives index (Stories + Poems)
 narratives/<slug>/index.html                            Individual narrative page
 narratives/<slug>/<Title>.md                            Narrative content (Markdown)
+
+explorations/index.html                                 Book 03 — Explorations index (Essays + Calculators)
+explorations/spin-station/index.html                    Spin Station essay page
+explorations/spin-station-calculator/index.html         Spin Station calculator
+
 style-guide/index.html                                  Design system style guide — colour tokens, typography, components, spacing
 ```
 
-Planned pages (coming soon, linked from home but not yet built):
-- `roulette/` — interactive calculator of some kind
-- `pf-dashboard/` — personal finance dashboard
+Planned books (coming soon, shown on homepage but not yet built):
+- `definitions/` — Coordinates, CV, and Contact chapters still to come
+- `instruments/` — Book 04, personal finance dashboard and other tools
+- `salivations/` — Book 05, food and drink
 
 ## Pages
 
 ### Home (`index.html`)
-Centred layout, large "Hello" heading, contents list with links. Live pages: Philosophy, Spin Station, Narratives. Coming soon: Roulette, PF Dashboard.
+Meridian layout — no header, no rail, full-bleed. Giant split name ("WIM" left / "STRYDOM" right), right-aligned intro, "Recent Machinations" strip (3 live publication links), then five numbered book rows. Books with no live content show a "coming soon" label. Scroll-reveal via vanilla IntersectionObserver.
 
-### Philosophy (`philosophy/index.html`)
+### Book 01 — Definitions
+
+#### Definitions index (`definitions/index.html`)
+Placeholder page. Standard header (wordmark → `../`) + left rail listing all four chapters (Coordinates, Philosophy, CV, Contact). Only Philosophy is a live link; others are listed as dim coming-soon items in the rail with no body sections. Content area has `.page-eyebrow` "Book 01", `.page-title` "Definitions", `.page-intro`, and one chapter section (Philosophy) with a link to `philosophy/`.
+
+#### Philosophy (`definitions/philosophy/index.html`)
 "The Manuscript" design. Key layout features:
 - Fixed left rail (230px) — section navigation only; clicking a section auto-collapses others and scrolls to it; active section highlights gold on scroll
-- Sticky header with wordmark linking to `../`
+- Sticky header with wordmark linking to `../../`
 - 5 collapsible sections: Metaphysics, Philosophy of Mind, Epistemology, Moral Philosophy, Meaning of Life
 - Nested Q&A accordions under each section ("Okay, so then...")
 - Reading progress bar (gold, top of viewport)
@@ -154,23 +171,30 @@ Centred layout, large "Hello" heading, contents list with links. Live pages: Phi
 - Hash links (`#metaphysics`, `#free-will`, etc.) work as deep links
 - Fully responsive — rail hidden on mobile
 
-### Spin Station (`spin-station/index.html`)
+### Book 02 — Narratives
+
+#### Narratives index (`narratives/index.html`)
+Two-section list page. "Stories" section (Short Fiction) and "Poems" section (Poetry), each with its own label + divider + `<ul class="link-list">`. Entries are newest-first within each section.
+
+#### Individual narrative pages
+Each narrative lives at `narratives/<slug>/index.html` and renders its `.md` file client-side. Template: copy `narratives/a-man-of-means-and-ends/index.html`. Shared features: sticky header with wordmark, left rail with section nav, reading progress bar.
+
+Narrative pages carry **no formatting CSS** in their `<style>` block — all rendering is handled by content archetypes defined globally in `style.css` (see Content archetypes section below). The only CSS a narrative page should ever add locally is non-formatting layout overrides specific to that one page.
+
+### Book 03 — Explorations
+
+#### Explorations index (`explorations/index.html`)
+Two-section list page. "Essays" section and "Calculators" section, each with its own label + divider + `<ul class="link-list">`. Entries are newest-first within each section.
+
+#### Spin Station (`explorations/spin-station/index.html`)
 Essay page: "The weird gravity of spin-station transit". Two-column layout — prose on the left, sticky animated canvas diagram on the right showing a rotating station with two colour-coded carriage types (data accent A and B). Ends with a CTA linking to `../spin-station-calculator/`.
 
 The canvas animation uses JS colour constants (`C_RED`, `C_BLUE`) that mirror `--red` and `--blue` from `style.css`. Update both if the palette changes.
 
-### Spin Station Calculator (`spin-station-calculator/index.html`)
+#### Spin Station Calculator (`explorations/spin-station-calculator/index.html`)
 Interactive calculator built with Plotly. Lets users adjust station diameter, target gravity, train speed, acceleration, and stop spacing, then shows live felt-gravity profiles for both journey directions.
 
 The Plotly chart colours and other chart/diagram constants are grouped at the top of the `<script>` block under "Design token mirrors". Update those constants if the corresponding `style.css` tokens change.
-
-### Narratives index (`narratives/index.html`)
-Two-section list page. "Stories" section (Short Fiction) and "Poems" section (Poetry), each with its own label + divider + `<ul class="link-list">`. Entries are newest-first within each section.
-
-### Individual narrative pages
-Each narrative lives at `narratives/<slug>/index.html` and renders its `.md` file client-side. Template: copy `narratives/a-man-of-means-and-ends/index.html`. Shared features: sticky header with wordmark, left rail with section nav, reading progress bar.
-
-Narrative pages carry **no formatting CSS** in their `<style>` block — all rendering is handled by content archetypes defined globally in `style.css` (see Content archetypes section below). The only CSS a narrative page should ever add locally is non-formatting layout overrides specific to that one page.
 
 ## Content archetypes
 
@@ -198,7 +222,7 @@ If a new content type is needed (e.g. `.recipe`), add a complete self-contained 
 
 ## Content rules
 
-The text in `philosophy/index.html` is authored by Wim and is **not to be edited or paraphrased**. Reproduce it exactly as written. This applies to all future content pages — treat user-supplied copy as law.
+The text in `definitions/philosophy/index.html` is authored by Wim and is **not to be edited or paraphrased**. Reproduce it exactly as written. This applies to all future content pages — treat user-supplied copy as law.
 
 ## Analytics
 
@@ -219,12 +243,13 @@ This must be included in every new page and narrative without exception.
 
 ## Adding new pages
 
-1. Create a directory (e.g. `roulette/`) with an `index.html` inside
-2. Update the link in `index.html` — change the `<span class="coming-soon">` to an `<a>` matching the existing link style
-3. Always link `/style.css` in the `<head>` — this provides all tokens and the global reset
-4. Use only design tokens (never raw hex/rgba values) for all colours in the page's inline `<style>` block
-5. Reuse the header/wordmark pattern from `philosophy/index.html`
-6. Include the Google Analytics snippet (see Analytics section above)
+1. Create a directory under the appropriate book folder (e.g. `explorations/fibonacci-roulette/`) with an `index.html` inside
+2. Update the explorations or definitions index page to include the new entry
+3. Update `index.html` if the book is now live — convert the book name from `m-book-name-dim` + `m-book-soon` to `m-book-name` with an `href`
+4. Always link `/style.css` in the `<head>` — this provides all tokens and the global reset
+5. Use only design tokens (never raw hex/rgba values) for all colours in the page's inline `<style>` block
+6. Reuse the header/wordmark pattern from `definitions/philosophy/index.html` (depth-appropriate `href` on wordmark)
+7. Include the Google Analytics snippet (see Analytics section above)
 
 ## Adding a new narrative
 
