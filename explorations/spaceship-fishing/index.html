@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DC8TCGZT0C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DC8TCGZT0C');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to go fishing with a spaceship — Wim Strydom</title>
+<meta name="description" content="Exploring the physics of Project Hail Mary's most confusing scene — and finding out that the right answer would look ridiculous.">
+<meta property="og:title" content="How to go fishing with a spaceship — Wim Strydom">
+<meta property="og:description" content="Exploring the physics of Project Hail Mary's most confusing scene — and finding out that the right answer would look ridiculous.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://wimstrydom.com/explorations/spaceship-fishing">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+body { overflow-x: hidden; }
+
+/* ── ESSAY COLUMN ───────────────────────────────────────────────
+   Centred by default. When body.split is active (i.e. the reader
+   has scrolled into a section that has a paired simulation), the
+   essay shifts left so the prose sits in the left half of the
+   viewport and the sim panel takes the right half. */
+.essay-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 60px 32px 160px;
+  position: relative;
+  z-index: 2;
+  transition: transform 0.55s cubic-bezier(.4, 0, .2, 1);
+  will-change: transform;
+}
+
+body.split .essay-wrap {
+  transform: translateX(-25vw);
+}
+
+/* ── SIM PANEL ──────────────────────────────────────────────────
+   Fixed to the right half of the viewport. Hidden until body has
+   the .split class. */
+.sim-panel {
+  position: fixed;
+  right: 0;
+  top: var(--header-h);
+  bottom: 0;
+  width: 50vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.55s ease;
+  z-index: 1;
+  overflow: hidden;
+  border-left: 1px solid var(--ink-faint);
+}
+
+body.split .sim-panel {
+  opacity: 1;
+}
+
+.sim-mount {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sim-label {
+  position: absolute;
+  top: 24px;
+  left: 28px;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  pointer-events: none;
+}
+
+/* ── CRASH CALLOUT ──────────────────────────────────────────────
+   Inserted into the mount at the rocket's crash position. The
+   `left`/`top` are set inline by index.js; this rule handles look
+   and the fade-in. */
+.sim-crash-callout {
+  position: absolute;
+  transform: translate(20px, -100%);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--red);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  padding-left: 14px;
+  border-left: 1px solid var(--red-dim);
+}
+.sim-crash-callout.visible { opacity: 1; }
+
+/* ── ESSAY TYPOGRAPHY ───────────────────────────────────────────
+   The page title in this essay needs the subtitle directly under
+   it, so it gets a tighter bottom margin and the subtitle takes
+   the meta-italic role. */
+.page-title { margin-bottom: 14px; }
+.page-subtitle {
+  font-size: 19px;
+  font-style: italic;
+  color: var(--ink-dim);
+  line-height: 1.5;
+  margin-bottom: 28px;
+}
+
+.essay-section {
+  margin-bottom: 56px;
+  scroll-margin-top: calc(var(--header-h) + 20px);
+}
+.essay-section:last-child { margin-bottom: 0; }
+.essay-section h2 {
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--ink-bright);
+  margin-bottom: 18px;
+  margin-top: 8px;
+}
+
+/* Placeholder reference blocks for the book quote / movie still.
+   Visual cue only — Wim will replace these with real content. */
+.placeholder-ref {
+  border: 1px dashed var(--ink-faint);
+  padding: 18px 22px;
+  margin: 24px 0;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink-dim);
+  letter-spacing: 0.02em;
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────────
+   On narrow viewports we drop the dynamic side panel and keep the
+   prose centred. A future pass can render an inline sim below each
+   split section. */
+@media (max-width: 960px) {
+  body.split .essay-wrap { transform: none; }
+  .sim-panel { display: none; }
+  .essay-wrap { padding: 36px 24px 100px; }
+}
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+
+<header>
+  <a href="../../" class="wordmark">Wim Strydom</a>
+  <nav class="header-nav">
+    <a href="../">Explorations</a>
+  </nav>
+</header>
+
+<!-- ── ESSAY ────────────────────────────────────────────────── -->
+<main class="essay-wrap">
+
+  <p class="page-eyebrow">Book 03 &nbsp;·&nbsp; Explorations</p>
+  <h1 class="page-title">How to go fishing with a spaceship</h1>
+  <p class="page-subtitle">Exploring the physics of <em>Project Hail Mary</em>'s most confusing scene.</p>
+
+  <!-- ── PHASE 1: centred (no panel) ─────────────────────── -->
+
+  <section class="essay-section" id="preface">
+    <h2>A small preface</h2>
+    <div class="body-text">
+      <p>I'm not about to point out a "well, actually" mistake here. I find the obsession with picking apart science fiction for its inaccuracies kind of insufferable, and that is genuinely not what this is. Andy Weir's <em>Project Hail Mary</em> is one of my favourite books of the last decade, and the film adaptation is great fun in its own right. Neither owes us a physics lecture, and both made exactly the right call with the scene I'm about to take apart.</p>
+      <p>What I do want to do is figure out how that scene <em>would</em> actually work — and discover, along the way, that the answer is so silly it could never have been put on the page or the screen. The book and the film were right not to try.</p>
+    </div>
+  </section>
+
+  <section class="essay-section" id="context">
+    <h2>Context</h2>
+    <div class="body-text">
+      <p>Briefly, for the uninitiated: the <em>Hail Mary</em> is a spacecraft sent on a one-shot mission to investigate an alien microbe — <em>Taumoeba</em> — that lives in the upper atmosphere of an exoplanet named Adrian. At a critical point in the story, our hero needs to capture a live sample directly from that upper atmosphere. He can't land — Adrian is hostile to humans and the ship was never built for atmospheric flight — so he has to <em>fish</em>: drag a long collector on a chain from the ship, just barely skimming the upper air, while the ship itself stays safely above.</p>
+      <div class="placeholder-ref">Book quote describing the manoeuvre goes here.</div>
+      <div class="placeholder-ref">Movie still of the corresponding scene goes here.</div>
+      <p>Both book and film handle it in their own way. The book describes a slow, careful pass with the ship hovering nose-up; the film shows a swooping arc over the planet. Both are entirely satisfying in context. Neither — as far as I can tell — actually works as physics.</p>
+    </div>
+  </section>
+
+  <!-- ── PHASE 2: split (vacuum scenes) ──────────────────── -->
+
+  <section class="essay-section" id="hail-mary" data-sim="fishing-cruise" data-sim-label="In space, nothing stops">
+    <h2>This is the Hail Mary</h2>
+    <div class="body-text">
+      <p>Before we get to Adrian, it's worth reminding ourselves how a ship moves in the first place. Two things matter, and the rest of the essay leans on both of them.</p>
+      <p>First: <strong>in space, if you start moving, you keep moving</strong>. There's no friction, no air, no road, no resistance. Conservation of momentum is the only law in town. A short burst of thrust gives you a velocity, and from then on you'll just drift in that direction — forever — until something else slows you down.</p>
+    </div>
+  </section>
+
+  <section class="essay-section" id="flip-burn" data-sim="fishing-flip-burn" data-sim-label="Flip-and-burn">
+    <div class="body-text">
+      <p>Which means that if you actually want to <em>arrive</em> somewhere, rather than just drift past it, you have to undo what you started. The standard manoeuvre is a <strong>flip-and-burn</strong>: accelerate toward your destination for the first half of the trip, then rotate the ship 180° and fire the engines the other way for the second half, bleeding off all the velocity you built up. You don't slow down by drifting. You slow down by burning fuel pointed the other way.</p>
+      <p>Keep that in mind. The "you have to actively burn to stop" thing is going to do a lot of work in a minute.</p>
+    </div>
+  </section>
+
+  <!-- ── PHASE 3: split (Adrian) ─────────────────────────── -->
+
+  <section class="essay-section" id="adrian-intro" data-sim="fishing-adrian-intro" data-sim-label="Adrian">
+    <h2>This is Adrian</h2>
+    <div class="body-text">
+      <p>Now bring a planet into it.</p>
+      <p>This is Adrian. Adrian has mass, and therefore gravity — a constant pull on everything nearby, directed toward its centre. The moment our ship gets close to Adrian, it inherits a new problem: it isn't free to just stop anymore.</p>
+    </div>
+  </section>
+
+  <section class="essay-section" id="adrian-crash" data-sim="fishing-adrian-crash" data-sim-label="Slowing down near Adrian">
+    <div class="body-text">
+      <p>Watch what happens if it tries. The ship cruises in toward Adrian, flips, and burns until it's perfectly still. As soon as the engines cut, gravity takes over and the ship falls straight down. Bad. Bad. Bad.</p>
+      <div class="callout">
+        <p class="callout-label">An aside</p>
+        <p>A common misconception about space is that "in space, you're weightless". You're not. Gravity doesn't switch off when you leave the atmosphere — at the International Space Station's altitude it's still about 90% of what you'd feel on the ground. The reason astronauts float around inside the ISS isn't that gravity has gone away; it's that the station, and everything inside it, is <em>in orbit</em>. Without an orbit, you fall just as fast as you would standing on a roof.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="essay-section" id="adrian-orbit" data-sim="fishing-adrian-orbit" data-sim-label="Orbit">
+    <div class="body-text">
+      <p>So if stopping next to Adrian just gets you killed, what do you do instead? You keep moving sideways — at exactly the right speed that as you fall toward the planet, the planet's surface curves away from you by the same amount. You're falling, all the time, but you never quite hit anything. That's an orbit.</p>
+      <p>It isn't glamorous, but it's how every spacecraft "hangs out" near a planet. When they're not actively landing or leaving, they're going around in circles.</p>
+    </div>
+  </section>
+
+  <!-- ── PHASE 4: split (problem with an orbit) ──────────── -->
+
+  <section class="essay-section" id="problem-orbit" data-sim="fishing-adrian-stable" data-sim-label="A stable orbit">
+    <h2>The problem with an orbit</h2>
+    <div class="body-text">
+      <p>Back to the fishing. The mission needs the chain — collector and all — to skim through the upper atmosphere. So why not just orbit there, low enough to dip the collector in?</p>
+      <p>Because orbits are <em>fast</em>. At a low orbital altitude around Adrian, the ship is moving at thousands of metres per second relative to the air below it. Anything trailing on a chain into that air doesn't dip gently — it slams into a wall of atmosphere and vaporises. The chain, the collector, probably a chunk of the ship along with it.</p>
+      <p>So here's our first constraint. <strong>Imperative one:</strong> to fish the air, the collector has to move through it <em>slowly</em>.</p>
+    </div>
+  </section>
+
+  <section class="essay-section" id="orbit-slowdown" data-sim="fishing-adrian-slowdown" data-sim-label="Just slow down?">
+    <div class="body-text">
+      <p>That immediately rules out a normal orbit. But you can't just slow down either, for the reason we already saw. Fire your engines retrograde, shed your tangential speed, and gravity stops being held off by your sideways motion. You don't end up moving slowly through the upper atmosphere — you end up crashing through all of it.</p>
+    </div>
+  </section>
+
+  <section class="essay-section" id="orbit-hover" data-sim="fishing-adrian-hover" data-sim-label="Hover like a helicopter">
+    <div class="body-text">
+      <p>Here's where the <em>Hail Mary</em> gets an advantage that real spacecraft don't have. It's powered by a fictional, absurdly efficient drive with effectively unlimited fuel and thrust. With an engine like that, you don't <em>have</em> to orbit. You can do what helicopters do: point the engine straight down and burn just hard enough to cancel out gravity. Hovering. In space.</p>
+      <p>It works, technically. But — and you can probably see this coming — the engines that make hovering possible are the same engines that produce a column of incandescent exhaust pointed at whatever is directly beneath the ship. And in our scenario, what's directly beneath the ship is, by design, the chain, the collector, and the very air we're trying to scoop a sample from. They'd all be cooked in seconds.</p>
+      <p>So here's our second constraint. <strong>Imperative two:</strong> the engines cannot be pointed straight down.</p>
+      <p>Between these two — <em>move through the air slowly</em>, but <em>don't point your exhaust at the thing you're collecting</em> — the problem starts to look impossible. Which, as we'll see, is roughly correct.</p>
+    </div>
+  </section>
+
+  <!-- TODO: continue from here.
+       Next sections (not yet built): the book version, the movie version,
+       why neither works, the actual zig-zag answer, and a final verdict. -->
+
+</main>
+
+<!-- ── SIM PANEL ─────────────────────────────────────────────── -->
+<aside class="sim-panel" id="sim-panel" aria-hidden="true">
+  <span class="sim-label" id="sim-label"></span>
+  <div class="sim-mount" id="sim-mount"></div>
+</aside>
+
+<script type="module">
+import { mount } from './index.js';
+
+// ── PROGRESS BAR ──────────────────────────────────────────────────────────────
+const bar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  bar.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
+}, { passive: true });
+
+// ── SIM SWITCHER ──────────────────────────────────────────────────────────────
+// Sections without `data-sim` are "centred" — they hide the panel and the
+// prose snaps back to the centre. Sections with `data-sim` switch the panel
+// in (or swap the active scene) and slide the prose to the left half.
+
+const mountEl  = document.getElementById('sim-mount');
+const labelEl  = document.getElementById('sim-label');
+const panelEl  = document.getElementById('sim-panel');
+const sections = Array.from(document.querySelectorAll('.essay-section'));
+
+let currentSetup = null;
+let currentSim   = null;
+let pendingClear = null;
+
+function switchTo(setupName, label) {
+  if (setupName === currentSetup) return;
+  currentSetup = setupName;
+  labelEl.textContent = label || setupName;
+
+  if (pendingClear) { clearTimeout(pendingClear); pendingClear = null; }
+  if (currentSim) currentSim.destroy();
+  mountEl.innerHTML = '';
+
+  currentSim = mount(mountEl, setupName, {
+    width:  mountEl.clientWidth,
+    height: mountEl.clientHeight,
+  });
+}
+
+function activeSection() {
+  const threshold = window.innerHeight * 0.42;
+  let active = null;
+  for (const s of sections) {
+    if (s.getBoundingClientRect().top <= threshold) active = s;
+  }
+  return active;
+}
+
+function update() {
+  const active = activeSection();
+  const setup  = active?.dataset.sim || null;
+
+  if (setup) {
+    document.body.classList.add('split');
+    panelEl.setAttribute('aria-hidden', 'false');
+    switchTo(setup, active.dataset.simLabel);
+  } else {
+    document.body.classList.remove('split');
+    panelEl.setAttribute('aria-hidden', 'true');
+    // Tear the sim down after the panel has faded so we're not running a
+    // physics loop on a hidden scene.
+    if (currentSim && !pendingClear) {
+      const toClear = currentSim;
+      currentSim = null;
+      currentSetup = null;
+      pendingClear = setTimeout(() => {
+        toClear.destroy();
+        mountEl.innerHTML = '';
+        pendingClear = null;
+      }, 600);
+    }
+  }
+}
+
+window.addEventListener('scroll', update, { passive: true });
+window.addEventListener('resize', update, { passive: true });
+update();
+</script>
+</body>
+</html>
