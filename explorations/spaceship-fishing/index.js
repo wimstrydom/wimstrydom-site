@@ -136,9 +136,10 @@ export function mount(mountEl, setupName, options = {}) {
   }
 
   let isResetting = false;
+  let isDestroyed = false;
 
   async function reset() {
-    if (isResetting) return;
+    if (isResetting || isDestroyed) return;
     isResetting = true;
 
     // Hold the crash frame so the callout (and the crash itself) is readable.
@@ -146,8 +147,10 @@ export function mount(mountEl, setupName, options = {}) {
     if (cfg.crashCallout) showCrashCallout(cfg.crashCallout);
     loop.pause();
     if (holdMs > 0) await new Promise(r => setTimeout(r, holdMs));
+    if (isDestroyed) { isResetting = false; return; }
 
     await fadeTo(loop, 0, 300);
+    if (isDestroyed) { isResetting = false; return; }
     hideCrashCallout();
 
     const rebuilt = buildEntities(cfg, dims);
@@ -155,6 +158,7 @@ export function mount(mountEl, setupName, options = {}) {
     rocket.velocity        = rebuilt.rocket.velocity;
     rocket.angle           = rebuilt.rocket.angle;
     rocket.thrustMagnitude = rebuilt.rocket.thrustMagnitude;
+    rocket.engineDirection = cfg.rocket.engineDirection || 'rear';
     rocket.engineOn        = cfg.rocket.engineOn || false;
 
     loop.resetSimTime();
@@ -196,6 +200,7 @@ export function mount(mountEl, setupName, options = {}) {
     resume:  () => loop.resume(),
     reset:   ()  => reset(),
     destroy: () => {
+      isDestroyed = true;
       loop.destroy();
       renderer.destroy();
       observer?.disconnect();
