@@ -19,7 +19,7 @@ render/
   svg-renderer.js — SvgRenderer: owns the <svg> element and drives the scene each frame
 index.js          — mount() public API; wires entities → renderer → SimLoop
 loop.js           — SimLoop: fixed-timestep physics accumulator + render dispatch
-index.html        — essay page; scroll-driven setup switcher
+index.html        — essay page; page-turn UI with paired sim switcher
 sandbox.html      — interactive "Hail Mary" tuning sandbox
 hail-mary-spacecraft-small.png  — 640×427 RGBA PNG; engines on left, nose on right
 ```
@@ -129,16 +129,20 @@ Each setup is a plain config object. `mount()` in `index.js` resolves function v
 These setups drive the spaceship-fishing essay. Most are scripted via a `controller`
 function (see below) and run on a loop using `autoResetAt`.
 
+All Adrian orbits go **counterclockwise visually** — at 12 o'clock the rocket is moving
+left, at 9 o'clock it's moving down, etc. The orbit-insertion scene establishes this
+direction and the other scenes match it for continuity between pages.
+
 | Setup | Key behaviour |
 |---|---|
 | `fishing-cruise` | Vacuum, no planet. Rocket starts left, motionless. After 2s, one longer pulse and three rapid pulses send it off-screen. Loops via `resetWhen: 'offscreen'`. |
-| `fishing-flip-burn` | Vacuum, no planet. Accelerates right, coasts, slowly rotates 180°, decelerates to a stop. `autoResetAt: 9.0`. |
+| `fishing-flip-burn` | Vacuum, no planet. Accelerates right, coasts, flips exactly 180° via `linearRotate`, decelerates to a stop. `autoResetAt: 9.0`. |
 | `fishing-adrian-intro` | Big planet labelled "Adrian"; rocket hidden. Static title slide. |
-| `fishing-adrian-crash` | Big planet. Rocket arrives cruising down, flips, brakes to a stop, then falls under gravity and crashes. `crashCallout: 'Bad. Bad. Bad.'` |
-| `fishing-adrian-orbit` | Big planet. Rocket placed in a stable circular orbit. Auto-resets after two full periods. |
-| `fishing-adrian-stable` | Big planet. Same orbit, never auto-resets — used for the "problem with orbits" scene. |
-| `fishing-adrian-slowdown` | Big planet. Starts in orbit, controller flips to retrograde and burns; ship crashes. `crashCallout: 'Bad. Bad. Bad.'` |
-| `fishing-adrian-hover` | Big planet. Starts in orbit, controller rotates to point engine radially inward and fires at `SIM_G` — hovers while drifting tangentially. `autoResetAt: 14`. |
+| `fishing-adrian-crash` | Big planet. Rocket arrives cruising down, `linearRotate`s 180° to face up, brakes to a stop, then falls under gravity and crashes. `crashCallout: 'Bad. Bad. Bad.'` |
+| `fishing-adrian-orbit` | Big planet. Rocket spawns above the viewport on a tangent line to the orbit (offset = `ADRIAN_ORBIT_R` left of planet centre), nose already up, falls tail-first with `vx` forced to 0 each step so the path stays a clean vertical line. When `dist ≤ ADRIAN_ORBIT_R + 6` the controller snaps the angle to the ΔV direction and burns to circularise. |
+| `fishing-adrian-stable` | Big planet. Stable circular orbit at `ADRIAN_ORBIT_R`, never auto-resets. |
+| `fishing-adrian-slowdown` | Big planet. Rocket orbits "engines-first" — controller locks the nose anti-prograde (180° from velocity) so the rear engine and rendered exhaust glow both point in the direction of motion. After 2s of orbit it fires for 0.6s (≈54 px/s ΔV ≈ 50% of `ADRIAN_ORBIT_V`), then coasts. The reduced velocity isn't enough to stay in orbit, so it falls in. `crashCallout: 'Bad. Bad. Bad.'` |
+| `fishing-adrian-hover` | Big planet. Rocket starts already in steady-state hover: lateral velocity `HOVER_V = 22 px/s` (deliberately sub-orbital), nose radially outward, thrust `HOVER_T = SIM_G − HOVER_V² / ADRIAN_ORBIT_R ≈ 45.5` back-solved from `v = sqrt(r × (g − T))` so altitude is held while drifting slowly tangentially. `autoResetAt: 14`. |
 
 Adrian-scene geometry constants live at the top of `setups.js`: `ADRIAN_R = 200`,
 `ADRIAN_ORBIT_R = 245`, `ADRIAN_CENTER = ({ width, height }) => ({ x: width/2, y: height*0.62 })`,
@@ -147,7 +151,7 @@ Adrian-scene geometry constants live at the top of `setups.js`: `ADRIAN_R = 200`
 
 `trackVelocity: true` smoothly rotates the rocket to face the velocity vector at speeds above
 8 px/s. Use `false` for setups whose controller manages rotation directly (every scripted
-`fishing-*` setup except `fishing-adrian-orbit` / `fishing-adrian-stable`).
+`fishing-*` setup except `fishing-adrian-stable`).
 
 ## Scripted controllers
 
@@ -173,9 +177,18 @@ Companion fields:
 Sim time resets to zero on every reset (`SimLoop.resetSimTime()`), so the controller's
 timeline runs from scratch on each loop iteration.
 
-A small helper, `rotateToward(rocket, targetAngle, dt, rate)`, lives at the top of `setups.js`
-and is used by every scripted controller that needs smooth rotation. It does proper
-wrap-around handling so a flip never takes the long way round.
+Two small rotation helpers live at the top of `setups.js` — both handle wrap-around so a
+flip never takes the long way round:
+
+- **`rotateToward(rocket, targetAngle, dt, rate)`** — exponential approach. Eases in but
+  asymptotes; never quite reaches the target. Use for tracking a *moving* target (e.g.
+  the velocity vector during an orbit), where landing exactly is impossible anyway.
+- **`linearRotate(rocket, fromAngle, toAngle, phaseTime, duration)`** — linear interpolation
+  over a fixed duration; `rocket.angle` lands exactly on `toAngle` when
+  `phaseTime ≥ duration`. Use for scripted flips where the angle must be precise (180°
+  flip-and-burn, the brake flip in `fishing-adrian-crash`). Don't use `rotateToward` for
+  these — at typical rates the rocket asymptotes ~10° short and the burn fires at the
+  wrong angle.
 
 ## Crash detection (`loop.js`)
 
@@ -224,9 +237,15 @@ below after rotation.
 - `IntersectionObserver` on the mount element pauses the loop when off-viewport (`rootMargin: 100px`).
 - `document.visibilitychange` pauses on hidden tab.
 - `mount()` returns `{ pause, resume, reset, destroy }`. The essay page calls `destroy()` when
-  switching between sections.
+  switching between pages.
 - `reset()` in `index.js`: fade out → mutate entity state in-place (same object refs, so the
   engine button still points to the right rocket) → fade in.
+- `reset()` is async with multiple `await` points (crash-hold, fade-out, fade-in). If `destroy()`
+  fires mid-reset (e.g. the reader turns the page during a "Bad. Bad. Bad." callout), an
+  `isDestroyed` flag is set and `reset()` checks it after each await — bailing out instead of
+  resuming the loop on a torn-down renderer (which would leave the callout visible after the
+  panel had faded). Also: `reset()` re-applies `cfg.rocket.engineDirection` so a controller that
+  mutated `rocket.engineDirection` to a vector mid-scene reverts to the configured value on loop.
 
 ## Sandbox controls (`sandbox.html`)
 

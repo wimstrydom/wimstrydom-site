@@ -199,16 +199,17 @@ Interactive calculator built with Plotly. Lets users adjust station diameter, ta
 The Plotly chart colours and other chart/diagram constants are grouped at the top of the `<script>` block under "Design token mirrors". Update those constants if the corresponding `style.css` tokens change.
 
 #### Spaceship Fishing (`explorations/spaceship-fishing/index.html`)
-Essay: "How to go fishing with a spaceship — exploring the physics of *Project Hail Mary*'s most confusing scene". Built on a fork of the `space-sim` engine (a 2D SVG orbital sim with a scripted-controller layer). The page uses a dynamic two-state layout:
+Essay: "How to go fishing with a spaceship — exploring the physics of *Project Hail Mary*'s most confusing scene". Built on a fork of the `space-sim` engine (a 2D SVG orbital sim with a scripted-controller layer). The page uses a **page-turn UI** instead of vertical scroll:
 
-- **Centred mode (default)** — prose sits in a 720px centred column; the simulation panel is hidden. Used for the preface and context sections.
-- **Split mode (`body.split`)** — prose translates left via `transform: translateX(-25vw)` and a fixed-position simulation panel fades in on the right half of the viewport. Used for every section that has a paired animated scene.
+- The document has `overflow: hidden`. All content lives inside `.essay-viewport`, a fixed-position container below the header.
+- Inside the viewport, `.essay-strip` is a horizontal flex row of `.essay-page` articles (one per page). The strip is translated by `translateX(-N × 100vw)` to reveal page N. The transition is 0.6s `cubic-bezier(.4, 0, .2, 1)`.
+- A floating `.page-nav` (prev / counter / next) sits bottom-centre. Arrow keys, Space, PageUp/PageDown, Home, and End all navigate. The top progress bar reflects `currentPage / (totalPages − 1)`.
+- Each page that has a paired simulation gets the `has-sim` class. In CSS this expands the page's `padding-right` to `50vw`, which reflows the inner column into the left half of the viewport. The sim panel (fixed to the right half) fades in via `body.split`. Horizontal padding lives on `.essay-page-inner` so the prose gutter travels with the column when it reflows.
+- On viewports ≤960px the split is disabled — `padding-right` reverts to 0 and the sim panel is hidden. The page-turn UI itself still works.
 
-A scroll handler picks the deepest section whose top has crossed 42% of the viewport, then either applies `body.split` and mounts that section's `data-sim` setup, or removes `.split` and tears down the active sim after a 600ms fade. On viewports ≤960px the split is disabled entirely and the prose stays centred (panel hidden).
+Animation beats are encoded as scripted **controllers** in `core/setups.js`. Each setup can define `controller(rocket, simTime, dt, ctx)` plus `autoResetAt` (seconds), `crashCallout` (e.g. "Bad. Bad. Bad."), `planetLabel` (e.g. "Adrian"), and `hideRocket`. The big planet "Adrian" scenes share `ADRIAN_R`, `ADRIAN_ORBIT_R`, and `ADRIAN_CENTER` constants at the top of `setups.js`, and they orbit **counterclockwise** visually (down at 9 o'clock → right at 6 → up at 3 → left at 12). See `explorations/spaceship-fishing/CLAUDE.md` for the engine-level details.
 
-Animation beats are encoded as scripted **controllers** in `core/setups.js`: each setup can define `controller(rocket, simTime, dt, ctx)` plus `autoResetAt` (seconds), `crashCallout` (e.g. "Bad. Bad. Bad."), `planetLabel` (e.g. "Adrian"), and `hideRocket`. The big planet "Adrian" scenes share `ADRIAN_R`, `ADRIAN_ORBIT_R`, and `ADRIAN_CENTER` constants at the top of `setups.js`. See `explorations/spaceship-fishing/CLAUDE.md` for the engine-level details.
-
-The page deliberately leaves placeholder blocks (`.placeholder-ref`) in the Context section for the book quote and movie still — Wim will fill these in. Sections beyond "imperative two" (book version, movie version, why neither works, the zig-zag answer) are sketched in an inline `<!-- TODO -->` comment but not yet built.
+The page deliberately leaves placeholder blocks (`.placeholder-ref`) on the title page for the book quote and movie still — Wim will fill these in. Pages beyond "imperative two" (book version, movie version, why neither works, the zig-zag answer) are sketched in an inline `<!-- TODO -->` comment but not yet built.
 
 #### Space Sim — legacy (`explorations/space-sim/index.html`)
 Earlier essay page titled "Orbital Mechanics" that became the seed for the spaceship-fishing essay. Still present so existing links don't break, but to be removed after the new essay is live.
