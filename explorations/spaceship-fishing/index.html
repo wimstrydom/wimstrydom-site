@@ -56,20 +56,24 @@ html, body {
   justify-content: center;
   align-items: flex-start;
   overflow-y: auto;
-  padding: 56px 32px 120px;
+  padding: 56px 0 120px;
   box-sizing: border-box;
+  /* In split mode, padding-right pushes the inner into the left half of
+     the viewport. Transitioning padding gives a smooth flex reflow. */
+  transition: padding 0.6s cubic-bezier(.4, 0, .2, 1);
 }
 
-/* Each page's prose lives in a fixed-width inner column. When the page
-   has a paired simulation, the inner shifts left so it sits in the
-   left half of the viewport and the sim panel takes the right half. */
+/* The inner column carries its own horizontal padding so left/right gutters
+   stay on the prose itself — they don't disappear when the page reflows. */
 .essay-page-inner {
   max-width: 720px;
   width: 100%;
-  transition: transform 0.6s cubic-bezier(.4, 0, .2, 1);
+  padding: 0 32px;
+  box-sizing: border-box;
 }
-.essay-page.has-sim .essay-page-inner {
-  transform: translateX(-25vw);
+
+.essay-page.has-sim {
+  padding-right: 50vw;
 }
 
 /* ── SIM PANEL ──────────────────────────────────────────────────
@@ -221,9 +225,10 @@ body.split .sim-panel { opacity: 1; }
    On narrow viewports we drop the right-side sim panel and keep
    the prose centred (the page-turn UI still works). */
 @media (max-width: 960px) {
-  .essay-page.has-sim .essay-page-inner { transform: none; }
+  .essay-page.has-sim { padding-right: 0; }
   .sim-panel { display: none; }
-  .essay-page { padding: 36px 24px 100px; }
+  .essay-page { padding: 36px 0 100px; }
+  .essay-page-inner { padding: 0 24px; }
 }
 </style>
 </head>
@@ -251,16 +256,6 @@ body.split .sim-panel { opacity: 1; }
           <div class="body-text">
             <p>I'm not about to point out a "well, actually" mistake here. I find the obsession with picking apart science fiction for its inaccuracies kind of insufferable, and that is genuinely not what this is. Andy Weir's <em>Project Hail Mary</em> is one of my favourite books of the last decade, and the film adaptation is great fun in its own right. Neither owes us a physics lecture, and both made exactly the right call with the scene I'm about to take apart.</p>
             <p>What I do want to do is figure out how that scene <em>would</em> actually work — and discover, along the way, that the answer is so silly it could never have been put on the page or the screen. The book and the film were right not to try.</p>
-          </div>
-        </section>
-      </div>
-    </article>
-
-    <article class="essay-page" data-page-id="context">
-      <div class="essay-page-inner">
-        <section class="essay-section">
-          <h2>Context</h2>
-          <div class="body-text">
             <p>Briefly, for the uninitiated: the <em>Hail Mary</em> is a spacecraft sent on a one-shot mission to investigate an alien microbe — <em>Taumoeba</em> — that lives in the upper atmosphere of an exoplanet named Adrian. At a critical point in the story, our hero needs to capture a live sample directly from that upper atmosphere. He can't land — Adrian is hostile to humans and the ship was never built for atmospheric flight — so he has to <em>fish</em>: drag a long collector on a chain from the ship, just barely skimming the upper air, while the ship itself stays safely above.</p>
             <div class="placeholder-ref">Book quote describing the manoeuvre goes here.</div>
             <div class="placeholder-ref">Movie still of the corresponding scene goes here.</div>

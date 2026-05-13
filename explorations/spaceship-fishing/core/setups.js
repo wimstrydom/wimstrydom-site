@@ -345,10 +345,15 @@ export const SETUPS = {
     },
   },
 
-  // Adrian: rocket arrives from off-centre, performs an orbital insertion
-  // burn at the right moment, then settles into a circular orbit. The burn
-  // direction is computed live as the ΔV between current velocity and the
-  // target orbital velocity at the rocket's current radial position.
+  // Adrian: rocket falls straight down from above the screen, offset to the
+  // left of the planet by exactly one orbital radius — a tangent line to the
+  // intended orbit. When it reaches orbital altitude the controller fires a
+  // burn to circularise. The orbit that results goes visually counterclockwise
+  // (down at 9 o'clock → right at 6 → up at 3 → left at 12).
+  //
+  // The approach phase forces vx = 0 each step so the path stays a clean
+  // vertical line (otherwise gravity's horizontal component would curve it
+  // toward the planet centre).
   'fishing-adrian-orbit': {
     environment: 'vacuum',
     planet: {
@@ -358,21 +363,20 @@ export const SETUPS = {
     },
     atmosphere: null,
     rocket: {
-      // Approach from upper-left, above the orbit altitude.
       position: (dims) => ({
-        x: ADRIAN_CENTER(dims).x - 130,
-        y: ADRIAN_CENTER(dims).y - ADRIAN_ORBIT_R - 80,
+        x: ADRIAN_CENTER(dims).x - ADRIAN_ORBIT_R,   // tangent line to orbit
+        y: -60,                                       // just above the viewport
       }),
-      velocity: { x: 60, y: 25 },            // mostly tangential, slight inbound
-      angle: Math.atan2(60, -25),            // initial nose along velocity
-      thrustMagnitude: 110,                  // strong enough to circularise quickly
+      velocity: { x: 0, y: 70 },               // straight down
+      angle: Math.PI,                          // nose down (along velocity)
+      thrustMagnitude: 110,
       engineOn: false,
       engineDirection: 'rear',
     },
     controls: { showButton: false },
-    trackVelocity: false,                    // controller manages rotation
+    trackVelocity: false,                      // controller manages rotation
     resetWhen: 'never',
-    autoResetAt: ADRIAN_ORBIT_T + 6,         // approach + burn + ~1 full orbit, then loop
+    autoResetAt: ADRIAN_ORBIT_T + 8,           // approach + burn + ~1 full orbit, then loop
     planetLabel: 'Adrian',
     showOrbitPath: true,
     orbitRadius: ADRIAN_ORBIT_R,
@@ -383,39 +387,42 @@ export const SETUPS = {
       const dist = Math.hypot(dx, dy) || 1;
 
       const v = rocket.velocity;
-      const speed = Math.hypot(v.x, v.y);
 
-      // Prograde tangent at this radial position (consistent rightward orbit).
-      const tx = -dy / dist;
-      const ty =  dx / dist;
-      // ΔV needed to reach target orbital velocity (prograde, magnitude ADRIAN_ORBIT_V).
+      // Counterclockwise prograde tangent (visually): the perpendicular to
+      // the radial outward that points in the same sense as a downward fall
+      // at 9 o'clock (i.e. (0,1) when rocket is directly left of planet).
+      const tx =  dy / dist;
+      const ty = -dx / dist;
       const dvx = tx * ADRIAN_ORBIT_V - v.x;
       const dvy = ty * ADRIAN_ORBIT_V - v.y;
       const dv  = Math.hypot(dvx, dvy);
 
-      // Approach phase: not yet at orbit altitude — coast, nose along velocity.
+      // Approach: keep the path strictly vertical, nose down.
       if (dist > ADRIAN_ORBIT_R + 6) {
+        rocket.velocity.x = 0;                 // cancel horizontal gravity drift
         rocket.engineOn = false;
-        if (speed > 5) rotateToward(rocket, Math.atan2(v.x, -v.y), dt, 4);
+        rocket.angle = Math.PI;                // nose down
         return;
       }
 
-      // Insertion phase: aim the engine in the ΔV direction and burn.
+      // Insertion burn: aim in the ΔV direction and fire.
       if (dv > 4) {
         const burnAngle = Math.atan2(dvx, -dvy);
-        rotateToward(rocket, burnAngle, dt, 8);
+        rotateToward(rocket, burnAngle, dt, 12);
         rocket.engineOn = true;
         return;
       }
 
       // Orbit phase: nose follows velocity.
       rocket.engineOn = false;
+      const speed = Math.hypot(v.x, v.y);
       if (speed > 5) rotateToward(rocket, Math.atan2(v.x, -v.y), dt, 4);
     },
   },
 
-  // Adrian: stable orbit that runs forever — used to anchor the "problem with
-  // orbits" scene before the slowdown / hover demos override the panel.
+  // Adrian: stable orbit that runs forever. Goes counterclockwise visually
+  // (matches the orbit-insertion scene) — at the top of the orbit the rocket
+  // is moving leftward.
   'fishing-adrian-stable': {
     environment: 'vacuum',
     planet: {
@@ -429,8 +436,8 @@ export const SETUPS = {
         x: ADRIAN_CENTER(dims).x,
         y: ADRIAN_CENTER(dims).y - ADRIAN_ORBIT_R,
       }),
-      velocity: () => ({ x: ADRIAN_ORBIT_V, y: 0 }),
-      angle: Math.PI / 2,
+      velocity: () => ({ x: -ADRIAN_ORBIT_V, y: 0 }),
+      angle: -Math.PI / 2,                     // facing left (along velocity)
       thrustMagnitude: 0,
       engineOn: false,
       engineDirection: 'rear',
@@ -459,8 +466,8 @@ export const SETUPS = {
         x: ADRIAN_CENTER(dims).x,
         y: ADRIAN_CENTER(dims).y - ADRIAN_ORBIT_R,
       }),
-      velocity: () => ({ x: ADRIAN_ORBIT_V, y: 0 }),
-      angle: Math.PI / 2,
+      velocity: () => ({ x: -ADRIAN_ORBIT_V, y: 0 }),
+      angle: -Math.PI / 2,
       thrustMagnitude: 90,
       engineOn: false,
       engineDirection: 'rear',
@@ -526,12 +533,13 @@ export const SETUPS = {
       },
       atmosphere: null,
       rocket: {
-        // Start at the top of the orbit altitude, moving slowly rightward.
+        // Start at the top of the orbit altitude, moving slowly leftward
+        // (matches the orbit-insertion scene's counterclockwise direction).
         position: (dims) => ({
           x: ADRIAN_CENTER(dims).x,
           y: ADRIAN_CENTER(dims).y - ADRIAN_ORBIT_R,
         }),
-        velocity: () => ({ x: HOVER_V, y: 0 }),
+        velocity: () => ({ x: -HOVER_V, y: 0 }),
         angle: 0,                            // nose points up — radially out at top of orbit
         thrustMagnitude: HOVER_T,            // back-solved to balance the slow centripetal need
         engineOn: true,
