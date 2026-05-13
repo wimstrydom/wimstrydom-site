@@ -347,9 +347,11 @@ export const SETUPS = {
 
   // Adrian: rocket falls straight down from above the screen, offset to the
   // left of the planet by exactly one orbital radius — a tangent line to the
-  // intended orbit. When it reaches orbital altitude the controller fires a
-  // burn to circularise. The orbit that results goes visually counterclockwise
-  // (down at 9 o'clock → right at 6 → up at 3 → left at 12).
+  // intended orbit. The controller plans the insertion burn so the brake
+  // *finishes* with velocity = orbital velocity right at the 9 o'clock point
+  // (dy = 0), rather than starting at that altitude and then overshooting it
+  // while still trying to slow down. The orbit that results goes visually
+  // counterclockwise (down at 9 o'clock → right at 6 → up at 3 → left at 12).
   //
   // The approach phase forces vx = 0 each step so the path stays a clean
   // vertical line (otherwise gravity's horizontal component would curve it
@@ -390,6 +392,7 @@ export const SETUPS = {
       const dist = Math.hypot(dx, dy) || 1;
 
       const v = rocket.velocity;
+      const speed = Math.hypot(v.x, v.y);
 
       // Counterclockwise prograde tangent (visually): the perpendicular to
       // the radial outward that points in the same sense as a downward fall
@@ -402,8 +405,20 @@ export const SETUPS = {
 
       // Approach: keep the path strictly vertical and the nose held up so
       // the rear engine is already pointed in the direction of motion —
-      // ready to brake the moment we reach orbital altitude.
-      if (dist > ADRIAN_ORBIT_R + 6) {
+      // ready to brake. Free-fall continues until the remaining vertical
+      // distance to the 9 o'clock insertion point equals the 1-D braking
+      // distance for the current vertical speed:
+      //
+      //   brakeDist = (v.y² − V²) / (2·T)
+      //
+      // Starting the burn at this moment makes the brake *finish* with
+      // velocity = orbital velocity exactly at dy = 0. While v.y is still
+      // below V, brakeDist is negative and the condition holds trivially.
+      const T = rocket.thrustMagnitude;
+      const brakeDist  = (v.y * v.y - ADRIAN_ORBIT_V * ADRIAN_ORBIT_V) / (2 * T);
+      const dToTarget  = planet.position.y - rocket.position.y;
+
+      if (dy < 0 && dToTarget > brakeDist) {
         rocket.velocity.x = 0;                 // cancel horizontal gravity drift
         rocket.engineOn = false;
         rocket.angle = 0;                      // nose up, tail-first descent
@@ -420,7 +435,6 @@ export const SETUPS = {
 
       // Orbit phase: nose follows velocity.
       rocket.engineOn = false;
-      const speed = Math.hypot(v.x, v.y);
       if (speed > 5) rotateToward(rocket, Math.atan2(v.x, -v.y), dt, 4);
     },
   },
