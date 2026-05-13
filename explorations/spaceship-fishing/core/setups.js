@@ -368,7 +368,10 @@ export const SETUPS = {
         y: -60,                                       // just above the viewport
       }),
       velocity: { x: 0, y: 70 },               // straight down
-      angle: Math.PI,                          // nose down (along velocity)
+      // Nose UP from the start — the rocket falls tail-first, engines already
+      // pointed in the direction of motion. When it reaches orbital altitude
+      // it can fire immediately with no flip delay.
+      angle: 0,
       thrustMagnitude: 110,
       engineOn: false,
       engineDirection: 'rear',
@@ -397,18 +400,20 @@ export const SETUPS = {
       const dvy = ty * ADRIAN_ORBIT_V - v.y;
       const dv  = Math.hypot(dvx, dvy);
 
-      // Approach: keep the path strictly vertical, nose down.
+      // Approach: keep the path strictly vertical and the nose held up so
+      // the rear engine is already pointed in the direction of motion —
+      // ready to brake the moment we reach orbital altitude.
       if (dist > ADRIAN_ORBIT_R + 6) {
         rocket.velocity.x = 0;                 // cancel horizontal gravity drift
         rocket.engineOn = false;
-        rocket.angle = Math.PI;                // nose down
+        rocket.angle = 0;                      // nose up, tail-first descent
         return;
       }
 
-      // Insertion burn: aim in the ΔV direction and fire.
+      // Insertion burn: aim in the ΔV direction and fire. Snap the angle so
+      // the burn starts producing thrust on the first physics step.
       if (dv > 4) {
-        const burnAngle = Math.atan2(dvx, -dvy);
-        rotateToward(rocket, burnAngle, dt, 12);
+        rocket.angle = Math.atan2(dvx, -dvy);
         rocket.engineOn = true;
         return;
       }
@@ -467,7 +472,7 @@ export const SETUPS = {
         y: ADRIAN_CENTER(dims).y - ADRIAN_ORBIT_R,
       }),
       velocity: () => ({ x: -ADRIAN_ORBIT_V, y: 0 }),
-      angle: -Math.PI / 2,
+      angle: Math.PI / 2,                    // anti-prograde (right) — rear toward leftward motion
       thrustMagnitude: 90,
       engineOn: false,
       engineDirection: 'rear',
@@ -478,38 +483,28 @@ export const SETUPS = {
     crashCallout: 'Bad. Bad. Bad.',
     planetLabel: 'Adrian',
     showOrbitPath: false,
-    // Attitude is locked relative to Adrian: the rocket nose always points
-    // radially outward (away from the planet centre, as if "standing up" on
-    // the local horizon). The engine doesn't fire from the rear here — we
-    // override `engineDirection` to a tangential retrograde unit vector so
-    // the burn slows orbital velocity directly without a 180° flip.
+    // The rocket orbits "engines-first": its nose is locked anti-prograde
+    // (180° from velocity), so the rear engine — and the rendered exhaust
+    // glow — both point in the direction of motion. When the engine fires,
+    // thrust is applied retrograde and the visual matches the physics.
+    //
+    // The burn is brief: ~50% of orbital velocity bled off, not all of it.
     controller: (rocket, t, dt, ctx) => {
-      const planet = ctx.planet;
-      const dx = rocket.position.x - planet.position.x;
-      const dy = rocket.position.y - planet.position.y;
-      const dist = Math.hypot(dx, dy) || 1;
+      const v = rocket.velocity;
+      const speed = Math.hypot(v.x, v.y);
 
-      // Nose points radially outward — locked to Adrian's local "up".
-      rocket.angle = Math.atan2(dx, -dy);
+      // Anti-prograde nose: rear (and exhaust) point in the direction of motion.
+      if (speed > 1) rocket.angle = Math.atan2(-v.x, v.y);
 
+      // Brief orbit, then a short braking burn, then coast.
+      // thrust = 90 px/s², duration 0.6s → ΔV ≈ 54 ≈ 50% of ADRIAN_ORBIT_V.
       if (t < 2) {
         rocket.engineOn = false;
-        return;
+      } else if (t < 2.6) {
+        rocket.engineOn = true;
+      } else {
+        rocket.engineOn = false;
       }
-
-      // Retrograde unit vector = perpendicular to radial, opposite the
-      // current velocity's tangential component.
-      const v = rocket.velocity;
-      // Tangential basis (one of two perpendiculars to the radial outward).
-      const tx = -dy / dist;
-      const ty =  dx / dist;
-      // Sign so the tangent points in the direction of motion (prograde).
-      const sign = (v.x * tx + v.y * ty) >= 0 ? 1 : -1;
-      // Retrograde = opposite of prograde.
-      rocket.engineDirection = { x: -sign * tx, y: -sign * ty };
-
-      // Burn for ~3.5s, then cut thrust and let gravity do the rest.
-      rocket.engineOn = (t < 5.5);
     },
   },
 
