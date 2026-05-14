@@ -369,6 +369,12 @@ export const SETUPS = {
       2 * SIM_G * ADRIAN_ORBIT_R * ADRIAN_ORBIT_R / (R_APO + ADRIAN_ORBIT_R)
     );
 
+    // Orientation timeline (sim seconds). Off-screen spawn at R_APO=600 takes
+    // about 2.5–3 s to drift into the panel, so the flip is timed to start
+    // after the rocket has clearly appeared.
+    const FLIP_HOLD_T = 3.0;                   // hold nose-up while appearing
+    const FLIP_END_T  = 5.0;                   // 2-second gentle flip
+
     // Controller state, persisted across the IIFE closure. Reset whenever
     // sim time goes backward (which is what resetSimTime() does on loop).
     let burnPhase = 'approach';   // 'approach' | 'burn' | 'orbit'
@@ -399,7 +405,7 @@ export const SETUPS = {
       controls: { showButton: false },
       trackVelocity: false,                    // controller manages rotation
       resetWhen: 'never',
-      autoResetAt: 26,                         // approach + burn + ~1 full orbit
+      autoResetAt: 32,                         // approach + flip + burn + ~1 orbit
       planetLabel: 'Adrian',
       showOrbitPath: true,
       orbitRadius: ADRIAN_ORBIT_R,
@@ -434,8 +440,21 @@ export const SETUPS = {
 
         if (burnPhase === 'approach') {
           rocket.engineOn = false;
-          // Coast nose-first along the velocity vector during the transfer.
-          if (speed > 5) rotateToward(rocket, Math.atan2(v.x, -v.y), dt, 4);
+
+          // Orientation timeline:
+          //   t < FLIP_HOLD_T : hold nose-up (prograde at spawn) while the
+          //                     rocket is still drifting onto the panel.
+          //   FLIP_HOLD_T..FLIP_END_T : gentle 180° flip, clockwise through
+          //                     the right side (tail swings forward).
+          //   t ≥ FLIP_END_T  : track anti-prograde — engine stays pointed
+          //                     in the direction of motion, "ass-first".
+          if (t < FLIP_HOLD_T) {
+            rocket.angle = 0;
+          } else if (t < FLIP_END_T) {
+            linearRotate(rocket, 0, Math.PI, t - FLIP_HOLD_T, FLIP_END_T - FLIP_HOLD_T);
+          } else if (speed > 5) {
+            rotateToward(rocket, Math.atan2(-v.x, v.y), dt, 4);
+          }
 
           // Periapsis: radial velocity crosses from approach (vr < 0) to
           // recede (vr ≥ 0). At that instant velocity is purely tangent —
@@ -451,6 +470,9 @@ export const SETUPS = {
 
         if (burnPhase === 'burn') {
           if (dv > 4) {
+            // Snap to ΔV direction. Because the rocket is already anti-
+            // prograde and ΔV ≈ anti-tangent at periapsis, this is only a
+            // few-degree correction, not a 180° flip.
             rocket.angle = Math.atan2(dvx, -dvy);
             rocket.engineOn = true;
             return;
@@ -458,9 +480,9 @@ export const SETUPS = {
           burnPhase = 'orbit';
         }
 
-        // Orbit phase — nose follows velocity, engine cold.
+        // Orbit phase — engine cold, keep the ass-first orientation.
         rocket.engineOn = false;
-        if (speed > 5) rotateToward(rocket, Math.atan2(v.x, -v.y), dt, 4);
+        if (speed > 5) rotateToward(rocket, Math.atan2(-v.x, v.y), dt, 4);
       },
     };
   })(),
