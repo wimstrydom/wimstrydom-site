@@ -345,99 +345,125 @@ export const SETUPS = {
     },
   },
 
-  // Adrian: rocket falls straight down from above the screen, offset to the
-  // left of the planet by exactly one orbital radius — a tangent line to the
-  // intended orbit. The controller plans the insertion burn so the brake
-  // *finishes* with velocity = orbital velocity right at the 9 o'clock point
-  // (dy = 0), rather than starting at that altitude and then overshooting it
-  // while still trying to slow down. The orbit that results goes visually
-  // counterclockwise (down at 9 o'clock → right at 6 → up at 3 → left at 12).
+  // Adrian: pure-physics orbital insertion. The rocket spawns at the
+  // apoapsis of a bound elliptical trajectory whose periapsis sits exactly
+  // at ADRIAN_ORBIT_R. Apoapsis is far enough out that the rocket begins
+  // off-screen to the right. Gravity does all the work of bending the path
+  // around the planet; the controller never touches velocity directly.
   //
-  // The approach phase forces vx = 0 each step so the path stays a clean
-  // vertical line (otherwise gravity's horizontal component would curve it
-  // toward the planet centre).
-  'fishing-adrian-orbit': {
-    environment: 'vacuum',
-    planet: {
-      position: ADRIAN_CENTER,
-      radius: ADRIAN_R,
-      g: SIM_G,
-    },
-    atmosphere: null,
-    rocket: {
-      position: (dims) => ({
-        x: ADRIAN_CENTER(dims).x - ADRIAN_ORBIT_R,   // tangent line to orbit
-        y: -60,                                       // just above the viewport
-      }),
-      velocity: { x: 0, y: 70 },               // straight down
-      // Nose UP from the start — the rocket falls tail-first, engines already
-      // pointed in the direction of motion. When it reaches orbital altitude
-      // it can fire immediately with no flip delay.
-      angle: 0,
-      thrustMagnitude: 110,
-      engineOn: false,
-      engineDirection: 'rear',
-    },
-    controls: { showButton: false },
-    trackVelocity: false,                      // controller manages rotation
-    resetWhen: 'never',
-    autoResetAt: ADRIAN_ORBIT_T + 8,           // approach + burn + ~1 full orbit, then loop
-    planetLabel: 'Adrian',
-    showOrbitPath: true,
-    orbitRadius: ADRIAN_ORBIT_R,
-    controller: (rocket, t, dt, ctx) => {
-      const planet = ctx.planet;
-      const dx = rocket.position.x - planet.position.x;
-      const dy = rocket.position.y - planet.position.y;
-      const dist = Math.hypot(dx, dy) || 1;
+  // When the rocket reaches periapsis (where radial velocity flips from
+  // negative to positive — i.e. the moment its motion is purely tangential)
+  // the controller fires the textbook circularisation burn:
+  //
+  //   ΔV = v_circ · t̂ − v_current     where v_circ = √(g · r)
+  //
+  // The burn is held in feedback until |ΔV| is small. The resulting orbit
+  // goes counterclockwise visually (matches the other Adrian scenes).
+  //
+  // Apoapsis velocity is back-solved from conservation of E and L in a
+  // bound orbit so that periapsis lands on ADRIAN_ORBIT_R exactly:
+  //   v_apo² = 2·g·r_peri² / (r_apo + r_peri)
+  'fishing-adrian-orbit': (() => {
+    const R_APO = 600;
+    const V_APO = Math.sqrt(
+      2 * SIM_G * ADRIAN_ORBIT_R * ADRIAN_ORBIT_R / (R_APO + ADRIAN_ORBIT_R)
+    );
 
-      const v = rocket.velocity;
-      const speed = Math.hypot(v.x, v.y);
+    // Controller state, persisted across the IIFE closure. Reset whenever
+    // sim time goes backward (which is what resetSimTime() does on loop).
+    let burnPhase = 'approach';   // 'approach' | 'burn' | 'orbit'
+    let prevVr    = null;
+    let prevT     = -1;
 
-      // Counterclockwise prograde tangent (visually): the perpendicular to
-      // the radial outward that points in the same sense as a downward fall
-      // at 9 o'clock (i.e. (0,1) when rocket is directly left of planet).
-      const tx =  dy / dist;
-      const ty = -dx / dist;
-      const dvx = tx * ADRIAN_ORBIT_V - v.x;
-      const dvy = ty * ADRIAN_ORBIT_V - v.y;
-      const dv  = Math.hypot(dvx, dvy);
+    return {
+      environment: 'vacuum',
+      planet: {
+        position: ADRIAN_CENTER,
+        radius: ADRIAN_R,
+        g: SIM_G,
+      },
+      atmosphere: null,
+      rocket: {
+        // Spawn at apoapsis = 3 o'clock (right of planet, off-screen on
+        // typical viewports), velocity tangent counterclockwise = straight up.
+        position: (dims) => ({
+          x: ADRIAN_CENTER(dims).x + R_APO,
+          y: ADRIAN_CENTER(dims).y,
+        }),
+        velocity: () => ({ x: 0, y: -V_APO }),
+        angle: 0,                              // nose up, aligned with velocity
+        thrustMagnitude: 110,
+        engineOn: false,
+        engineDirection: 'rear',
+      },
+      controls: { showButton: false },
+      trackVelocity: false,                    // controller manages rotation
+      resetWhen: 'never',
+      autoResetAt: 26,                         // approach + burn + ~1 full orbit
+      planetLabel: 'Adrian',
+      showOrbitPath: true,
+      orbitRadius: ADRIAN_ORBIT_R,
+      controller: (rocket, t, dt, ctx) => {
+        // Reset closure state when sim time loops back to ~0.
+        if (t < prevT) {
+          burnPhase = 'approach';
+          prevVr    = null;
+        }
+        prevT = t;
 
-      // Approach: keep the path strictly vertical and the nose held up so
-      // the rear engine is already pointed in the direction of motion —
-      // ready to brake. Free-fall continues until the remaining vertical
-      // distance to the 9 o'clock insertion point equals the 1-D braking
-      // distance for the current vertical speed:
-      //
-      //   brakeDist = (v.y² − V²) / (2·T)
-      //
-      // Starting the burn at this moment makes the brake *finish* with
-      // velocity = orbital velocity exactly at dy = 0. While v.y is still
-      // below V, brakeDist is negative and the condition holds trivially.
-      const T = rocket.thrustMagnitude;
-      const brakeDist  = (v.y * v.y - ADRIAN_ORBIT_V * ADRIAN_ORBIT_V) / (2 * T);
-      const dToTarget  = planet.position.y - rocket.position.y;
+        const planet = ctx.planet;
+        const dx = rocket.position.x - planet.position.x;
+        const dy = rocket.position.y - planet.position.y;
+        const dist = Math.hypot(dx, dy) || 1;
 
-      if (dy < 0 && dToTarget > brakeDist) {
-        rocket.velocity.x = 0;                 // cancel horizontal gravity drift
+        const v = rocket.velocity;
+        const speed = Math.hypot(v.x, v.y);
+
+        // Radial velocity: outward positive, inward negative.
+        const vr = (v.x * dx + v.y * dy) / dist;
+
+        // Counterclockwise (visual) tangent unit vector at this point.
+        const tx =  dy / dist;
+        const ty = -dx / dist;
+
+        // ΔV to circularise at the current radius.
+        const vCirc = Math.sqrt(SIM_G * dist);
+        const dvx = tx * vCirc - v.x;
+        const dvy = ty * vCirc - v.y;
+        const dv  = Math.hypot(dvx, dvy);
+
+        if (burnPhase === 'approach') {
+          rocket.engineOn = false;
+          // Coast nose-first along the velocity vector during the transfer.
+          if (speed > 5) rotateToward(rocket, Math.atan2(v.x, -v.y), dt, 4);
+
+          // Periapsis: radial velocity crosses from approach (vr < 0) to
+          // recede (vr ≥ 0). At that instant velocity is purely tangent —
+          // the textbook moment for a circularising burn. The dist guard
+          // prevents a spurious trigger from numerical noise right at
+          // apoapsis where vr starts at 0.
+          if (prevVr !== null && prevVr < 0 && vr >= 0 && dist < R_APO * 0.95) {
+            burnPhase = 'burn';
+          }
+          prevVr = vr;
+          return;
+        }
+
+        if (burnPhase === 'burn') {
+          if (dv > 4) {
+            rocket.angle = Math.atan2(dvx, -dvy);
+            rocket.engineOn = true;
+            return;
+          }
+          burnPhase = 'orbit';
+        }
+
+        // Orbit phase — nose follows velocity, engine cold.
         rocket.engineOn = false;
-        rocket.angle = 0;                      // nose up, tail-first descent
-        return;
-      }
-
-      // Insertion burn: aim in the ΔV direction and fire. Snap the angle so
-      // the burn starts producing thrust on the first physics step.
-      if (dv > 4) {
-        rocket.angle = Math.atan2(dvx, -dvy);
-        rocket.engineOn = true;
-        return;
-      }
-
-      // Orbit phase: nose follows velocity.
-      rocket.engineOn = false;
-      if (speed > 5) rotateToward(rocket, Math.atan2(v.x, -v.y), dt, 4);
-    },
-  },
+        if (speed > 5) rotateToward(rocket, Math.atan2(v.x, -v.y), dt, 4);
+      },
+    };
+  })(),
 
   // Adrian: stable orbit that runs forever. Goes counterclockwise visually
   // (matches the orbit-insertion scene) — at the top of the orbit the rocket
