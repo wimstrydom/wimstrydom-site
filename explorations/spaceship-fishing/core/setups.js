@@ -369,17 +369,18 @@ export const SETUPS = {
       2 * SIM_G * ADRIAN_ORBIT_R * ADRIAN_ORBIT_R / (R_APO + ADRIAN_ORBIT_R)
     );
 
-    // Orientation timeline (sim seconds). Off-screen spawn at R_APO=600 takes
-    // about 2.5–3 s to drift into the panel, so the flip is timed to start
-    // after the rocket has clearly appeared.
-    const FLIP_HOLD_T = 3.0;                   // hold nose-up while appearing
-    const FLIP_END_T  = 5.0;                   // 2-second gentle flip
+    // Flip duration — the rocket gently swings 180° once it's on the panel.
+    // The flip is triggered by visibility (not absolute sim-time), so wide
+    // viewports where the rocket spawns already on-screen and narrow viewports
+    // where it drifts in late both see the flip start at the right moment.
+    const FLIP_DURATION = 2.0;
 
     // Controller state, persisted across the IIFE closure. Reset whenever
     // sim time goes backward (which is what resetSimTime() does on loop).
-    let burnPhase = 'approach';   // 'approach' | 'burn' | 'orbit'
-    let prevVr    = null;
-    let prevT     = -1;
+    let burnPhase  = 'approach';   // 'approach' | 'burn' | 'orbit'
+    let prevVr     = null;
+    let prevT      = -1;
+    let flipStartT = null;         // sim-time the flip began (null = not yet)
 
     return {
       environment: 'vacuum',
@@ -412,8 +413,9 @@ export const SETUPS = {
       controller: (rocket, t, dt, ctx) => {
         // Reset closure state when sim time loops back to ~0.
         if (t < prevT) {
-          burnPhase = 'approach';
-          prevVr    = null;
+          burnPhase  = 'approach';
+          prevVr     = null;
+          flipStartT = null;
         }
         prevT = t;
 
@@ -441,19 +443,28 @@ export const SETUPS = {
         if (burnPhase === 'approach') {
           rocket.engineOn = false;
 
+          // Latch the flip start time the first frame the rocket is on the
+          // panel — works whether it spawns visible (wide viewport) or
+          // drifts in over a few seconds (narrow viewport).
+          if (flipStartT === null && rocket.position.x < ctx.bounds.width) {
+            flipStartT = t;
+          }
+
           // Orientation timeline:
-          //   t < FLIP_HOLD_T : hold nose-up (prograde at spawn) while the
-          //                     rocket is still drifting onto the panel.
-          //   FLIP_HOLD_T..FLIP_END_T : gentle 180° flip, clockwise through
-          //                     the right side (tail swings forward).
-          //   t ≥ FLIP_END_T  : track anti-prograde — engine stays pointed
-          //                     in the direction of motion, "ass-first".
-          if (t < FLIP_HOLD_T) {
+          //   off-screen       : hold initial angle (nose-up = prograde at spawn)
+          //   flipPhase < 2 s  : gentle 180° flip, clockwise through the right
+          //                      side (tail swings forward)
+          //   flipPhase ≥ 2 s  : track anti-prograde — engine stays pointed in
+          //                      the direction of motion, "ass-first"
+          if (flipStartT === null) {
             rocket.angle = 0;
-          } else if (t < FLIP_END_T) {
-            linearRotate(rocket, 0, Math.PI, t - FLIP_HOLD_T, FLIP_END_T - FLIP_HOLD_T);
-          } else if (speed > 5) {
-            rotateToward(rocket, Math.atan2(-v.x, v.y), dt, 4);
+          } else {
+            const flipPhase = t - flipStartT;
+            if (flipPhase < FLIP_DURATION) {
+              linearRotate(rocket, 0, Math.PI, flipPhase, FLIP_DURATION);
+            } else if (speed > 5) {
+              rotateToward(rocket, Math.atan2(-v.x, v.y), dt, 4);
+            }
           }
 
           // Periapsis: radial velocity crosses from approach (vr < 0) to
