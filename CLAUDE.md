@@ -98,7 +98,67 @@ Page title specifics: `line-height: 1.08; letter-spacing: -0.3px; margin-bottom:
 
 **Page divider (`.page-divider`):** `height: 1px; background: var(--ink-faint); margin-bottom: 56px`.
 
-**Body text utility (`.body-text`):** A layout utility class for inline prose fragments within page layouts (philosophy Q&A answers, spin-station essay body). Provides: 18px / 1.44, justified paragraphs, inline elements (em, strong, a), blockquote, hr, lists. Distinct from the content archetypes (`.prose`, `.poem`) which are for full markdown-rendered documents.
+**Body text utility (`.body-text`):** A layout utility class for inline prose fragments within page layouts (philosophy Q&A answers, spin-station essay body, build journey prose sections). Provides: 18px / 1.44, justified paragraphs, inline elements (em, strong, a), blockquote, hr, lists. Distinct from the content archetypes (`.prose`, `.poem`) which are for full markdown-rendered documents.
+
+### Interactive components
+
+Three reusable interactive components are defined in `style.css` (after the content archetypes). Use them on any page that needs them.
+
+**Step carousel (`.step-carousel-wrap` / `.step-carousel` / `.step-card`):**
+A horizontally snap-scrolling card row for presenting multi-step processes. Each card has a round gold number badge (`.step-card-num`), an uppercase dim title (`.step-card-title`), and body prose (`.step-card-body`). Dot indicators (`.step-carousel-dots` / `.step-carousel-dot`) live below the carousel. The wrap has a right-fade gradient overlay (via `::after`) to signal scrollability. Requires the carousel JS snippet (dot sync + drag-to-scroll) — see `instruments/cooking-without-going-in-the-kitchen/index.html` for the reference implementation.
+
+```html
+<div class="step-carousel-wrap">
+  <div class="step-carousel">
+    <div class="step-card">
+      <div class="step-card-num">1</div>
+      <div class="step-card-title">Step label</div>
+      <div class="step-card-body"><p>Step description.</p></div>
+    </div>
+    <!-- more cards -->
+  </div>
+  <div class="step-carousel-dots">
+    <button class="step-carousel-dot active" aria-label="Step 1"></button>
+    <!-- one dot per card -->
+  </div>
+</div>
+```
+
+**Stat grid (`.stat-grid` / `.stat-block`):**
+A CSS Grid of large-number stat tiles with border-table styling. Uses `grid-template-columns: repeat(auto-fill, minmax(180px, 1fr))` with `border-top`/`border-left` on the grid and `border-right`/`border-bottom` on each block, forming clean table lines. Each block has `.stat-num` (large, `--ink-bright`), `.stat-label` (small caps, `--ink-dim`), and optional `.stat-note` (italic, `--ink-dim`, with top border).
+
+```html
+<div class="stat-grid">
+  <div class="stat-block">
+    <span class="stat-num">244</span>
+    <span class="stat-label">Prompts</span>
+    <span class="stat-note">Every message typed.</span>
+  </div>
+</div>
+```
+
+**Claude callout (`.claude-callout`):**
+A collapsible callout for Claude-authored commentary. Collapsed by default; toggled by clicking the header button. Uses `grid-template-rows: 0fr → 1fr` for smooth expansion (same technique as the philosophy page accordions). The header shows the inlined Anthropic SVG mark in `--red`, a "Claude" badge label, a summary line, and a `▾` caret that rotates 180° when open. Requires the callout JS snippet — see `instruments/cooking-without-going-in-the-kitchen/index.html`.
+
+```html
+<div class="claude-callout" id="callout-id">
+  <button class="claude-callout-header" aria-expanded="false" aria-controls="callout-id-body">
+    <div class="claude-callout-badge">
+      <svg class="claude-callout-badge-icon" ...><!-- Anthropic SVG --></svg>
+      <span class="claude-callout-badge-label">Claude</span>
+    </div>
+    <span class="claude-callout-summary">Summary of what's inside</span>
+    <span class="claude-callout-caret">▾</span>
+  </button>
+  <div class="claude-callout-body" id="callout-id-body">
+    <div class="claude-callout-body-inner">
+      <div class="claude-callout-body-pad">
+        <p>Content here.</p>
+      </div>
+    </div>
+  </div>
+</div>
+```
 
 ### Layout and structure
 
@@ -144,12 +204,14 @@ explorations/spin-station-calculator/index.html         Spin Station calculator
 explorations/spaceship-fishing/index.html               Spaceship Fishing essay (Hail Mary physics, scripted SVG sims)
 explorations/space-sim/index.html                       Legacy orbital-mechanics essay (will be deleted; superseded by spaceship-fishing)
 
+instruments/index.html                                  Book 04 — Instruments index (Build Journeys + Tools sections)
+instruments/<slug>/index.html                           Individual Build Journey page
+
 style-guide/index.html                                  Design system style guide — colour tokens, typography, components, spacing
 ```
 
 Planned books (coming soon, shown on homepage but not yet built):
 - `definitions/` — Coordinates, CV, and Contact chapters still to come
-- `instruments/` — Book 04, personal finance dashboard and other tools
 - `salivations/` — Book 05, food and drink
 
 ## Pages
@@ -213,6 +275,27 @@ The page deliberately leaves placeholder blocks (`.placeholder-ref`) on the titl
 
 #### Space Sim — legacy (`explorations/space-sim/index.html`)
 Earlier essay page titled "Orbital Mechanics" that became the seed for the spaceship-fishing essay. Still present so existing links don't break, but to be removed after the new essay is live.
+
+### Book 04 — Instruments
+
+#### Instruments index (`instruments/index.html`)
+Two-section list page. "Build Journeys" section and "Tools" section (Tools currently shows "coming soon"). Follows the same centred-container layout as the explorations index (no rail, no header — just `.container` with a giant heading).
+
+#### Build Journey pages (`instruments/<slug>/index.html`)
+Long-form narrative pages documenting a complete app build. Use the standard rail + content layout (same shell as the philosophy page): sticky header with wordmark → `../../`, reading progress bar, fixed left rail with section links that highlight on scroll via IntersectionObserver.
+
+Key design patterns used on Build Journey pages:
+- **Section number ornaments:** `<h2 data-num="01">` with `h2[data-num]::before { content: attr(data-num) }` in the page `<style>` — renders a small dim ordinal above the heading.
+- **`.step-carousel`** (see Interactive components below) — used for all numbered multi-step process lists.
+- **`.stat-grid`** (see Interactive components below) — used for hero stats and any large-number dashboards.
+- **`.claude-callout`** (see Interactive components below) — used for Claude-authored commentary blocks; collapsed by default, expanded on click. Displays the Anthropic mark SVG icon (inlined) in `--red` beside the "Claude" label.
+- **`.callout`** — used for non-Claude editorial asides (e.g. "Small Aside" blocks).
+- **`.wim-note`** class — `color: var(--ink-dim); font-style: italic` — used for Wim's inline editorial comments appearing inside Claude-authored callout text.
+- **Cost comparison bar** — page-specific: a `div.cost-bar-track` containing `div.cost-bar-fill` with a percentage width, styled in the page `<style>`.
+
+The Anthropic mark SVG (13-ray starburst, `fill="currentColor"`, `viewBox="0 0 100 100"`) is inlined directly in the HTML wherever the Claude icon is needed; the icon colour is set via `color: var(--red)` on the containing element. No external SVG file.
+
+**First build journey:** `instruments/cooking-without-going-in-the-kitchen/index.html` — the recipe app build story.
 
 ## Content archetypes
 
@@ -320,3 +403,12 @@ For poems, use `Poetry` in place of `Short Fiction` in the meta span.
 **4. Content rules**
 
 The `.md` file is authored by Wim — reproduce it exactly as written, no edits or paraphrasing. Do not add front matter to the markdown file; metadata is set in the HTML.
+
+## Adding a new Build Journey
+
+1. Create `instruments/<slug>/index.html` — use `instruments/cooking-without-going-in-the-kitchen/index.html` as the template.
+2. Add the entry to `instruments/index.html` under the "Build Journeys" section (newest-first).
+3. Add a sublink to the Book 04 row in `index.html` (inside `.m-book-sublinks`).
+4. The page uses rail + content layout. Sections get `id` attributes for scroll-spy. Use `<h2 data-num="NN">` for numbered section ornaments.
+5. For numbered process steps: use `.step-carousel-wrap` + dot JS. For large stats: use `.stat-grid`. For Claude commentary: use `.claude-callout` (collapsed by default) with the inlined Anthropic SVG mark.
+6. Wim's inline editorial comments inside Claude-authored text get `<span class="wim-note">` (styled in the page `<style>` as `color: var(--ink-dim); font-style: italic`).

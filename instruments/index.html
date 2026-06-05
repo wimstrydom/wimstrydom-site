@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DC8TCGZT0C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DC8TCGZT0C');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instruments — Wim Strydom</title>
+<meta name="description" content="Things I built because I wanted them. Build journeys and tools — personal finance, recipe preservation, and whatever comes next.">
+<meta property="og:title" content="Instruments — Wim Strydom">
+<meta property="og:description" content="Things I built because I wanted them. Build journeys and tools.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wimstrydom.com/instruments">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  padding: 48px 32px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.back {
+  display: block;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink-dim);
+  text-decoration: none;
+  margin-bottom: 56px;
+  transition: color 0.18s;
+}
+.back:hover { color: var(--ink); }
+
+.heading {
+  font-size: clamp(60px, 12vw, 108px);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--ink-bright);
+  margin-bottom: 64px;
+  letter-spacing: -1px;
+}
+
+.section-label {
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  display: block;
+  margin-bottom: 16px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--ink-faint);
+  margin-bottom: 8px;
+}
+
+.link-list {
+  list-style: none;
+}
+
+.link-list li {
+  border-bottom: 1px solid var(--ink-faint);
+}
+
+.link-list a {
+  display: block;
+  padding: 13px 0;
+  font-size: 20px;
+  line-height: 1;
+  text-decoration: none;
+  color: var(--ink);
+  transition: color 0.18s;
+}
+.link-list a:hover { color: var(--gold); }
+
+.story-meta {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink-dim);
+  margin-top: 3px;
+  display: block;
+}
+
+.coming-soon-item {
+  padding: 13px 0;
+  font-size: 17px;
+  font-style: italic;
+  color: var(--ink-dim);
+  border-bottom: 1px solid var(--ink-faint);
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .container { padding: 36px 24px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="../" class="back">← Wim Strydom</a>
+  <h1 class="heading">Instruments</h1>
+
+  <span class="section-label">Build Journeys</span>
+  <div class="divider"></div>
+  <ul class="link-list">
+    <li>
+      <a href="cooking-without-going-in-the-kitchen/">
+        Cooking Without Going in the Kitchen
+        <span class="story-meta">Recipe app · 2026</span>
+      </a>
+    </li>
+  </ul>
+
+  <span class="section-label" style="margin-top: 48px;">Tools</span>
+  <div class="divider"></div>
+  <ul class="link-list">
+    <li><span class="coming-soon-item">Coming soon</span></li>
+  </ul>
+</div>
+</body>
+</html>

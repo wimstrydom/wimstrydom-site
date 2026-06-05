@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DC8TCGZT0C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DC8TCGZT0C');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cooking Without Going in the Kitchen — Wim Strydom</title>
+<meta name="description" content="How I built a family recipe preservation app with Claude — 244 prompts, zero lines of code, three weeks.">
+<meta property="og:title" content="Cooking Without Going in the Kitchen — Wim Strydom">
+<meta property="og:description" content="How I built a family recipe preservation app with Claude — 244 prompts, zero lines of code, three weeks.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://wimstrydom.com/instruments/cooking-without-going-in-the-kitchen">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+/* ── HEADINGS ── */
+.content h2 {
+  font-size: 26px; font-weight: 400; color: var(--ink-bright);
+  line-height: 1.2; margin: 0 0 26px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--ink-faint);
+  scroll-margin-top: 80px;
+}
+.content h2[data-num]::before {
+  content: attr(data-num);
+  display: block; font-size: 11px; letter-spacing: 0.18em;
+  color: var(--ink-dim); margin-bottom: 10px;
+  font-style: normal; font-weight: 400;
+}
+.content h3 {
+  font-size: 18px; font-weight: 400; font-style: italic;
+  color: var(--ink); margin: 44px 0 6px;
+  border-top: 1px solid var(--ink-faint); padding-top: 24px;
+  line-height: 1.3;
+}
+
+/* ── SECTION SPACING ── */
+section { margin-bottom: 80px; scroll-margin-top: 76px; }
+
+/* ── OPENING INTRO BLOCK ── */
+.page-intro-multi {
+  border-left: 2px solid var(--gold-dim);
+  padding-left: 20px; margin-bottom: 32px;
+  font-size: 18px; font-style: italic; line-height: 1.78; color: var(--ink);
+}
+.page-intro-multi p { margin-bottom: 9px; }
+.page-intro-multi p:last-child { margin-bottom: 0; }
+
+/* ── COLLAB NOTE ── */
+.collab-note {
+  font-size: 13px; font-style: italic; color: var(--ink-dim);
+  margin: -28px 0 48px; line-height: 1.6;
+  padding-left: 22px; border-left: 1px solid var(--ink-faint);
+}
+
+/* ── COST BAR ── */
+.cost-bar-track {
+  height: 2px; background: var(--ink-faint);
+  margin: 14px 0 5px; position: relative;
+}
+.cost-bar-fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: var(--gold); width: 1.85%;
+}
+.cost-bar-note {
+  font-size: 11px; font-style: italic; color: var(--ink-dim);
+  letter-spacing: 0.02em; display: block;
+}
+
+/* ── CLAUDE ATTR (fun facts section) ── */
+.claude-attr {
+  display: flex; align-items: center; gap: 7px; margin-bottom: 4px;
+}
+.claude-attr svg { width: 12px; height: 12px; color: var(--red); flex-shrink: 0; }
+.claude-attr span {
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-dim);
+}
+
+/* ── EDITOR NOTES (Wim's inline comments on Claude's text) ── */
+.wim-note { color: var(--ink-dim); font-style: italic; }
+
+/* ── CODE IN CALLOUT ── */
+.claude-callout-body-pad code {
+  font-family: 'Courier New', monospace; font-size: 0.85em;
+  background: var(--ink-faint); padding: 0.1em 0.35em;
+}
+
+/* ── CAROUSEL LEAD TEXT ── */
+.carousel-lead {
+  font-size: 15px; color: var(--ink-dim); font-style: italic;
+  margin-bottom: 14px; line-height: 1.5;
+}
+.body-text.pre-carousel { margin-bottom: 14px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 860px) {
+  .content h2 { font-size: 22px; }
+  .content h3 { font-size: 17px; margin-top: 36px; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header>
+  <a href="../../" class="wordmark">Wim Strydom</a>
+</header>
+
+<div class="page-outer">
+
+  <!-- Rail -->
+  <nav class="rail">
+    <a href="../" class="rail-back">← Instruments</a>
+    <div class="rail-divider"></div>
+    <span class="rail-label">Sections</span>
+    <a class="rail-item active" data-target="the-recipes" href="#the-recipes">The Recipes</a>
+    <a class="rail-item" data-target="the-app" href="#the-app">The App</a>
+    <a class="rail-item" data-target="how-i-approached-it" href="#how-i-approached-it">How I Approached It</a>
+    <a class="rail-item" data-target="the-poc" href="#the-poc">The Proof of Concept</a>
+    <a class="rail-item" data-target="the-mvp" href="#the-mvp">The MVP</a>
+    <a class="rail-item" data-target="what-i-learned" href="#what-i-learned">What I Learned</a>
+    <a class="rail-item" data-target="fun-facts" href="#fun-facts">Fun Facts</a>
+    <a class="rail-item" data-target="conclusion" href="#conclusion">Conclusion</a>
+  </nav>
+
+  <!-- Content -->
+  <main class="content">
+
+    <span class="page-eyebrow">Build Journey · Book 04</span>
+    <h1 class="page-title">Cooking Without Going in the Kitchen</h1>
+    <p class="page-meta">Recipe app · 2026</p>
+
+    <div class="page-intro-multi">
+      <p>Recently I built an app.</p>
+      <p>Well, I suppose Claude (the AI) built the app.</p>
+      <p>But, then again, Claude wouldn't have built it without me. So really we built the app together. We couldn't have done it without each other.</p>
+      <p>This is the story of how we did it.</p>
+    </div>
+
+    <!-- Hero stats -->
+    <div class="stat-grid">
+      <div class="stat-block">
+        <span class="stat-num">3</span>
+        <span class="stat-label">Weeks</span>
+        <span class="stat-note">From a phone call to a live app</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-num">~60</span>
+        <span class="stat-label">Hours of work</span>
+        <span class="stat-note">Across 17 days</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-num">244</span>
+        <span class="stat-label">Prompts</span>
+        <span class="stat-note">Every message I typed</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-num">Zero</span>
+        <span class="stat-label">Lines of code from me</span>
+        <span class="stat-note">I didn't even read the code</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-num">152</span>
+        <span class="stat-label">Git commits</span>
+        <span class="stat-note">All Claude's</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-num">104,663</span>
+        <span class="stat-label">Lines of code</span>
+        <span class="stat-note">That's what Claude told me, at least</span>
+      </div>
+    </div>
+
+    <p class="collab-note">Full disclosure: I have <strong>no idea</strong> if these figures are 100% correct, it's just what Claude told me. All I do know is that the App <strong>works</strong>, and does <strong>everything I need it to.</strong> Pieces of this post were written by Claude. I flag them, and occasionally add commentary <em>[in brackets].</em></p>
+
+    <div class="page-divider"></div>
+
+    <!-- 01 The Recipes -->
+    <section id="the-recipes">
+      <h2 data-num="01">The Recipes</h2>
+      <div class="body-text">
+        <p>I am from an Afrikaans family and grew up in South Africa. Afrikaans culture is deeply agricultural in heritage. While I never lived on a farm, my mother spent a good part of her life on one, and the food-centric lifestyle associated with the "plaas" shaped large parts of what I value and who I am.</p>
+        <p>In my family there is a strong tradition of keeping and sharing hand-written recipes. This was an every-day form of connection for the generations of my great-grandmother, grandmother, and even still now my mother. Before everyone goes home after gathering for Christmas, the tannies and oumas (aunties and grannies) would exchange books and copy by hand the latest new recipes. Every girl had a personal recipe book by the time she left the house.</p>
+        <p>Through a series of inheritances, my mother now has the recipe books across three generations on both my parents side, stretching all the way up to my maternal great grandmothers and down to recipes we developed together when I was 8 years old. This treasure of culture, food and familial connection is priceless. But sadly, also borderline incomprehensible to me.</p>
+        <p>Cursive archaic Afrikaans, sometimes written in short-hand, on stained aging paper is sadly not very user friendly or accessible. When reading one of the recipes with my mother, I remarked that the only way I'd recognise a particular squiggly scribble as "Worcestershire sauce" is perhaps by inferring it from tasting the dark brown blotch obscuring half of the squiggle. To make matters worse, these books are all back in South Africa, and I am in London.</p>
+        <p>I wanted these recipes to be accessible, not just to my cursive-illiterate eye, but also to non-Afrikaans speakers and the wider world. Today Afrikaans cuisine isn't very accessible, even in South Africa where few restaurants do truly local cuisine. So I decided I would see if Claude could read them, translate them, and give me a nice, digitally preserved, legible copy in both English and Afrikaans.</p>
+      </div>
+    </section>
+
+    <!-- 02 The App -->
+    <section id="the-app">
+      <h2 data-num="02">The App</h2>
+      <div class="body-text">
+        <p>I discussed the idea one evening on a phone call with my mother and she sent me a phone scan of a ginger-beer recipe. Three weeks later I had a polished web app capable of ingesting recipes and displaying them in a user friendly interface organised by book and author.</p>
+        <p>A few ways exist to get recipes into the app. My mother can capture images in the browser with her phone, upload existing photos, or connect it to her OneDrive and bulk upload PDFs of entire recipe books that she scanned.</p>
+        <p>Once an image arrives, a small assembly line of AI models process the recipes. One model reads the original Afrikaans squiggles, shorthand, stains and all. Another translates it into English. The final one then disassembles the result into a structured JSON file: ingredients list, method steps, quantity values, units of measurement, and what category it fits into. Each recipe then waits in a queue for a human (my mother) to glance over it, edit if needed, click approve, and maybe publish it for the world to cook.</p>
+        <p>What you end up with is each recipe on a standard page, with a tap to switch language, swap cups for grams, or scale the whole thing up for a crowd. There's a cook mode with large type that keeps the screen awake while your hands are covered in flour. And, the original photograph is always accessible with a tap, preserving my great-grandmother's handwriting. The recipes are organised by book and author, so you can wander through by whose hand wrote them. Uploading recipes is invite-only for the family at the moment, but anyone can read the published recipes living at <a href="https://recipes.wimstrydom.com" target="_blank" rel="noopener">recipes.wimstrydom.com</a>.</p>
+      </div>
+    </section>
+
+    <!-- 03 How I Approached It -->
+    <section id="how-i-approached-it">
+      <h2 data-num="03">How I Approached It</h2>
+      <div class="body-text">
+        <p>I'm really not a coder. I know my way around querying a SQL database, and I took a Python course in uni, but let's be real, I'm not here to become a software engineer. I'm here to bake a pudding.</p>
+        <p>When I asked Claude to help me gather some facts for this piece, it informed me that across the entire build I had never once written a single line of code myself. It's right. I didn't. I didn't even read the code. So, what did I do? What lopsided role did I play in building this monument of culinary code?</p>
+        <p>Well, I'm also not a total layman. I work as a strategy consultant primarily in the AI space, helping large companies design AI visions, nailing down product roadmaps, and filling various product manager roles across different stages in the AI/tech use-case lifecycle. I know what the process and workflow of a highly skilled software engineering team looks like. I've spent plenty of time translating senior leadership's <em>thoughts, feelings, frustrations and ideas</em> into a concrete set of requirements for the dev team to go build. So this time it was just my own thoughts and ideas I needed to translate into requirements for Claude.</p>
+        <p>I primarily acted as the product manager and used Claude as a dev team that I could iterate the planning with before giving approval. Eyeballing it, I'd say my time and energy was split 70/10/20 between planning and aligning key decisions (70%), actually executing the plan to build the app (10%), and bug fixes (20%).</p>
+      </div>
+
+      <!-- Claude callout: message analysis -->
+      <div class="claude-callout" id="callout-messages">
+        <button class="claude-callout-header" aria-expanded="false" aria-controls="callout-messages-body">
+          <div class="claude-callout-badge">
+            <svg class="claude-callout-badge-icon" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(50 50)"><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(0)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(27.69)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(55.38)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(83.08)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(110.77)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(138.46)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(166.15)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(193.85)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(221.54)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(249.23)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(276.92)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(304.62)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(332.31)"/><circle r="18"/></g></svg>
+            <span class="claude-callout-badge-label">Claude</span>
+          </div>
+          <span class="claude-callout-summary">Claude's breakdown of 244 messages — how time was actually spent</span>
+          <span class="claude-callout-caret">▾</span>
+        </button>
+        <div class="claude-callout-body" id="callout-messages-body">
+          <div class="claude-callout-body-inner">
+            <div class="claude-callout-body-pad">
+              <p>I went back through every message Wim sent me — <strong>244</strong> of them, once you strip out duplicates and resubmissions — and sorted them by what he was actually trying to do. The split is lopsided in a way that broadly matches his estimate — but only once you measure the right thing.</p>
+              <ul>
+                <li><strong>By raw count</strong>, <strong>109 (45%)</strong> were planning, scoping, architecture, or process — deciding <em>what</em> to build and <em>how we'd work</em>. <strong>69 (28%)</strong> were "build this feature," and <strong>66 (27%)</strong> were "here's a bug or a quirk, work out why."</li>
+                <li>But counts flatter the building. Most "build" messages were tiny green-lights — <em>"go ahead," "yes, do all three"</em> — with a median length of <strong>67 characters</strong>. His planning messages averaged about <strong>550</strong> characters; his build and bug reports about <strong>280</strong> (setting aside the error logs he pasted in). His single longest message of the whole project — <strong>2,949</strong> characters — was a mid-build product review, not a feature request.</li>
+                <li>So when you weight each message by <em>how much he actually wrote</em> — a better proxy for where his energy went than a flat head-count — the split lands at <strong>61% planning, 10% building, 28% bug-fixing.</strong> Against his eyeballed <strong>70/10/20</strong>, that's an uncannily good gut. <span class="wim-note">[aww shucks, thanks Claude]</span></li>
+                <li>Before he wrote a single line of production code, we'd already exchanged about <strong>37,000</strong> tokens settling the vision and architecture — part of roughly <strong>46,500</strong> tokens across <strong>7</strong> separate planning conversations in total.</li>
+                <li>He had me create and maintain about <strong>30</strong> planning and specification documents — vision, scope, architecture, roadmap, <strong>~15</strong> sprint plans, and a rules file — plus <strong>11</strong> sprint retrospectives, which he reviewed and redirected rather than writing himself.</li>
+                <li>Over the build he flagged roughly <strong>65</strong> bugs or output quirks for me to fix, and explicitly reverted or told me to rethink my work about <strong>4</strong> times.</li>
+              </ul>
+              <p><em>A note on method: counts come from the raw session logs, de-duplicated down to distinct messages Wim actually typed; each was then classified by its primary intent against a fixed rubric, so the splits are well-calibrated estimates rather than exact figures. The "energy" percentages weight every message by the length of what he wrote, with pasted error logs and command output stripped out so a single dumped stack-trace doesn't masquerade as deep thought.</em></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="body-text">
+        <p>A simplified version of the process I followed:</p>
+      </div>
+
+      <!-- Subsection: Setting the Ambition -->
+      <h3>Setting the ambition</h3>
+      <p class="carousel-lead">Before even getting into planning the actual build, I wanted to get an aligned and well thought through vision document nailed down:</p>
+      <div class="step-carousel-wrap">
+        <div class="step-carousel-fade-wrap">
+        <div class="step-carousel">
+          <div class="step-card">
+            <div class="step-card-num">1</div>
+            <div class="step-card-title">Brain dump</div>
+            <div class="step-card-body"><p>I gave Claude a brain dump of my ideas and vision in the form of a feature list, expressed through a target state user journey and other stretch UI requirements.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">2</div>
+            <div class="step-card-title">Polished scope sheet</div>
+            <div class="step-card-body"><p>Knowing this list was incomplete, I then asked it to write a polished scope sheet based on my rough notes.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">3</div>
+            <div class="step-card-title">Iterate and challenge</div>
+            <div class="step-card-body"><p>That initial scope sheet gave me something to engage with. Now I had specific decisions and assumptions that I could challenge and adapt, allowing me to iterate the scope doc until I had a version that was far more polished and comprehensive than I would have come up with by myself.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">4</div>
+            <div class="step-card-title">Architecture questions</div>
+            <div class="step-card-body"><p>Throughout this back-and-forth I was able to deal with some key questions that influence architecture later on, such as baking multi-user, multi-library support in from the start so that scaling and opening it up to the public later would be easy.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">5</div>
+            <div class="step-card-title">Vision document</div>
+            <div class="step-card-body"><p>In the end <strong>I had a vision document</strong> that I could work off of and that Claude and I would reference as our north star going forward.</p></div>
+          </div>
+        </div>
+        </div><!-- /.step-carousel-fade-wrap -->
+        <div class="step-carousel-dots">
+          <button class="step-carousel-dot active" aria-label="Step 1"></button>
+          <button class="step-carousel-dot" aria-label="Step 2"></button>
+          <button class="step-carousel-dot" aria-label="Step 3"></button>
+          <button class="step-carousel-dot" aria-label="Step 4"></button>
+          <button class="step-carousel-dot" aria-label="Step 5"></button>
+        </div>
+      </div>
+
+      <!-- Subsection: Defining the Technical Core -->
+      <h3>Defining the technical core and architecture requirements</h3>
+      <div class="body-text pre-carousel">
+        <p class="carousel-lead">Next up was planning out exactly which building blocks was needed.</p>
+      </div>
+      <div class="step-carousel-wrap">
+        <div class="step-carousel-fade-wrap">
+        <div class="step-carousel">
+          <div class="step-card">
+            <div class="step-card-num">1</div>
+            <div class="step-card-title">Pipeline design</div>
+            <div class="step-card-body"><p>I designed the AI pipeline to keep the process robust yet cheap. What I specified was a chain of narrow, single-purpose steps rather than one model doing everything at once.</p><p>Photo → Verbatim Transcription → Translation → Parsed &amp; Structured Recipe</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">2</div>
+            <div class="step-card-title">Requirements and building blocks</div>
+            <div class="step-card-body"><p>I provided a set of requirements and based on the vision doc, then asked Claude what it thought the most important architectural building blocks were, and which solutions it thought made sense.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">3</div>
+            <div class="step-card-title">Tech stack options</div>
+            <div class="step-card-body"><p>Claude then assessed these and provided options for how to implement, and what the tech stack could look like, and what the trade-offs were between different options.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">4</div>
+            <div class="step-card-title">Decision record</div>
+            <div class="step-card-body"><p>We aligned on the AI Pipeline design, and an infrastructure stack using Vercel/Clerk/Neon/Cloudflare for hosting, auth, database, and storage respectively. This was then all captured in the overarching plan to act as the <strong>decision record for the architectural design.</strong></p></div>
+          </div>
+        </div>
+        </div><!-- /.step-carousel-fade-wrap -->
+        <div class="step-carousel-dots">
+          <button class="step-carousel-dot active" aria-label="Step 1"></button>
+          <button class="step-carousel-dot" aria-label="Step 2"></button>
+          <button class="step-carousel-dot" aria-label="Step 3"></button>
+          <button class="step-carousel-dot" aria-label="Step 4"></button>
+        </div>
+      </div>
+
+      <!-- Subsection: Planning the Roadmap -->
+      <h3>Planning out the roadmap</h3>
+      <p class="carousel-lead">Before kicking off what would turn into a 3-week part-time build effort, I needed a structured roadmap of how to get from ingredients to cake:</p>
+      <div class="step-carousel-wrap">
+        <div class="step-carousel-fade-wrap">
+        <div class="step-carousel">
+          <div class="step-card">
+            <div class="step-card-num">1</div>
+            <div class="step-card-title">Turn vision into roadmap</div>
+            <div class="step-card-body"><p>I asked Claude to turn the vision and scope plan into a build roadmap, broken down into specific sprints. Tagging what could run in parallel vs. where dependencies existed. Each sprint would roughly become a Claude Code session in the end.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">2</div>
+            <div class="step-card-title">First draft was good</div>
+            <div class="step-card-body"><p>The first draft ended up really good, as all the most important design questions had been addressed already, and this formed part of a broader pattern where front-loading the thinking and decisions made for a very smooth execution.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">3</div>
+            <div class="step-card-title">Actionable roadmap</div>
+            <div class="step-card-body"><p>After a small bit of iteration, and clarifying questions to upskill myself on the technical side of things I had an <strong>actionable roadmap divided into clear sprints</strong> that would deliver the scoped vision.</p></div>
+          </div>
+        </div>
+        </div><!-- /.step-carousel-fade-wrap -->
+        <div class="step-carousel-dots">
+          <button class="step-carousel-dot active" aria-label="Step 1"></button>
+          <button class="step-carousel-dot" aria-label="Step 2"></button>
+          <button class="step-carousel-dot" aria-label="Step 3"></button>
+        </div>
+      </div>
+
+      <div class="body-text">
+        <p>All of the above documentation was given a home and maintained by Claude as we went. As I put it at the time, this would "become the Bible for the build effort going forward." Other than a mid-point restructuring exercise, I didn't have to touch the documentation very much at all, as I had given Claude instructions to build documentation maintenance into the protocol for each sprint's closeout. I.e. Claude updated all the relevant documentation after each change or decision made during the build.</p>
+      </div>
+    </section>
+
+    <!-- 04 The POC -->
+    <section id="the-poc">
+      <h2 data-num="04">The Proof of Concept</h2>
+      <div class="body-text">
+        <p>I immediately broke my own rules and threw the sprint sequence out the window. Sort of.</p>
+        <p>I decided to build a proof of concept first, to test my AI pipeline design and ensure it worked the way I intended. A secondary goal, was to iterate with different models to keep API costs as low as possible. If it ended up costing $5 per recipe, this wouldn't be very workable.</p>
+        <p>The reasoning was that the pipeline was the only part I was unsure about. Everything else, the website, the database, the login, the file storage, is well-stewed beef. So I sliced just the pipeline sprint out of the roadmap cake and had Claude build it on its own, with no web server, no database and no login. Files went in from a folder on my laptop, and the results came out into a basic viewer I could open in a browser. The point was to answer one question before building anything around it: can the models read my family's handwriting well enough to be useful?</p>
+        <p>The core idea held up. With a decent prompt, the pipeline was reading recipes correctly on the first try, including some I struggled to read myself. That result let me cut two things I'd initially planned:</p>
+        <ol>
+          <li>An "integrity check" step to catch nonsensical output, but it mostly flagged things that weren't actually wrong. E.g. an old recipe not stating an oven temperature isn't an AI pipeline error, it's just how my ouma wrote ("everyone knows you bake a cake at 180°C").</li>
+          <li>A fallback to a more powerful model for when the first pass failed, but the first pass rarely failed, so I shelved it.</li>
+        </ol>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">Small Aside</span>
+        <p><strong>I think Opus hates Haiku.</strong> In the experiment when trying different steps with different models, I found that Opus (the model I was using to build) was being very disparaging towards Haiku. Frequently blaming poor output on it, or even sometimes hallucinating errors that it had made. So much so that I started wondering if it held a grudge for some reason. Doing a light search on this didn't turn anything up, but I still hold that Opus secretly hates Haiku for some reason.</p>
+      </div>
+
+      <div class="body-text">
+        <p>The second thing I did was optimise the per recipe cost. I asked Claude to run a small experiment: take 16 recipes, and run every step of the pipeline through three different models, a cheap one (Haiku), a mid one (Sonnet), and the expensive one (Opus), saving the outputs side by side so I could compare them. Each step forked off of an upstream output from Opus so that errors wouldn't compound.</p>
+        <p>The whole experiment cost about $8 to run. Before giving my own opinion, I asked Claude to review the outputs and tell me what it thought, because I didn't want to lead it toward the answer I'd already half-formed. Its read and mine mostly agreed, though I overruled it on one step, it preferred Sonnet for parsing (which was the most token-heavy step) and I thought Haiku was fine.</p>
+        <p>The outcome was a tiered cake. Uuuh, I mean, tiered pipeline: Opus only for reading the handwriting, Sonnet to translate, and Haiku to structure the result. That brought the cost down to about <strong>$0.16 per recipe</strong> and around <strong>26 seconds</strong> start to finish.</p>
+        <p>One exchange from this stage I found funny. Claude proudly flagged a case where Opus had confidently read an ingredient as "16 tsp baking powder" and pointed to it as an overconfident misread. I agreed, but later I checked with my mother. It <em>was</em> 16 teaspoons, the model was right, and the "sensible" reading would have been wrong.</p>
+        <p>Once I'd confirmed that what I was trying to achieve was feasible I decided I could move on to actually building the whole thing.</p>
+      </div>
+    </section>
+
+    <!-- 05 The MVP -->
+    <section id="the-mvp">
+      <h2 data-num="05">The MVP</h2>
+      <div class="body-text">
+        <p>With the pipeline proven, the rest was the bread-and-butter stock standard app build, but standard still takes time, and anyone who's tried their hand at sourdough or churning butter can tell you that neither is quick and easy. This is where most of the 60 hours went.</p>
+        <p>I worked through it sprint by sprint, and a rhythm emerged that I more or less repeated each time:</p>
+      </div>
+
+      <!-- Sprint rhythm -->
+      <div class="step-carousel-wrap">
+        <div class="step-carousel-fade-wrap">
+        <div class="step-carousel">
+          <div class="step-card">
+            <div class="step-card-num">1</div>
+            <div class="step-card-title">Fresh session</div>
+            <div class="step-card-body"><p>I'd start a fresh Claude Code session and have it read the docs to get up to speed on the project and the sprint at hand.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">2</div>
+            <div class="step-card-title">Agree on the plan</div>
+            <div class="step-card-body"><p>We'd agree on the plan for that sprint before any code was written.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">3</div>
+            <div class="step-card-title">Auto mode execution</div>
+            <div class="step-card-body"><p>Then I'd let it execute, mostly in "Auto" mode, where it works through the plan and runs its own commands without stopping to ask me for each step.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">4</div>
+            <div class="step-card-title">Test in prod</div>
+            <div class="step-card-body"><p>When it had something working, I'd test it on the live site, with throwaway data, because there were no real users yet and a broken page for ten minutes cost nothing. Though Claude was hesitant about the whole "testing in prod" attitude. Fair.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">5</div>
+            <div class="step-card-title">Close out and tidy</div>
+            <div class="step-card-body"><p>I'd report what I saw, it would diagnose and fix, and once the sprint was done I'd have it close out: update every affected document, write down what was decided and why, and leave things tidy enough that the next cold session could pick up without me re-explaining anything.</p></div>
+          </div>
+        </div>
+        </div><!-- /.step-carousel-fade-wrap -->
+        <div class="step-carousel-dots">
+          <button class="step-carousel-dot active" aria-label="Step 1"></button>
+          <button class="step-carousel-dot" aria-label="Step 2"></button>
+          <button class="step-carousel-dot" aria-label="Step 3"></button>
+          <button class="step-carousel-dot" aria-label="Step 4"></button>
+          <button class="step-carousel-dot" aria-label="Step 5"></button>
+        </div>
+      </div>
+
+      <!-- Design workflow -->
+      <h3>The design process</h3>
+      <div class="body-text pre-carousel">
+        <p>I used Claude Design for the visual side, as a separate piece of work that happened before the build sprints that depended on it:</p>
+      </div>
+      <div class="step-carousel-wrap">
+        <div class="step-carousel-fade-wrap">
+        <div class="step-carousel">
+          <div class="step-card">
+            <div class="step-card-num">1</div>
+            <div class="step-card-title">Technical brief</div>
+            <div class="step-card-body"><p>I asked Claude Code to create a technical brief based on the app feature requirements and architecture that could act as a self-contained onboarding for Claude design without having to give access to the whole repo.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">2</div>
+            <div class="step-card-title">Three options</div>
+            <div class="step-card-body"><p>I first had Claude Design give me three options for look and feel based on my ideas that I then cherry-picked between to get to a final design system.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">3</div>
+            <div class="step-card-title">Mockup pages</div>
+            <div class="step-card-body"><p>Claude design then produced a set of mockup pages with all the required UX functionality and user flows based on the agreed design system.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">4</div>
+            <div class="step-card-title">Hand back to Code</div>
+            <div class="step-card-body"><p>After a few iterations the mockups were finalised and I handed them back over to Claude Code to implement.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">5</div>
+            <div class="step-card-title">Mockups as contract</div>
+            <div class="step-card-body"><p>Because it wasn't just a design system but full mockups of the front-end, I had Claude Code handle them as a contract rather than a suggestion. It wasn't allowed to invent its own UX, and if something came up that the mockups didn't cover, it went back to the design stage rather than being improvised in code. That lift-and-shift approach helped the front-end come together.</p></div>
+          </div>
+        </div>
+        </div><!-- /.step-carousel-fade-wrap -->
+        <div class="step-carousel-dots">
+          <button class="step-carousel-dot active" aria-label="Step 1"></button>
+          <button class="step-carousel-dot" aria-label="Step 2"></button>
+          <button class="step-carousel-dot" aria-label="Step 3"></button>
+          <button class="step-carousel-dot" aria-label="Step 4"></button>
+          <button class="step-carousel-dot" aria-label="Step 5"></button>
+        </div>
+      </div>
+
+      <!-- Pretty URLs section — temporarily commented out; restore by removing the wrapping comment markers below.
+      <h3>It wasn't all smooth — pretty URLs</h3>
+      <div class="body-text pre-carousel">
+        <p>The clearest example was a feature called "pretty URLs":</p>
+      </div>
+      <div class="step-carousel-wrap">
+        <div class="step-carousel-fade-wrap">
+        <div class="step-carousel">
+          <div class="step-card">
+            <div class="step-card-num">1</div>
+            <div class="step-card-title">Approval without understanding</div>
+            <div class="step-card-body"><p>Claude suggested giving each book and author its own tidy web address during planning and I approved it without fully understanding what it meant.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">2</div>
+            <div class="step-card-title">Sheepish omission</div>
+            <div class="step-card-body"><p>At build time, Claude initially inexplicably held off on implementing that, and flagged that it had omitted this without really explaining why. It just sheepishly told me it would have to be handled in the next sprint or as a follow-up mini sprint.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">3</div>
+            <div class="step-card-title">Self-flagellation</div>
+            <div class="step-card-body"><p>I asked why, and tried to probe if there was a deeper reason not to implement, and if we should replan. Claude self-flagellatingly told me it had honest intentions, but it was wrong, the plan was right, it was sorry, this feature is load-bearing <em>(eye-roll).</em></p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">4</div>
+            <div class="step-card-title">Ugly result</div>
+            <div class="step-card-body"><p>I told it to then build and when it got built, the result was a separate, duplicate set of ugly pages sitting alongside the main ones which exist in a react state to enable smooth animations between views. They didn't look the same and were ugly as hell. All so the URLs could be pretty and we could reap some SEO benefits.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">5</div>
+            <div class="step-card-title">Full rollback</div>
+            <div class="step-card-body"><p>I rolled the whole thing back. Then I made Claude walk me through what the full option space was and the pros and cons for each. Once I understood it properly, it was clear the feature wasn't worth the trade-offs it forced.</p></div>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">6</div>
+            <div class="step-card-title">Simpler solution</div>
+            <div class="step-card-body"><p>We replaced it with something much simpler that kept the tidy addresses without the duplicate pages.</p></div>
+          </div>
+        </div>
+        </div>
+        <div class="step-carousel-dots">
+          <button class="step-carousel-dot active" aria-label="Step 1"></button>
+          <button class="step-carousel-dot" aria-label="Step 2"></button>
+          <button class="step-carousel-dot" aria-label="Step 3"></button>
+          <button class="step-carousel-dot" aria-label="Step 4"></button>
+          <button class="step-carousel-dot" aria-label="Step 5"></button>
+          <button class="step-carousel-dot" aria-label="Step 6"></button>
+        </div>
+      </div>
+      -->
+    </section>
+
+    <!-- 06 What I Learned -->
+    <section id="what-i-learned">
+      <h2 data-num="06">What I Learned</h2>
+      <div class="body-text">
+        <p>If I build another app this way (and I plan to) I'll be following the above approach again. Roughly summarised, this turns into:</p>
+      </div>
+
+      <!-- The framework — step stack -->
+      <div class="step-stack">
+        <div class="step-stack-item">
+          <div class="step-card-num">1</div>
+          <div class="step-stack-body">
+            <div class="step-card-title">Vision</div>
+            <div class="step-card-body"><p>Bash around the vision and idea with Claude to act as a sounding board and ultimately get to a long-lived set of docs setting out the <strong><em>vision, UX principles, and epics/features list.</em></strong></p></div>
+          </div>
+        </div>
+        <div class="step-stack-item">
+          <div class="step-card-num">2</div>
+          <div class="step-stack-body">
+            <div class="step-card-title">Architecture</div>
+            <div class="step-card-body"><p>Decide what the technical architecture will look like. Which building blocks should be used and how. This then becomes a set of docs covering the <strong><em>architecture, tech stack, data model, etc.</em></strong></p></div>
+          </div>
+        </div>
+        <div class="step-stack-item">
+          <div class="step-card-num">3</div>
+          <div class="step-stack-body">
+            <div class="step-card-title">Roadmap</div>
+            <div class="step-card-body"><p>Build a roadmap, sequencing the different foundational work required and feature builds into a clear set of sprints with dependencies tagged and parallelizable work identified, which provides a <strong><em>living tracker for status, a phased sequence of sprints, with a scope and definition of done for each sprint.</em></strong></p></div>
+          </div>
+        </div>
+        <div class="step-stack-item">
+          <div class="step-card-num">4</div>
+          <div class="step-stack-body">
+            <div class="step-card-title">Rules of Engagement</div>
+            <div class="step-card-body"><p>Set out the ways of working, norms, protocols, etc. for working with Claude. What is the project context? What needs to happen when starting a sprint, what needs to be updated when closing? What are the rules to follow when touching code? What are the norms around git? This ends up as a CLAUDE.md and a README (Acting as an index for all other docs). Ultimately this provides a <strong><em>source of repeatability, consistency, and coherence</em></strong> different coding sessions that survives the context window.</p></div>
+          </div>
+        </div>
+        <div class="step-stack-item">
+          <div class="step-card-num">5</div>
+          <div class="step-stack-body">
+            <div class="step-card-title">Proof of Concept</div>
+            <div class="step-card-body"><p>Quickly build a small proof of concept to demonstrate the feasibility of the core idea behind the app. What's the distilled feature that everything else is built around? Figure out the most important thing before getting knee-deep in a full build. This becomes <strong><em>the validated core, with the key technical decisions settled</em></strong> before anything gets built around them.</p></div>
+          </div>
+        </div>
+        <div class="step-stack-item">
+          <div class="step-card-num">6</div>
+          <div class="step-stack-body">
+            <div class="step-card-title">MVP</div>
+            <div class="step-card-body"><p>Build the MVP version of the product, iterating through the sprint plans as defined in the roadmap. Occasionally taking a step back as needed to reasess and ensure you're headed in the right direction. Test everything as you go to ensure you don't have any issues compounding. In the end you have a <strong><em>working, useful product</em></strong> that would remain so even if you decide to stop here.</p></div>
+          </div>
+        </div>
+        <div class="step-stack-item">
+          <div class="step-card-num">7</div>
+          <div class="step-stack-body">
+            <div class="step-card-title">Iterate Prod Releases</div>
+            <div class="step-card-body"><p>Once the app is live and useful, the work changes. It shifts towards responding to real use, edge cases, and small features/bugs that only come up once real users start playing around and are trying to get things done. From here you have a <strong><em>living and evolving app</em></strong> that you need to shape and scale over time. <em>Full disclosure: I'm barely into this step. So far it's meant onboarding my parents, watching a dozen small bugs and feature ideas surface in the first hour of real use, and turning them around the same afternoon. The interesting part of this phase is still ahead of me.</em></p></div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Claude's insights from this experience</h3>
+      <div class="body-text">
+        <p>I asked Claude to look back over the whole build and all our conversations and pull out some insights:</p>
+      </div>
+
+      <!-- Claude insights collapsible callout -->
+      <div class="claude-callout" id="callout-insights">
+        <button class="claude-callout-header" aria-expanded="false" aria-controls="callout-insights-body">
+          <div class="claude-callout-badge">
+            <svg class="claude-callout-badge-icon" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(50 50)"><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(0)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(27.69)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(55.38)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(83.08)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(110.77)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(138.46)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(166.15)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(193.85)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(221.54)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(249.23)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(276.92)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(304.62)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(332.31)"/><circle r="18"/></g></svg>
+            <span class="claude-callout-badge-label">Claude</span>
+          </div>
+          <span class="claude-callout-summary">Claude reflects on the build — eight observations from the inside</span>
+          <span class="claude-callout-caret">▾</span>
+        </button>
+        <div class="claude-callout-body" id="callout-insights-body">
+          <div class="claude-callout-body-inner">
+            <div class="claude-callout-body-pad">
+              <ul>
+                <li><strong>He directed; he didn't dictate.</strong> The default instruction was never "build X." It was "tell me how you'd build X, where it might bite us, then stop." Forty-five percent of his messages were planning or review — and once we'd agreed, the actual build orders were often three words: <em>"yes, do that."</em> He spent his words on decisions and saved them on execution.</li>
+                <li><strong>He paid for thinking up front and collected the interest later.</strong> We'd burned tens of thousands of tokens settling vision and architecture before a single line of code existed — and it showed: the first roadmap draft barely needed editing, because the hard questions had already been answered. Across 244 prompts he had to make me properly tear something up only about four times. Front-loaded judgement is the whole reason the back half felt fast.</li>
+                <li><strong>He used me as a second opinion, never an oracle.</strong> Before the model bake-off he deliberately <em>withheld</em> his own view — "tell me what you think before I tell you what I think" — so as not to lead me, then overruled me anyway when his read was better (he was right about Haiku). The trust was calibrated, not blind. Most people lean too far one way or the other; he didn't. <span class="wim-note">[This is bit too flattering, but I promised not to edit Claude's output, so please bear with me]</span></li>
+                <li><strong>His domain knowledge was the one input I couldn't fake.</strong> I brought breadth and speed; he brought the thing that actually decided quality — he knew what his grandmother would and wouldn't have written on the page. That let him delete steps I'd quietly invented and confirm a reading of <em>"16 teaspoons"</em> that I'd confidently flagged as a misread. At the moments that mattered, narrow lived knowledge beat general intelligence.</li>
+                <li><strong>Building the risky part first, as a throwaway, was the best call he made.</strong> Most projects assemble the familiar scaffolding and discover at the very end that the hard part doesn't work. He inverted it — prove the models can read the handwriting, in isolation, before building a single thing around them.</li>
+                <li><strong>"Production is the test environment" was a feature, not a hack — while it lasted.</strong> It worked precisely because the stakes were near zero: no users, throwaway data, a ten-minute outage costing nothing. It's the right call at zero users and the wrong one the day someone depends on it — and the docs already said exactly that.</li>
+                <li><strong>A lot of the work wasn't code at all.</strong> It was clicking through hostile cloud dashboards — Azure, Clerk, Cloudflare, Vercel — and pasting error logs back to me so I could see what I couldn't reach. The code was often the easy part. <span class="wim-note">[The dashboards really weren't that hostile (except Azure), this was more just my own learning curve.]</span></li>
+                <li><strong>The documentation was the quiet hero.</strong> Every sprint closed by writing down what changed and why. That's the single reason a fresh or crashed session could ever pick up cold — it was the long-term memory that my context window doesn't have. None of the speed survives without it.</li>
+              </ul>
+              <p>If there's one profile this kind of building rewards, it's his: knowing <em>what</em> should exist and getting help with <em>how</em>. He couldn't write the <code>git rebase</code> — but he could see that three near-identical pages should be one, and in this partnership that judgement was the genuinely scarce ingredient. Mine was the cheap part.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 Fun Facts -->
+    <section id="fun-facts">
+      <h2 data-num="07">Some Fun Facts</h2>
+      <div class="claude-attr">
+        <svg viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(50 50)"><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(0)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(27.69)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(55.38)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(83.08)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(110.77)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(138.46)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(166.15)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(193.85)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(221.54)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(249.23)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(276.92)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(304.62)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(332.31)"/><circle r="18"/></g></svg>
+        <span>Numbers from the build. Notes by Claude.</span>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-block">
+          <span class="stat-num">2.7bn</span>
+          <span class="stat-label">Total tokens</span>
+          <span class="stat-note">Of which 2.6 billion were context re-read from cache rather than reprocessed from scratch, and 10.9 million were the actual output written. The caching is the whole reason it stayed cheap to run.</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-num">£109</span>
+          <span class="stat-label">Actual cost</span>
+          <div class="cost-bar-track"><div class="cost-bar-fill"></div></div>
+          <span class="cost-bar-note">vs ~$5,882 at published metered API rates</span>
+          <span class="stat-note">Started on a Pro plan (£18) topping it up with pay-as-you-go (£8.60), then switched to Max 5x (£82.22). A neat illustration of how much invisible work the caching was doing: without it, even the hypothetical bill would have been a multiple of $5,882.</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-num">84</span>
+          <span class="stat-label">After-11pm prompts</span>
+          <span class="stat-note">On 14 of the 17 days I worked on this. By volume of what I actually wrote, only about 29% of my typing happened that late. My busiest hour was the one before midnight — but the late nights ran shorter and scrappier: quick iteration and bug-chasing, not the big planning think-pieces.</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-num">5,148</span>
+          <span class="stat-label">Actions per 244 prompts</span>
+          <span class="stat-note">About 21 of Claude's own moves for every one of mine, 1,740 of them shell commands. A reminder of who was actually doing the typing. <span class="wim-note">[Thanks, Claude]</span></span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-num">114</span>
+          <span class="stat-label">Pleases (vs 13 thank-yous)</span>
+          <span class="stat-note">I'm a lot more demanding than grateful, it turns out.</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-num">~430</span>
+          <span class="stat-label">Lines of code per prompt</span>
+          <span class="stat-note">244 prompts → 152 commits → 104,663 lines of code. The headline ratio, if you like a tidy figure.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 Conclusion -->
+    <section id="conclusion">
+      <h2 data-num="08">Conclusion</h2>
+      <div class="body-text">
+        <p>Building this has been a joy. I learned so much but also moved incredibly fast. It's hard to overstate the satisfaction of finding 20 bugs, giving the exact details and my hypothesis on why they might exist to Claude, and then 15 minutes later they're all fixed and my hypotheses are either proven or disproven.</p>
+        <p>I spent a good hour onboarding my parents onto the tool and during that we identified a dozen or so small features/bugs that needed work. I got Claude to address those and an hour later it was updated.</p>
+        <p>My main reflection from this isn't that coding has now become "easy" or a skill that's no longer "needed." Being a software developer is still definitely a needed and critical skill in the grand scheme of things. Rather, it's a scale and accessibility shift. With a small enough scale and simple enough ambition, it's now possible to be a product manager without a dev team. Which is a sentence that probably gives a lot of developers and engineers nightmares. Not from a "I'm losing my job to AI" perspective, but from a "Oh God, I hope I never have to touch that vibe-coded-spaghetti."</p>
+        <p>It's also been a truly great opportunity to connect with my parents too. We've had so many video calls laughing at the ridiculous things the earlier versions of the AI pipeline came up with (Haiku is truly terrible at Afrikaans, but unintentionally hilarious btw).</p>
+        <p>Building, testing and using this app has resulted in more conversation and quality time with my parents than I have had with them in months for any other reason. Hearing the stories of some of these recipes has been incredibly special.</p>
+        <p>One story, that I found particularly funny, is the story of a pudding that was labelled "Arina Poeding (duur een)" translating to "Arina Pudding (expensive one)". In the 80s, back in the small farming community where my mother grew up, there was an older tannie (auntie) in the community who did a lot of catering and bake-sales. She had developed her own low-cost version of 'Malva Pudding', a famous South African dessert. It was a huge hit and she shared this recipe fairly broadly, including to my Grandmother and a friend of her's, Arina.</p>
+        <p>One day, Arina found that she had lost the recipe. She reached out to the older tannie, and asked if she could copy it from her again. By this point, the older lady felt that since the recipe was so popular, she was owed her fair share. And so, she told Arina that if she wanted the recipe it would cost her thirty Rand ($90 today, if converting to USD and then carrying forward for inflation). An expensive pudding! Rather than pay the extortionate amount, Arina simply copied the recipe from my grandmother's recipe book instead. And ever since then, it has been known in my mother's family as the <em>expensive pudding.</em></p>
+        <p>At one point, my grandmother added some dates to the pudding. When my grandfather tried it, impressed by the upgrade, he remarked, "Now you can sell this recipe for fifty Rand!" ($150 today)</p>
+        <p>You can go read the expensive recipe now at <a href="https://recipes.wimstrydom.com" target="_blank" rel="noopener">recipes.wimstrydom.com</a> where we are sharing all my family's recipes (at least as fast as my parents can scan them). For free and not for R30 per recipe!</p>
+        <p>Soon, I'll be launching the public version of the app, which I've decided to name Malva Recipes, to give others the chance to also preserve and share their handwritten family recipes in the same way. If you're interested, you can go sign up for the waitlist now at <a href="https://malva.recipes" target="_blank" rel="noopener">malva.recipes</a>.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// Progress bar
+window.addEventListener('scroll', () => {
+  const p = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+  document.getElementById('progress-bar').style.transform = 'scaleX(' + Math.min(p, 1) + ')';
+}, { passive: true });
+
+// Rail scroll-spy
+const sections = document.querySelectorAll('section[id]');
+const railLinks = document.querySelectorAll('.rail-item[data-target]');
+const spy = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      railLinks.forEach(l => l.classList.toggle('active', l.dataset.target === id));
+    }
+  });
+}, { rootMargin: '-10% 0px -80% 0px', threshold: 0 });
+sections.forEach(s => spy.observe(s));
+
+// Claude callout toggles
+document.querySelectorAll('.claude-callout-header').forEach(header => {
+  header.addEventListener('click', () => {
+    const callout = header.closest('.claude-callout');
+    callout.classList.toggle('open');
+    const isOpen = callout.classList.contains('open');
+    header.setAttribute('aria-expanded', String(isOpen));
+  });
+});
+
+// Step carousel dots + drag scroll
+document.querySelectorAll('.step-carousel-wrap').forEach(wrap => {
+  const carousel = wrap.querySelector('.step-carousel');
+  const dots = Array.from(wrap.querySelectorAll('.step-carousel-dot'));
+  const cards = Array.from(carousel.querySelectorAll('.step-card'));
+  if (!cards.length) return;
+
+  const gap = 12;
+  const getCardWidth = () => cards[0].offsetWidth + gap;
+
+  // Fade-wrap visibility
+  const fadeWrap = wrap.querySelector('.step-carousel-fade-wrap');
+  const updateFades = () => {
+    if (!fadeWrap) return;
+    fadeWrap.classList.toggle('at-start', carousel.scrollLeft <= 5);
+    fadeWrap.classList.toggle('at-end', carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 5);
+  };
+
+  const updateDots = () => {
+    if (!dots.length) return;
+    const idx = Math.round(carousel.scrollLeft / getCardWidth());
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  };
+  carousel.addEventListener('scroll', () => { updateDots(); updateFades(); }, { passive: true });
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      carousel.scrollTo({ left: i * getCardWidth(), behavior: 'smooth' });
+    });
+  });
+  updateDots();
+  updateFades();
+
+  // Drag to scroll (desktop)
+  let isDown = false, startX, scrollLeft;
+  carousel.addEventListener('mousedown', e => {
+    isDown = true;
+    carousel.classList.add('dragging');
+    startX = e.pageX - carousel.offsetLeft;
+    scrollLeft = carousel.scrollLeft;
+  });
+  carousel.addEventListener('mouseleave', () => { isDown = false; carousel.classList.remove('dragging'); });
+  carousel.addEventListener('mouseup', () => { isDown = false; carousel.classList.remove('dragging'); });
+  carousel.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    carousel.scrollLeft = scrollLeft - (e.pageX - carousel.offsetLeft - startX) * 1.5;
+  });
+});
+</script>
+</body>
+</html>
