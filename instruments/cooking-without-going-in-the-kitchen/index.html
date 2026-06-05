@@ -376,6 +376,8 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
           <li>An "integrity check" step to catch nonsensical output, but it mostly flagged things that weren't actually wrong. E.g. an old recipe not stating an oven temperature isn't an AI pipeline error, it's just how my ouma wrote ("everyone knows you bake a cake at 180°C").</li>
           <li>A fallback to a more powerful model for when the first pass failed, but the first pass rarely failed, so I shelved it.</li>
         </ol>
+        <p>The second thing I did was optimise the per recipe cost. I asked Claude to run a small experiment: take 16 recipes, and run every step of the pipeline through three different models, a cheap one (Haiku), a mid one (Sonnet), and the expensive one (Opus), saving the outputs side by side so I could compare them. Each step forked off of an upstream output from Opus so that errors wouldn't compound.</p>
+        <p>The whole experiment cost about $8 to run. Before giving my own opinion, I asked Claude to review the outputs and tell me what it thought, because I didn't want to lead it toward the answer I'd already half-formed. Its read and mine mostly agreed, though I overruled it on one step, it preferred Sonnet for parsing (which was the most token-heavy step) and I thought Haiku was fine.</p>
       </div>
 
       <div class="callout">
@@ -384,8 +386,6 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
       </div>
 
       <div class="body-text">
-        <p>The second thing I did was optimise the per recipe cost. I asked Claude to run a small experiment: take 16 recipes, and run every step of the pipeline through three different models, a cheap one (Haiku), a mid one (Sonnet), and the expensive one (Opus), saving the outputs side by side so I could compare them. Each step forked off of an upstream output from Opus so that errors wouldn't compound.</p>
-        <p>The whole experiment cost about $8 to run. Before giving my own opinion, I asked Claude to review the outputs and tell me what it thought, because I didn't want to lead it toward the answer I'd already half-formed. Its read and mine mostly agreed, though I overruled it on one step, it preferred Sonnet for parsing (which was the most token-heavy step) and I thought Haiku was fine.</p>
         <p>The outcome was a tiered cake. Uuuh, I mean, tiered pipeline: Opus only for reading the handwriting, Sonnet to translate, and Haiku to structure the result. That brought the cost down to about <strong>$0.16 per recipe</strong> and around <strong>26 seconds</strong> start to finish.</p>
         <p>One exchange from this stage I found funny. Claude proudly flagged a case where Opus had confidently read an ingredient as "16 tsp baking powder" and pointed to it as an overconfident misread. I agreed, but later I checked with my mother. It <em>was</em> 16 teaspoons, the model was right, and the "sensible" reading would have been wrong.</p>
         <p>Once I'd confirmed that what I was trying to achieve was feasible I decided I could move on to actually building the whole thing.</p>
