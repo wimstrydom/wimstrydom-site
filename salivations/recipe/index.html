@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DC8TCGZT0C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DC8TCGZT0C');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe — Wim Strydom</title>
+<meta name="description" content="">
+<meta property="og:title" content="Recipe — Wim Strydom">
+<meta property="og:description" content="">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<!-- Reading progress -->
+<div id="progress-bar"></div>
+
+<!-- Header -->
+<header>
+  <a href="../../" class="wordmark">Wim Strydom</a>
+  <span class="header-date" id="header-date"></span>
+</header>
+
+<div class="page-outer">
+
+  <!-- Rail -->
+  <nav class="rail" id="rail">
+    <a href="../" class="rail-back">← Salivations</a>
+    <div class="rail-divider"></div>
+
+    <div class="r-control" id="rail-scale" style="display:none">
+      <span class="r-control-label">Scale</span>
+      <div class="r-scale">
+        <button class="r-scale-btn" id="scale-dec" aria-label="Less">−</button>
+        <span class="r-scale-val" id="scale-val">×1</span>
+        <button class="r-scale-btn" id="scale-inc" aria-label="More">+</button>
+      </div>
+    </div>
+
+    <div class="r-control" id="rail-units" style="display:none">
+      <span class="r-control-label">Units</span>
+      <div class="r-unit-toggle">
+        <button class="r-unit-btn active" data-unit="metric">Metric</button>
+        <button class="r-unit-btn" data-unit="us">US</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <main class="content recipe-viewer" id="content">
+    <p class="r-state" id="state-msg">Loading…</p>
+  </main>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════════════
+// Recipe viewer. Reads ?slug=, fetches /salivations/data/<slug>.json, renders a
+// split-view (ingredients pinned, method scrolling) that mirrors the recipe app.
+//
+// The unit + temperature conversion below is a faithful vanilla-JS port of the
+// app's deterministic helpers (apps/web/components/recipe/recipe-helpers.ts in
+// recipe-scanner). Keep them in sync: the canonical unit table, the "largest
+// unit that stays ≥ 1" target selection, and the cooking-friendly rounding are
+// what make 1 tbsp render as "15 ml" rather than "14.8 ml".
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── STATE ──
+let recipe = null;
+let scale = 1;                 // ingredient multiplier
+let units = 'metric';          // 'metric' | 'us' — both convert; metric is default
+
+// ── CANONICAL UNITS ──
+// system + kind + base (ml for volume, g for weight). Ported verbatim.
+const CANONICAL_UNITS = {
+  ml:     { system: 'metric', kind: 'volume', base: 1 },
+  l:      { system: 'metric', kind: 'volume', base: 1000 },
+  tsp:    { system: 'us',     kind: 'volume', base: 4.92892 },
+  tbsp:   { system: 'us',     kind: 'volume', base: 14.7868 },
+  fl_oz:  { system: 'us',     kind: 'volume', base: 29.5735 },
+  cup:    { system: 'us',     kind: 'volume', base: 240 },
+  pint:   { system: 'us',     kind: 'volume', base: 473.176 },
+  quart:  { system: 'us',     kind: 'volume', base: 946.353 },
+  gallon: { system: 'us',     kind: 'volume', base: 3785.41 },
+  g:      { system: 'metric', kind: 'weight', base: 1 },
+  kg:     { system: 'metric', kind: 'weight', base: 1000 },
+  oz:     { system: 'us',     kind: 'weight', base: 28.3495 },
+  lb:     { system: 'us',     kind: 'weight', base: 453.592 },
+};
+const TARGETS = {
+  metric: { volume: ['ml', 'l'], weight: ['g', 'kg'] },
+  us: {
+    volume: ['tsp', 'tbsp', 'fl_oz', 'cup', 'pint', 'quart', 'gallon'],
+    weight: ['oz', 'lb'],
+  },
+};
+const UNIT_LABELS = {
+  ml: { sing: 'ml' }, l: { sing: 'l' },
+  tsp: { sing: 'tsp' }, tbsp: { sing: 'tbsp' }, fl_oz: { sing: 'fl oz' },
+  cup: { sing: 'cup', plur: 'cups' },
+  pint: { sing: 'pint', plur: 'pints' },
+  quart: { sing: 'quart', plur: 'quarts' },
+  gallon: { sing: 'gallon', plur: 'gallons' },
+  g: { sing: 'g' }, kg: { sing: 'kg' },
+  oz: { sing: 'oz' }, lb: { sing: 'lb' },
+};
+
+const isCanonicalUnit = (u) => Object.prototype.hasOwnProperty.call(CANONICAL_UNITS, u);
+
+// Convert (quantity, canonical unit) into the target system, choosing the
+// largest target unit where the quantity stays ≥ 1 (250 ml → "1 cup", not "16 tbsp").
+function convertUnit(quantity, unit, target) {
+  const spec = CANONICAL_UNITS[unit];
+  if (spec.system === target) return { quantity, unit };
+  const baseAmount = quantity * spec.base;
+  const candidates = TARGETS[target][spec.kind];
+  let chosen = candidates[0];
+  for (const c of candidates) {
+    const q = baseAmount / CANONICAL_UNITS[c].base;
+    if (q >= 1) chosen = c; else break;
+  }
+  return { quantity: baseAmount / CANONICAL_UNITS[chosen].base, unit: chosen };
+}
+
+// Snap a converted metric quantity to a cooking-friendly value.
+function roundMetric(q, unit) {
+  if (CANONICAL_UNITS[unit].system !== 'metric') return q;
+  if (unit === 'ml' || unit === 'g') {
+    if (q < 5)    return Math.round(q * 2) / 2;   // nearest 0.5
+    if (q < 100)  return Math.round(q / 5) * 5;   // nearest 5
+    if (q < 1000) return Math.round(q / 25) * 25; // nearest 25
+    return Math.round(q / 50) * 50;
+  }
+  return Math.round(q * 20) / 20;                 // l / kg — nearest 0.05
+}
+
+function unitLabel(unit, qty) {
+  const entry = UNIT_LABELS[unit];
+  if (!entry) return unit;
+  return qty !== 1 && entry.plur ? entry.plur : entry.sing;
+}
+
+// ── NUMBER FORMATTING ──
+const VULGAR = { '0.25': '¼', '0.5': '½', '0.75': '¾', '0.33': '⅓', '0.67': '⅔' };
+
+// Source quantities scaled, with nice fractions for the common values.
+function formatQty(qty, mult) {
+  if (qty === null || qty === undefined) return '';
+  const v = qty * mult;
+  if (v === Math.floor(v)) return String(v);
+  const frac = v - Math.floor(v);
+  const key = (Math.round(frac * 100) / 100).toString();
+  const fracStr = VULGAR[key] ?? v.toFixed(1).replace(/\.0$/, '');
+  return Math.floor(v) ? `${Math.floor(v)} ${fracStr}` : fracStr;
+}
+
+// Post-conversion decimals: snap near-fractions, else 1 dp under 10 / integer above.
+function formatDecimalQty(v) {
+  if (v === Math.floor(v)) return String(v);
+  const frac = v - Math.floor(v);
+  const key = (Math.round(frac * 100) / 100).toString();
+  if (VULGAR[key]) return Math.floor(v) ? `${Math.floor(v)} ${VULGAR[key]}` : VULGAR[key];
+  if (v >= 10) return String(Math.round(v));
+  return v.toFixed(1).replace(/\.0$/, '');
+}
+
+// ── INGREDIENT MEASURE ──
+// Returns the "2 cups" / "15 ml" measure string for an ingredient, converted
+// into the chosen system (metric or US), scaled. Mirrors ingredientLabel().
+function measureFor(ing) {
+  const qty = ing.quantity;
+  const u = ing.unit;
+  if (qty === null || qty === undefined || !u) {
+    return qty !== null && qty !== undefined ? formatQty(qty, scale) : '';
+  }
+  const canonical = u.normalized;
+
+  // Custom / drifted unit (tin, packet…) — render verbatim, no conversion.
+  if (!isCanonicalUnit(canonical)) {
+    const label = canonical || u.original || '';
+    return `${formatQty(qty, scale)} ${label}`.trim();
+  }
+  // Convert into the chosen system (volume↔volume, weight↔weight only). A unit
+  // already in-system passes through unchanged; roundMetric only snaps metric.
+  const conv = convertUnit(qty * scale, canonical, units);
+  const display = roundMetric(conv.quantity, conv.unit);
+  const qtyStr = formatDecimalQty(display);
+  // Pluralise on what's actually shown ("1" → singular) so a value that rounds
+  // to 1 for display (e.g. 1.04 cup) reads "1 cup", not "1 cups".
+  return `${qtyStr} ${unitLabel(conv.unit, qtyStr === '1' ? 1 : display)}`;
+}
+
+// ── TEMPERATURE ──
+// Metric mode shows °C, US mode shows °F.
+function formatTemperature(temp) {
+  if (!temp) return null;
+  const target = units === 'metric' ? 'C' : 'F';
+  if (temp.unit === target) return `${Math.round(temp.value)}°${target}`;
+  const converted = temp.unit === 'C'
+    ? temp.value * 9 / 5 + 32
+    : (temp.value - 32) * 5 / 9;
+  return `${Math.round(converted / 5) * 5}°${target}`;
+}
+
+// ── YIELD ──
+function formatYield() {
+  const y = recipe.yield;
+  if (!y) return null;
+  const v = y.value * scale;
+  const vMax = y.value_max ? y.value_max * scale : null;
+  const val = vMax ? `${formatQty(v, 1)}–${formatQty(vMax, 1)}` : formatQty(v, 1);
+  return `${val} ${y.unit}`;
+}
+
+// ── RENDERING ──
+const esc = (s) => String(s ?? '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+
+// Generic group labels carry no information above their list — drop them.
+const GENERIC_LABELS = new Set(['ingredients', 'bestanddele', 'method', 'metode', 'steps', 'stappe', 'instructions']);
+function groupLabel(label) {
+  if (!label) return '';
+  if (GENERIC_LABELS.has(label.trim().toLowerCase())) return '';
+  return `<h4 class="r-group-label">${esc(label)}</h4>`;
+}
+
+// True when the first group carries a (non-generic) label — used to decide
+// whether the section head gets a rule below it (avoids a double line when the
+// leading group is unlabelled and its first row already draws a top border).
+function leadsWithLabel(groups) {
+  return !!(groups && groups[0] && groupLabel(groups[0].label) !== '');
+}
+
+// Scale ladder, including halves/quarters below 1×.
+const SCALE_STEPS = [0.25, 0.5, 1, 2, 3, 4, 5, 6, 8, 10, 12];
+function scaleLabel(s) {
+  if (s === 0.25) return '×¼';
+  if (s === 0.5)  return '×½';
+  return `×${s}`;
+}
+
+function renderIngredient(ing) {
+  const measure = measureFor(ing);
+  const measurePart = measure ? `<span class="r-ing-measure">${esc(measure)}</span>` : '';
+  const prep = ing.preparation ? `<span class="r-ing-prep">, ${esc(ing.preparation)}</span>` : '';
+  const opt = ing.optional ? ` <span class="r-ing-opt">optional</span>` : '';
+  return `<li class="r-ing${ing.optional ? ' is-optional' : ''}">
+    ${measurePart}
+    <span class="r-ing-name">${esc(ing.name)}${prep}${opt}</span>
+  </li>`;
+}
+
+function renderIngredients() {
+  return recipe.ingredient_groups.map(g =>
+    `${groupLabel(g.label)}<ul class="r-ing-list">${g.ingredients.map(renderIngredient).join('')}</ul>`
+  ).join('');
+}
+
+function renderStep(step) {
+  const badges = [];
+  const temp = formatTemperature(step.temperature);
+  if (temp) badges.push(`<span class="r-step-badge">${temp}</span>`);
+  if (step.duration_minutes) badges.push(`<span class="r-step-badge">${step.duration_minutes} min</span>`);
+  return `<li class="r-step">
+    <span class="r-step-num">${step.number}</span>
+    <span class="r-step-text">${esc(step.instruction)}${badges.join('')}</span>
+  </li>`;
+}
+
+function renderMethod() {
+  return recipe.step_groups.map(g =>
+    `${groupLabel(g.label)}<ol class="r-step-list">${g.steps.map(renderStep).join('')}</ol>`
+  ).join('');
+}
+
+function buildContent() {
+  const cats = (recipe.categorization?.categories || [])
+    .map(c => c[0].toUpperCase() + c.slice(1)).join(', ');
+  const eyebrow = cats || 'Recipe';
+
+  const desc = recipe.description
+    ? `<p class="page-intro">${esc(recipe.description)}</p>` : '';
+
+  const metaBits = [];
+  if (recipe.source?.book) metaBits.push(esc(recipe.source.book));
+  if (recipe.source?.era) metaBits.push(esc(recipe.source.era));
+  const yld = formatYield();
+  if (yld) metaBits.push(`Makes ${yld}`);
+  const meta = metaBits.length
+    ? `<p class="recipe-meta">${metaBits.join('<span class="meta-sep">·</span>')}</p>` : '';
+
+  return `
+    <span class="page-eyebrow">${esc(eyebrow)}</span>
+    <h1 class="page-title">${esc(recipe.name)}</h1>
+    ${desc}
+    ${meta}
+
+    <div class="r-mobile-controls" id="mobile-controls"></div>
+
+    <div class="page-divider"></div>
+
+    <div class="recipe r-split">
+      <section class="r-col-ing" id="ingredients">
+        <div class="r-section-head${leadsWithLabel(recipe.ingredient_groups) ? ' is-ruled' : ''}">Ingredients</div>
+        <div id="ing-content">${renderIngredients()}</div>
+      </section>
+      <section class="r-col-method" id="method">
+        <div class="r-section-head${leadsWithLabel(recipe.step_groups) ? ' is-ruled' : ''}">Method</div>
+        <div id="step-content">${renderMethod()}</div>
+      </section>
+    </div>
+  `;
+}
+
+// Re-render only the parts that depend on scale / units.
+function rerender() {
+  const ing = document.getElementById('ing-content');
+  const step = document.getElementById('step-content');
+  if (ing) ing.innerHTML = renderIngredients();
+  if (step) step.innerHTML = renderMethod();
+
+  const meta = document.querySelector('.recipe-meta');
+  const yld = formatYield();
+  if (meta && yld) {
+    // Refresh the "Makes …" fragment in place when scaling.
+    const bits = meta.innerHTML.split('<span class="meta-sep">·</span>')
+      .filter(b => !/Makes /.test(b));
+    bits.push(`Makes ${yld}`);
+    meta.innerHTML = bits.join('<span class="meta-sep">·</span>');
+  }
+
+  const label = scaleLabel(scale);
+  document.querySelectorAll('.r-scale-val').forEach(el => { el.textContent = label; });
+}
+
+// ── CONTROLS ──
+function setScale(delta) {
+  const i = SCALE_STEPS.indexOf(scale);
+  const next = Math.max(0, Math.min(SCALE_STEPS.length - 1, i + delta));
+  scale = SCALE_STEPS[next];
+  rerender();
+}
+function setUnits(mode) {
+  units = mode;
+  document.querySelectorAll('.r-unit-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.unit === mode));
+  rerender();
+}
+
+// Mobile controls mirror the rail controls (rail is hidden ≤860px). Clone the
+// rail markup so the wiring stays in one place.
+function buildMobileControls() {
+  const host = document.getElementById('mobile-controls');
+  if (!host) return;
+  host.innerHTML = `
+    <div class="r-control">
+      <span class="r-control-label">Scale</span>
+      <div class="r-scale">
+        <button class="r-scale-btn" data-scale="-1" aria-label="Less">−</button>
+        <span class="r-scale-val">${scaleLabel(scale)}</span>
+        <button class="r-scale-btn" data-scale="1" aria-label="More">+</button>
+      </div>
+    </div>
+    <div class="r-control">
+      <span class="r-control-label">Units</span>
+      <div class="r-unit-toggle">
+        <button class="r-unit-btn ${units === 'metric' ? 'active' : ''}" data-unit="metric">Metric</button>
+        <button class="r-unit-btn ${units === 'us' ? 'active' : ''}" data-unit="us">US</button>
+      </div>
+    </div>`;
+}
+
+// One delegated listener handles both rail + mobile controls.
+document.addEventListener('click', (e) => {
+  const scaleBtn = e.target.closest('[data-scale], #scale-dec, #scale-inc');
+  if (scaleBtn) {
+    const d = scaleBtn.id === 'scale-dec' ? -1 : scaleBtn.id === 'scale-inc' ? 1 : Number(scaleBtn.dataset.scale);
+    setScale(d);
+    return;
+  }
+  const unitBtn = e.target.closest('.r-unit-btn');
+  if (unitBtn) setUnits(unitBtn.dataset.unit);
+});
+
+// ── READING PROGRESS ──
+function updateProgress() {
+  const el = document.getElementById('progress-bar');
+  if (!el) return;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  el.style.transform = `scaleX(${docHeight > 0 ? window.scrollY / docHeight : 0})`;
+}
+window.addEventListener('scroll', updateProgress, { passive: true });
+
+// ── LOAD ──
+const slug = new URLSearchParams(location.search).get('slug');
+
+if (!slug) {
+  document.getElementById('state-msg').innerHTML =
+    'No recipe specified. <a href="../">Back to Salivations</a>.';
+} else {
+  fetch(`/salivations/data/${slug}.json`)
+    .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
+    .then(data => {
+      recipe = data;
+
+      document.title = `${recipe.name} — Wim Strydom`;
+      const setMeta = (sel, val) => { const el = document.querySelector(sel); if (el) el.content = val; };
+      setMeta('meta[name="description"]', recipe.description || recipe.name);
+      setMeta('meta[property="og:title"]', `${recipe.name} — Wim Strydom`);
+      setMeta('meta[property="og:description"]', recipe.description || '');
+
+      if (recipe.source?.era) document.getElementById('header-date').textContent = recipe.source.era;
+
+      // Reveal rail controls.
+      document.getElementById('rail-scale').style.display = 'block';
+      document.getElementById('rail-units').style.display = 'block';
+
+      document.getElementById('content').innerHTML = buildContent();
+      buildMobileControls();
+      updateProgress();
+    })
+    .catch(() => {
+      document.getElementById('state-msg').innerHTML =
+        'Recipe not found. <a href="../">Back to Salivations</a>.';
+    });
+}
+</script>
+</body>
+</html>

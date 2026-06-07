@@ -450,6 +450,210 @@ header {
   .content.no-rail:has(.poem) .page-title { font-size: 32px; }
 }
 
+/* ── RECIPE ARCHETYPE ── */
+.recipe h2 { font-size: 26px; font-weight: 400; color: var(--ink-bright); margin: 40px 0 20px; }
+.recipe h2:first-child { margin-top: 0; }
+.recipe-yield { font-size: 14px; font-style: italic; color: var(--ink-dim); }
+
+.r-group-label {
+  font-size: 16px; font-weight: 500; font-style: italic;
+  letter-spacing: 0.05em; color: var(--ink-dim);
+  margin: 28px 0 10px;
+}
+.r-group-label:first-child { margin-top: 0; }
+
+.r-ing-list {
+  list-style: none;
+  margin-bottom: 8px;
+}
+.r-ing {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--ink-faint);
+  font-size: 17px;
+  line-height: 1.45;
+}
+.r-ing:first-child { border-top: 1px solid var(--ink-faint); }
+.r-ing-measure {
+  min-width: 84px;
+  flex-shrink: 0;
+  color: var(--ink);
+  font-size: 15px;
+  display: flex;
+  gap: 4px;
+  align-items: baseline;
+  font-variant-numeric: tabular-nums;
+}
+.r-ing-qty { color: var(--ink-bright); }
+.r-ing-unit { font-size: 13px; color: var(--ink-dim); }
+.r-ing-name { color: var(--ink); flex: 1; min-width: 0; }
+.r-ing-prep { font-style: italic; color: var(--ink-dim); }
+.r-ing-opt {
+  font-size: 12px; font-style: italic; color: var(--gold-dim);
+  letter-spacing: 0.04em; margin-left: 6px;
+}
+.r-ing.is-optional .r-ing-name { color: var(--ink-dim); }
+
+.r-step-list { list-style: none; }
+.r-step {
+  display: flex;
+  gap: 18px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--ink-faint);
+}
+.r-step:first-child { border-top: 1px solid var(--ink-faint); }
+.r-step-num {
+  font-size: 13px;
+  color: var(--gold);
+  min-width: 22px;
+  padding-top: 3px;
+  flex-shrink: 0;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.r-step-text {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+.r-step-badge {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  background: var(--gold-tint);
+  border: 1px solid var(--gold-dim);
+  padding: 1px 8px;
+  border-radius: 2px;
+  white-space: nowrap;
+  font-style: normal;
+  align-self: center;
+}
+
+/* ── RECIPE VIEWER — split-view layout + controls ── */
+
+/* Give the viewer a wider canvas than the default reading column so the two
+   columns breathe; collapses back to full-width on mobile (rail hidden). */
+.content.recipe-viewer { --content-max: 940px; }
+
+.r-split {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  gap: 56px;
+  align-items: start;
+}
+/* Ingredients pin while the (longer) method scrolls — mirrors the app. */
+.r-col-ing {
+  position: sticky;
+  top: calc(var(--header-h) + 28px);
+  max-height: calc(100vh - var(--header-h) - 52px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.r-col-ing::-webkit-scrollbar { display: none; }
+
+.r-section-head {
+  margin-bottom: 18px;
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+/* Rule below the head — only added when the first group carries a label, so it
+   doesn't double up with the leading row's own top border (unlabelled groups). */
+.r-section-head.is-ruled {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--ink-faint);
+}
+
+.recipe-meta {
+  font-size: 13px; font-style: italic; color: var(--ink-dim);
+  margin-bottom: 40px; line-height: 1.6;
+  display: flex; flex-wrap: wrap; gap: 6px 14px;
+}
+.recipe-meta .meta-sep { color: var(--ink-faint); }
+
+/* Rail + mobile controls (servings scale, unit toggle) */
+.r-control { margin-bottom: 22px; }
+.r-control-label {
+  font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--ink-dim); display: block; margin-bottom: 10px;
+}
+.r-scale { display: flex; align-items: center; gap: 10px; }
+.r-scale-btn {
+  width: 28px; height: 28px;
+  border: 1px solid var(--ink-faint);
+  border-radius: 2px;
+  background: none; color: var(--ink-dim);
+  font-family: var(--serif); font-size: 18px; line-height: 1;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 0.18s, border-color 0.18s, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.r-scale-btn:hover { color: var(--gold); border-color: var(--gold-dim); }
+.r-scale-btn:active { transform: scale(0.88); }
+.r-scale-val {
+  font-size: 16px; color: var(--ink-bright);
+  min-width: 34px; text-align: center; user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+.r-unit-toggle {
+  display: flex;
+  border: 1px solid var(--ink-faint);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.r-unit-btn {
+  flex: 1; padding: 6px 0;
+  background: none; border: none;
+  font-family: var(--serif); font-size: 13px; font-style: italic;
+  color: var(--ink-dim); cursor: pointer; text-align: center;
+  transition: color 0.2s, background 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.r-unit-btn + .r-unit-btn { border-left: 1px solid var(--ink-faint); }
+.r-unit-btn.active { background: var(--gold-tint); color: var(--gold); font-style: normal; }
+
+/* Mobile control strip — shown only when the rail is hidden (≤860px). */
+.r-mobile-controls {
+  display: none;
+  gap: 28px; flex-wrap: wrap;
+  margin-bottom: 36px; padding-bottom: 28px;
+  border-bottom: 1px solid var(--ink-faint);
+}
+.r-mobile-controls .r-control { margin-bottom: 0; min-width: 120px; }
+
+@media (max-width: 860px) {
+  .content.recipe-viewer { --content-max: 100%; }
+  /* Single column; ingredients flow above the method and stop pinning. */
+  .r-split { grid-template-columns: 1fr; gap: 0; }
+  .r-col-ing {
+    position: static; max-height: none; overflow: visible;
+    margin-bottom: 44px;
+  }
+  .r-mobile-controls { display: flex; }
+  /* The control strip's own bottom border separates header from recipe — drop
+     the page divider on mobile so the two rules don't stack. */
+  .r-mobile-controls + .page-divider { display: none; }
+}
+
+/* Loading / error state for the viewer. */
+.r-state {
+  font-size: 18px; font-style: italic; color: var(--ink-dim);
+  padding: 32px 0; line-height: 1.7;
+}
+.r-state a { color: var(--gold); }
+
+@media (prefers-reduced-motion: reduce) {
+  .r-scale-btn, .r-unit-btn { transition: color 0.18s, border-color 0.18s, background 0.18s; }
+  .r-scale-btn:active { transform: none; }
+}
+
 /* ── STEP CAROUSEL ── */
 .step-carousel-wrap { margin: 8px 0 20px; }
 .step-carousel-fade-wrap {
