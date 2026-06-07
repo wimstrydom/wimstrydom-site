@@ -1,22 +1,20 @@
 [
   {
-    "slug": "blitstert",
-    "name": "Blitstert",
-    "description": "This is a traditional layer cake with a cream-milk filling.",
+    "slug": "cheesy-meaty-pasta-recipe",
+    "name": "Cheesy Meaty Pasta",
+    "description": "A pasta recipe that I developed as an elevated version of the Knorr Mince Mate from my childhood.",
     "categories": [
-      "dessert",
-      "baking"
+      "mains"
     ],
-    "source": "Ma se Resepteboek"
+    "source": "Wim se goed"
   },
   {
-    "slug": "annelize-s-baked-cheesecake",
-    "name": "Annelize's Baked Cheesecake",
-    "description": "Rich cheesecake with ginger-biscuit crust and sour cream topping.",
+    "slug": "mango-sticky-rice-cocktail",
+    "name": "Mango Sticky Rice Cocktail",
+    "description": null,
     "categories": [
-      "dessert",
-      "baking"
+      "beverages"
     ],
-    "source": "Ma se Resepteboek"
+    "source": "Wim se goed"
   }
 ]

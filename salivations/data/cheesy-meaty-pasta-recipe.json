@@ -1,0 +1,291 @@
+{
+  "slug": "cheesy-meaty-pasta-recipe",
+  "name": "Cheesy Meaty Pasta",
+  "description": "A pasta recipe that I developed as an elevated version of the Knorr Mince Mate from my childhood.",
+  "yield": null,
+  "source": {
+    "book": "Wim se goed",
+    "era": null
+  },
+  "ingredient_groups": [
+    {
+      "label": null,
+      "ingredients": [
+        {
+          "id": "ing_neutral_oil",
+          "quantity": 1,
+          "unit": {
+            "normalized": "tbsp",
+            "original": "tbsp"
+          },
+          "name": "neutral oil",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_beef_mince",
+          "quantity": 500,
+          "unit": {
+            "normalized": "g",
+            "original": "g"
+          },
+          "name": "beef mince",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_salt_pepper",
+          "quantity": null,
+          "unit": null,
+          "name": "salt and pepper",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_onion",
+          "quantity": 1,
+          "unit": null,
+          "name": "medium onion",
+          "preparation": "diced",
+          "optional": false
+        },
+        {
+          "id": "ing_garlic",
+          "quantity": 1,
+          "unit": {
+            "normalized": "clove",
+            "original": "clove"
+          },
+          "name": "garlic",
+          "preparation": "crushed",
+          "optional": false
+        },
+        {
+          "id": "ing_whole_milk",
+          "quantity": 400,
+          "unit": {
+            "normalized": "ml",
+            "original": "ml"
+          },
+          "name": "whole milk",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_parsley",
+          "quantity": 1,
+          "unit": {
+            "normalized": "bunch",
+            "original": "bunch"
+          },
+          "name": "flat leaf parsley",
+          "preparation": "finely chopped",
+          "optional": false
+        },
+        {
+          "id": "ing_porcini_mushrooms",
+          "quantity": 1,
+          "unit": {
+            "normalized": "tbsp",
+            "original": "tbsp"
+          },
+          "name": "ground dried porcini mushrooms",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_onion_powder",
+          "quantity": 1,
+          "unit": {
+            "normalized": "tsp",
+            "original": "tsp"
+          },
+          "name": "onion powder",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_garlic_powder",
+          "quantity": 1,
+          "unit": {
+            "normalized": "tsp",
+            "original": "tsp"
+          },
+          "name": "garlic powder",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_msg",
+          "quantity": 1,
+          "unit": {
+            "normalized": "tsp",
+            "original": "tsp"
+          },
+          "name": "MSG",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_elbow_macaroni",
+          "quantity": 300,
+          "unit": {
+            "normalized": "g",
+            "original": "g"
+          },
+          "name": "elbow macaroni",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_evaporated_milk",
+          "quantity": 1,
+          "unit": {
+            "normalized": "can",
+            "original": "can"
+          },
+          "name": "evaporated milk",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_cornstarch",
+          "quantity": 2,
+          "unit": {
+            "normalized": "tsp",
+            "original": "tsp"
+          },
+          "name": "cornstarch",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_dijon_mustard",
+          "quantity": 1,
+          "unit": {
+            "normalized": "tbsp",
+            "original": "tbsp"
+          },
+          "name": "Dijon mustard",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_hot_sauce",
+          "quantity": 2,
+          "unit": {
+            "normalized": "tsp",
+            "original": "tsp"
+          },
+          "name": "hot sauce",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_american_cheese",
+          "quantity": 100,
+          "unit": {
+            "normalized": "g",
+            "original": "g"
+          },
+          "name": "American cheese",
+          "preparation": "grated",
+          "optional": false
+        },
+        {
+          "id": "ing_alpine_cheese",
+          "quantity": 200,
+          "unit": {
+            "normalized": "g",
+            "original": "g"
+          },
+          "name": "alpine cheese",
+          "preparation": "grated",
+          "optional": false
+        },
+        {
+          "id": "ing_blue_cheese",
+          "quantity": 30,
+          "unit": {
+            "normalized": "g",
+            "original": "g"
+          },
+          "name": "blue cheese",
+          "preparation": "grated/crumbled",
+          "optional": false
+        }
+      ]
+    }
+  ],
+  "step_groups": [
+    {
+      "label": null,
+      "steps": [
+        {
+          "number": 1,
+          "instruction": "Combine cornstarch, evaporated milk, mustard, and hot sauce. Whisk until homogeneous. Set aside.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 2,
+          "instruction": "Whisk together milk, half the parsley, mushrooms, onion powder, garlic powder, and MSG. Set aside.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 3,
+          "instruction": "Bring a pot of salted water, barely enough to completely cover the macaroni, to a boil, and add macaroni. Cook until about 2 minutes shy of al dente, reserving pasta water.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 4,
+          "instruction": "In the meantime, in a large skillet, heat oil over medium-high heat until shimmering. Add mince, and sear without moving or stirring until a crust forms; about 1-2 minutes. Break up with a wooden spoon and season lightly with salt and pepper. Cook until no pink remains visible; about 5 minutes.",
+          "duration_minutes": 5,
+          "temperature": null
+        },
+        {
+          "number": 5,
+          "instruction": "Add onions, cook until semi-translucent; about 2 minutes. Add garlic, cooking until fragrant; around 30 seconds.",
+          "duration_minutes": 2,
+          "temperature": null
+        },
+        {
+          "number": 6,
+          "instruction": "Add milk and spice mixture to mince. Stir until well incorporated, and scrape up any browned bits on the bottom of the pan. Reduce heat to barely above a simmer.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 7,
+          "instruction": "When the pasta is cooked, add to the pan with the mince along with 150 ml of reserved pasta water and stir through. Let simmer for 1-2 minutes, until pasta is perfectly al dente. Remove from heat.",
+          "duration_minutes": 2,
+          "temperature": null
+        },
+        {
+          "number": 8,
+          "instruction": "Add evaporated milk mixture and grated cheese to skillet and stir through, letting the residual heat melt the cheese and emulsify into a thick sauce. If the sauce is too thick, thin out with a splash of milk or pasta water on low heat, below a simmer, stirring constantly to combine.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 9,
+          "instruction": "Garnish with the rest of the parsley and serve immediately.",
+          "duration_minutes": null,
+          "temperature": null
+        }
+      ]
+    }
+  ],
+  "categorization": {
+    "categories": [
+      "mains"
+    ],
+    "tags": [
+      "traditional",
+      "one-pot"
+    ]
+  },
+  "exported_at": "2026-06-07T16:26:49.832Z"
+}
