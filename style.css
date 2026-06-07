@@ -559,25 +559,17 @@ header {
 .r-col-ing::-webkit-scrollbar { display: none; }
 
 .r-section-head {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 18px;
   font-size: 11px;
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--ink-dim);
 }
-.r-section-head .r-section-num {
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  color: var(--gold-dim);
-}
-.r-section-head .r-section-line {
-  flex: 1;
-  height: 1px;
-  background: var(--ink-faint);
-  align-self: center;
+/* Rule below the head — only added when the first group carries a label, so it
+   doesn't double up with the leading row's own top border (unlabelled groups). */
+.r-section-head.is-ruled {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--ink-faint);
 }
 
 .recipe-meta {
@@ -645,6 +637,9 @@ header {
     margin-bottom: 44px;
   }
   .r-mobile-controls { display: flex; }
+  /* The control strip's own bottom border separates header from recipe — drop
+     the page divider on mobile so the two rules don't stack. */
+  .r-mobile-controls + .page-divider { display: none; }
 }
 
 /* Loading / error state for the viewer. */
