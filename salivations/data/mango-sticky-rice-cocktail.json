@@ -1,0 +1,139 @@
+{
+  "slug": "mango-sticky-rice-cocktail",
+  "name": "Mango Sticky Rice Cocktail",
+  "description": null,
+  "yield": null,
+  "source": {
+    "book": "Wim se goed",
+    "era": null
+  },
+  "ingredient_groups": [
+    {
+      "label": null,
+      "ingredients": [
+        {
+          "id": "ing_bacardi_carta_blanca",
+          "quantity": 2,
+          "unit": {
+            "normalized": "fl_oz",
+            "original": "oz"
+          },
+          "name": "Bacardi Carta Blanca",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_sake",
+          "quantity": 1,
+          "unit": {
+            "normalized": "fl_oz",
+            "original": "oz"
+          },
+          "name": "sake",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_mango_puree",
+          "quantity": 1,
+          "unit": {
+            "normalized": "fl_oz",
+            "original": "oz"
+          },
+          "name": "mango puree",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_whipping_cream",
+          "quantity": 1,
+          "unit": {
+            "normalized": "fl_oz",
+            "original": "oz"
+          },
+          "name": "whipping cream",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_coconut_syrup",
+          "quantity": 0.25,
+          "unit": {
+            "normalized": "fl_oz",
+            "original": "oz"
+          },
+          "name": "coconut syrup",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_rice_syrup",
+          "quantity": 0.25,
+          "unit": {
+            "normalized": "fl_oz",
+            "original": "oz"
+          },
+          "name": "rice syrup",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_lime_juice",
+          "quantity": 0.25,
+          "unit": {
+            "normalized": "fl_oz",
+            "original": "oz"
+          },
+          "name": "lime juice",
+          "preparation": "half of a lime",
+          "optional": false
+        },
+        {
+          "id": "ing_salt",
+          "quantity": null,
+          "unit": null,
+          "name": "salt",
+          "preparation": "a pinch",
+          "optional": false
+        }
+      ]
+    }
+  ],
+  "step_groups": [
+    {
+      "label": null,
+      "steps": [
+        {
+          "number": 1,
+          "instruction": "Shake with ice.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 2,
+          "instruction": "Strain and serve in a coupe.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 3,
+          "instruction": "Garnish with a couple of crisped rice granules.",
+          "duration_minutes": null,
+          "temperature": null
+        }
+      ]
+    }
+  ],
+  "categorization": {
+    "categories": [
+      "beverages"
+    ],
+    "tags": [
+      "cocktail",
+      "tropical",
+      "mango",
+      "no-bake"
+    ]
+  },
+  "exported_at": "2026-06-07T16:26:49.966Z"
+}
