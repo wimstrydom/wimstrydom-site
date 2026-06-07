@@ -11,12 +11,12 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cooking Without Going in the Kitchen — Wim Strydom</title>
+<title>Cooking Without Entering the Kitchen — Wim Strydom</title>
 <meta name="description" content="How I built a family recipe preservation app with Claude — 244 prompts, zero lines of code, three weeks.">
-<meta property="og:title" content="Cooking Without Going in the Kitchen — Wim Strydom">
+<meta property="og:title" content="Cooking Without Entering the Kitchen — Wim Strydom">
 <meta property="og:description" content="How I built a family recipe preservation app with Claude — 244 prompts, zero lines of code, three weeks.">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://wimstrydom.com/instruments/cooking-without-going-in-the-kitchen">
+<meta property="og:url" content="https://wimstrydom.com/instruments/cooking-without-entering-the-kitchen">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
@@ -136,7 +136,7 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
   <main class="content">
 
     <span class="page-eyebrow">Build Journey · Book 04</span>
-    <h1 class="page-title">Cooking Without Going in the Kitchen</h1>
+    <h1 class="page-title">Cooking Without Entering the Kitchen</h1>
     <p class="page-meta">Recipe app · 2026</p>
 
     <div class="page-intro-multi">
@@ -188,7 +188,7 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
     <section id="the-recipes">
       <h2 data-num="01">The Recipes</h2>
       <div class="body-text">
-        <p>I am from an Afrikaans family and grew up in South Africa. Afrikaans culture is deeply agricultural in heritage. While I never lived on a farm, my mother spent a good part of her life on one, and the food-centric lifestyle associated with the "plaas" shaped large parts of what I value and who I am.</p>
+        <p>I am from an Afrikaans family and grew up in South Africa. Afrikaans culture is deeply agricultural in heritage. While I never lived on a farm, my mother spent a good part of her life on one, and the food-centric lifestyle associated with the "plaas" (farm) shaped large parts of what I value and who I am.</p>
         <p>In my family there is a strong tradition of keeping and sharing hand-written recipes. This was an every-day form of connection for the generations of my great-grandmother, grandmother, and even still now my mother. Before everyone goes home after gathering for Christmas, the tannies and oumas (aunties and grannies) would exchange books and copy by hand the latest new recipes. Every girl had a personal recipe book by the time she left the house.</p>
         <p>Through a series of inheritances, my mother now has the recipe books across three generations on both my parents side, stretching all the way up to my maternal great grandmothers and down to recipes we developed together when I was 8 years old. This treasure of culture, food and familial connection is priceless. But sadly, also borderline incomprehensible to me.</p>
         <p>Cursive archaic Afrikaans, sometimes written in short-hand, on stained aging paper is sadly not very user friendly or accessible. When reading one of the recipes with my mother, I remarked that the only way I'd recognise a particular squiggly scribble as "Worcestershire sauce" is perhaps by inferring it from tasting the dark brown blotch obscuring half of the squiggle. To make matters worse, these books are all back in South Africa, and I am in London.</p>
@@ -203,7 +203,7 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
         <p>I discussed the idea one evening on a phone call with my mother and she sent me a phone scan of a ginger-beer recipe. Three weeks later I had a polished web app capable of ingesting recipes and displaying them in a user friendly interface organised by book and author.</p>
         <p>A few ways exist to get recipes into the app. My mother can capture images in the browser with her phone, upload existing photos, or connect it to her OneDrive and bulk upload PDFs of entire recipe books that she scanned.</p>
         <p>Once an image arrives, a small assembly line of AI models process the recipes. One model reads the original Afrikaans squiggles, shorthand, stains and all. Another translates it into English. The final one then disassembles the result into a structured JSON file: ingredients list, method steps, quantity values, units of measurement, and what category it fits into. Each recipe then waits in a queue for a human (my mother) to glance over it, edit if needed, click approve, and maybe publish it for the world to cook.</p>
-        <p>What you end up with is each recipe on a standard page, with a tap to switch language, swap cups for grams, or scale the whole thing up for a crowd. There's a cook mode with large type that keeps the screen awake while your hands are covered in flour. And, the original photograph is always accessible with a tap, preserving my great-grandmother's handwriting. The recipes are organised by book and author, so you can wander through by whose hand wrote them. Uploading recipes is invite-only for the family at the moment, but anyone can read the published recipes living at <a href="https://recipes.wimstrydom.com" target="_blank" rel="noopener">recipes.wimstrydom.com</a>.</p>
+        <p>What you end up with is each recipe on a standard page, with a tap to switch language, swap cups for grams, or scale the whole thing up for a crowd. There's a cook mode with large type that keeps the screen awake while your hands are covered in flour. And, the original photograph is always accessible with a tap, preserving my great-grandmother's handwriting. The recipes are organised by book and author, so you can wander through by whose hand wrote them. Uploading recipes is invite-only for the family at the moment, but soon I will be launching publically. More on that at the end.</p>
       </div>
     </section>
 
@@ -596,12 +596,13 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
         </div>
       </div>
 
+      <!-- Claude insights section — temporarily commented out; restore by removing the wrapping comment markers below.
       <h3>Claude's insights from this experience</h3>
       <div class="body-text">
         <p>I asked Claude to look back over the whole build and all our conversations and pull out some insights:</p>
       </div>
 
-      <!-- Claude insights collapsible callout -->
+      Claude insights collapsible callout
       <div class="claude-callout" id="callout-insights">
         <button class="claude-callout-header" aria-expanded="false" aria-controls="callout-insights-body">
           <div class="claude-callout-badge">
@@ -629,6 +630,7 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
           </div>
         </div>
       </div>
+      -->
     </section>
 
     <!-- 07 Fun Facts -->

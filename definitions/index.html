@@ -12,32 +12,158 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Definitions — Wim Strydom</title>
-<meta name="description" content="Who I am, distilled. Coordinates, philosophy, a CV, and a way to get in touch.">
+<meta name="description" content="Who I am, where I'm from, what I do for a living, what I believe, and how to get in touch.">
 <meta property="og:title" content="Definitions — Wim Strydom">
-<meta property="og:description" content="Who I am, distilled. Coordinates, philosophy, a CV, and a way to get in touch.">
-<meta property="og:type" content="website">
+<meta property="og:description" content="Who I am, where I'm from, what I do for a living, what I believe, and how to get in touch.">
+<meta property="og:type" content="profile">
 <meta property="og:url" content="https://wimstrydom.com/definitions">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
+<style>
+
+/* ── SECTION RHYTHM ── */
+.def-section {
+  margin-bottom: 72px;
+  scroll-margin-top: 76px;
+}
+
+.def-section-label {
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  border-bottom: 1px solid var(--ink-faint);
+  padding-bottom: 10px;
+  margin-bottom: 28px;
+  display: block;
+}
+
+/* ── ROLE LIST (condensed professional background) ── */
+.role-list {
+  margin: 28px 0 24px;
+}
+
+.role-row {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 0 28px;
+  align-items: baseline;
+  padding: 16px 0;
+  border-top: 1px solid var(--ink-faint);
+}
+
+.role-row:last-child {
+  border-bottom: 1px solid var(--ink-faint);
+}
+
+.role-when {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  padding-top: 4px;
+}
+
+.role-co {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-bright);
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.role-role {
+  font-size: 18px;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+.role-place {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-top: 3px;
+}
+
+@media (max-width: 600px) {
+  .role-row {
+    grid-template-columns: 1fr;
+    gap: 6px 0;
+  }
+  .role-when { padding-top: 0; }
+}
+
+/* ── CONTACT ── */
+.contact-list {
+  margin-top: 28px;
+}
+
+.contact-row {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 0 28px;
+  align-items: baseline;
+  padding: 16px 0;
+  border-top: 1px solid var(--ink-faint);
+}
+
+.contact-row:last-child {
+  border-bottom: 1px solid var(--ink-faint);
+}
+
+.contact-label {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.contact-value {
+  font-size: 18px;
+  color: var(--ink);
+}
+
+.contact-value a {
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid var(--gold-dim);
+  transition: opacity 0.18s;
+}
+
+.contact-value a:hover { opacity: 0.72; }
+
+@media (max-width: 600px) {
+  .contact-row {
+    grid-template-columns: 1fr;
+    gap: 6px 0;
+  }
+}
+
+</style>
 </head>
 <body>
 
+<div id="progress-bar"></div>
+
 <header>
   <a href="../" class="wordmark">Wim Strydom</a>
+  <span class="header-date">Book 01</span>
 </header>
 
 <div class="page-outer" id="top">
 
   <nav class="rail" id="rail">
-    <span class="rail-label">Chapters</span>
-    <span class="rail-item" style="color: var(--ink-dim); cursor: default; font-style: italic;">Coordinates</span>
-    <a href="philosophy/" class="rail-item active">
-      Philosophy
-    </a>
-    <span class="rail-item" style="color: var(--ink-dim); cursor: default; font-style: italic;">Curriculum Vitae</span>
-    <span class="rail-item" style="color: var(--ink-dim); cursor: default; font-style: italic;">Contact</span>
+    <span class="rail-label">Sections</span>
+    <a href="#site" class="rail-item" data-section="site">This site</a>
+    <a href="#about" class="rail-item" data-section="about">Who I am</a>
+    <a href="#work" class="rail-item" data-section="work">What I do</a>
+    <a href="#philosophy" class="rail-item" data-section="philosophy">What I believe</a>
+    <a href="#contact" class="rail-item" data-section="contact">Get in touch</a>
     <div class="rail-divider"></div>
     <a href="../" class="rail-back">← home</a>
   </nav>
@@ -45,17 +171,139 @@
   <main class="content">
     <span class="page-eyebrow">Book 01</span>
     <h1 class="page-title">Definitions</h1>
-    <p class="page-intro">Where I'm from, what I believe, how I've spent my time, and how to reach me. Four chapters — one complete so far.</p>
+    <p class="page-intro">This website is a collection of my personal thoughts and projects. It's mostly meant as repository for myself, but I also like to share my thoughts and experiences with the world. This page is about me and who I am.</p>
     <div class="page-divider"></div>
 
-    <section id="philosophy" style="scroll-margin-top: 76px;">
-      <h2>Philosophy</h2>
-      <p>My stances on core questions — metaphysics, consciousness, epistemology, moral philosophy, and the meaning of life. Declarative, considered, and revisable.</p>
-      <p style="margin-top: 24px;"><a href="philosophy/">Read the philosophy page →</a></p>
+    <!-- ══ THIS SITE ══ -->
+    <section class="def-section" id="site">
+      <span class="def-section-label">This site</span>
+      <div class="body-text">
+        <p>This site is organised into five <em>books</em>. Each one is a different type of thing I like to create. <strong>Definitions</strong> — the one you're reading — is the closest thing to an about page: who I am and what I think. <strong>Narratives</strong> collects short fiction and poetry. <strong>Explorations</strong> is where I follow a curiosity to its conclusion — essays and interactive calculators, usually with a physics or systems bent. <strong>Instruments</strong> documents things I've built, end to end. <strong>Salivations</strong> is for food and drink.</p>
+        <p>There's no single thread tying them together except that I made all of them and found each one worth finishing.</p>
+      </div>
+    </section>
+
+    <!-- ══ WHO I AM ══ -->
+    <section class="def-section" id="about">
+      <span class="def-section-label">Who I am</span>
+      <div class="body-text">
+        <p>I'm Wim. South African by birth, living and working in <strong>London</strong>. Professionally, I'm a strategy consultant at BCG; fundamentally, I'm a curious generalist who likes building things and chasing ideas further than is always reasonable. The quantitative side of my work scratches one itch; the writing, the simulations, and the cooking scratch the rest. This site is where the second category lives.</p>
+        <p>I am from <strong>Cape Town</strong> originally with Afrikaans as my first language. I had a long detour through Cape Town's film and media scene before I ever touched a spreadsheet before studying economics and finance at <strong>Stellenbosch University</strong>. Outside of Cape Town and London, 've lived in <strong>Tübingen, Germany</strong>, <strong>Zürich, Switzerland</strong>, <strong>Johannesburg, South Africa</strong>, and <strong>Nairobi, Kenya</strong></p>
+      </div>
+    </section>
+
+    <!-- ══ WHAT I DO ══ -->
+    <section class="def-section" id="work">
+      <span class="def-section-label">What I do</span>
+      <div class="body-text">
+        <p>I work in strategy, turning ambiguous problems into decisions with clear recommendations to act on. My work has heavily involved AI strategies and implementations at large corporates, but has also spanned pricing, channel and growth strategy, and operating-model design, across consumer goods, retail, banking, pharma, entertainment, and asset management.</p>
+      </div>
+
+      <div class="role-list">
+        <div class="role-row">
+          <div class="role-when">2025 — Present</div>
+          <div>
+            <div class="role-co">Boston Consulting Group</div>
+            <div class="role-role">Consultant</div>
+            <div class="role-place">London</div>
+          </div>
+        </div>
+        <div class="role-row">
+          <div class="role-when">2024 — 2025</div>
+          <div>
+            <div class="role-co">Merlin Entertainments</div>
+            <div class="role-role">Strategy Manager</div>
+            <div class="role-place">London</div>
+          </div>
+        </div>
+        <div class="role-row">
+          <div class="role-when">2021 — 2024</div>
+          <div>
+            <div class="role-co">Boston Consulting Group</div>
+            <div class="role-role">Associate · Business Analyst</div>
+            <div class="role-place">Johannesburg &amp; Nairobi</div>
+          </div>
+        </div>
+        <div class="role-row">
+          <div class="role-when">2018 — 2021</div>
+          <div>
+            <div class="role-co">Stellenbosch University</div>
+            <div class="role-role">BCom, International Business — Economics &amp; Finance</div>
+            <div class="role-place">South Africa · exchange semester at Tübingen</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ══ WHAT I BELIEVE ══ -->
+    <section class="def-section" id="philosophy">
+      <span class="def-section-label">What I believe</span>
+      <div class="body-text">
+        <p>As a personal repository, I keep a standing set of positions on the big questions of life: metaphysics, consciousness, knowledge, morality, and what any of it is for. They're declarative, formed over years, and will certainly change more; writing them down is something I did so future-me can reflect on how they've changed.</p>
+        <p style="margin-bottom: 0;"><a href="philosophy/">Read the philosophy page →</a></p>
+      </div>
+    </section>
+
+    <!-- ══ GET IN TOUCH ══ -->
+    <section class="def-section" id="contact" style="margin-bottom: 0;">
+      <span class="def-section-label">Get in touch</span>
+      <div class="body-text">
+        <p>The fastest ways to reach me are below. Please don't send me spam.</p>
+      </div>
+
+      <div class="contact-list">
+        <div class="contact-row">
+          <span class="contact-label">Email</span>
+          <span class="contact-value"><a id="email-link" href="#">loading…</a></span>
+        </div>
+        <div class="contact-row">
+          <span class="contact-label">LinkedIn</span>
+          <span class="contact-value"><a href="https://www.linkedin.com/in/wim-strydom/" target="_blank" rel="noopener">linkedin.com/in/wim-strydom</a></span>
+        </div>
+      </div>
     </section>
 
   </main>
 </div>
 
+<script>
+// Assemble the email at runtime so it isn't a plain-text string in the markup.
+(function () {
+  var user = 'wimstrydom';
+  var domain = 'outlook' + '.' + 'com';
+  var addr = user + '@' + domain;
+  var a = document.getElementById('email-link');
+  if (a) {
+    a.href = 'mailto:' + addr;
+    a.textContent = addr;
+  }
+})();
+
+// Rail active state on scroll
+function updateRailActive() {
+  const sections = document.querySelectorAll('.def-section[id]');
+  const railItems = document.querySelectorAll('.rail-item[data-section]');
+  let activeId = null;
+  let bestScore = -Infinity;
+  sections.forEach(sec => {
+    const rect = sec.getBoundingClientRect();
+    const visible = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
+    if (visible > bestScore) { bestScore = visible; activeId = sec.id; }
+  });
+  railItems.forEach(item => item.classList.toggle('active', item.dataset.section === activeId));
+}
+window.addEventListener('scroll', updateRailActive, { passive: true });
+updateRailActive();
+
+// Progress bar
+const bar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scrolled = doc.scrollTop || document.body.scrollTop;
+  const total = doc.scrollHeight - doc.clientHeight;
+  bar.style.transform = `scaleX(${total > 0 ? scrolled / total : 0})`;
+}, { passive: true });
+</script>
 </body>
 </html>

@@ -105,7 +105,7 @@ Page title specifics: `line-height: 1.08; letter-spacing: -0.3px; margin-bottom:
 Three reusable interactive components are defined in `style.css` (after the content archetypes). Use them on any page that needs them.
 
 **Step carousel (`.step-carousel-wrap` / `.step-carousel` / `.step-card`):**
-A horizontally snap-scrolling card row for presenting multi-step processes. Each card has a round gold number badge (`.step-card-num`), an uppercase dim title (`.step-card-title`), and body prose (`.step-card-body`). Dot indicators (`.step-carousel-dots` / `.step-carousel-dot`) live below the carousel. The wrap has a right-fade gradient overlay (via `::after`) to signal scrollability. Requires the carousel JS snippet (dot sync + drag-to-scroll) — see `instruments/cooking-without-going-in-the-kitchen/index.html` for the reference implementation.
+A horizontally snap-scrolling card row for presenting multi-step processes. Each card has a round gold number badge (`.step-card-num`), an uppercase dim title (`.step-card-title`), and body prose (`.step-card-body`). Dot indicators (`.step-carousel-dots` / `.step-carousel-dot`) live below the carousel. The wrap has a right-fade gradient overlay (via `::after`) to signal scrollability. Requires the carousel JS snippet (dot sync + drag-to-scroll) — see `instruments/cooking-without-entering-the-kitchen/index.html` for the reference implementation.
 
 ```html
 <div class="step-carousel-wrap">
@@ -138,7 +138,7 @@ A CSS Grid of large-number stat tiles with border-table styling. Uses `grid-temp
 ```
 
 **Claude callout (`.claude-callout`):**
-A collapsible callout for Claude-authored commentary. Collapsed by default; toggled by clicking the header button. Uses `grid-template-rows: 0fr → 1fr` for smooth expansion (same technique as the philosophy page accordions). The header shows the inlined Anthropic SVG mark in `--red`, a "Claude" badge label, a summary line, and a `▾` caret that rotates 180° when open. Requires the callout JS snippet — see `instruments/cooking-without-going-in-the-kitchen/index.html`.
+A collapsible callout for Claude-authored commentary. Collapsed by default; toggled by clicking the header button. Uses `grid-template-rows: 0fr → 1fr` for smooth expansion (same technique as the philosophy page accordions). The header shows the inlined Anthropic SVG mark in `--red`, a "Claude" badge label, a summary line, and a `▾` caret that rotates 180° when open. Requires the callout JS snippet — see `instruments/cooking-without-entering-the-kitchen/index.html`.
 
 ```html
 <div class="claude-callout" id="callout-id">
@@ -191,7 +191,7 @@ The site is structured around five **books** — the top-level groupings named D
 index.html                                              Homepage — Meridian layout (no header/rail)
 scope.md                                                Site scope & roadmap document
 
-definitions/index.html                                  Book 01 — Definitions (placeholder, Philosophy chapter live)
+definitions/index.html                                  Book 01 — Definitions (integrated about page; Philosophy linked out)
 definitions/philosophy/index.html                       Philosophy chapter — full dedicated page
 
 narratives/index.html                                   Book 02 — Narratives index (Stories + Poems)
@@ -211,8 +211,9 @@ style-guide/index.html                                  Design system style guid
 ```
 
 Planned books (coming soon, shown on homepage but not yet built):
-- `definitions/` — Coordinates, CV, and Contact chapters still to come
 - `salivations/` — Book 05, food and drink
+
+Definitions (Book 01) is live: the index page integrates the about/CV/contact material, and Philosophy is a full dedicated chapter. A standalone Coordinates chapter may still be added later.
 
 ## Pages
 
@@ -222,7 +223,7 @@ Meridian layout — no header, no rail, full-bleed. Giant split name ("WIM" left
 ### Book 01 — Definitions
 
 #### Definitions index (`definitions/index.html`)
-Placeholder page. Standard header (wordmark → `../`) + left rail listing all four chapters (Coordinates, Philosophy, CV, Contact). Only Philosophy is a live link; others are listed as dim coming-soon items in the rail with no body sections. Content area has `.page-eyebrow` "Book 01", `.page-title` "Definitions", `.page-intro`, and one chapter section (Philosophy) with a link to `philosophy/`.
+Integrated "about" page — a single self-contained narrative rather than a chapter directory. Sticky header (wordmark → `../`, `.header-date` shows "Book 01") + reading progress bar + fixed left rail with in-page section nav (scroll-spy via the same `updateRailActive` pattern as the CV/build-journey pages). Five `.def-section` blocks, each introduced by a `.def-section-label` (page-specific class): **This site** (the five-books overview), **Who I am** (origins — South Africa, Stellenbosch, now London), **What I do** (condensed professional background — a `.role-list` of company/role/place/dates rows, *not* a verbatim CV, with a link out to LinkedIn for the full record), **What I believe** (short intro linking to `philosophy/`), and **Get in touch** (a `.contact-list` of Email + LinkedIn rows). The email is assembled at runtime in JS so it isn't a plain-text string in the markup (light anti-scraping). Prose lives in `.body-text` blocks. There is no standalone CV page — the CV is folded into the "What I do" section by design.
 
 #### Philosophy (`definitions/philosophy/index.html`)
 "The Manuscript" design. Key layout features:
@@ -279,7 +280,7 @@ Earlier essay page titled "Orbital Mechanics" that became the seed for the space
 ### Book 04 — Instruments
 
 #### Instruments index (`instruments/index.html`)
-Two-section list page. "Build Journeys" section and "Tools" section (Tools currently shows "coming soon"). Follows the same centred-container layout as the explorations index (no rail, no header — just `.container` with a giant heading).
+Two-section list page. "Build Journeys" section and "Tools" section. Follows the same centred-container layout as the explorations index (no rail, no header — just `.container` with a giant heading). Tools may link to external apps (e.g. `malva.recipes`, opened with `target="_blank"`).
 
 #### Build Journey pages (`instruments/<slug>/index.html`)
 Long-form narrative pages documenting a complete app build. Use the standard rail + content layout (same shell as the philosophy page): sticky header with wordmark → `../../`, reading progress bar, fixed left rail with section links that highlight on scroll via IntersectionObserver.
@@ -295,7 +296,7 @@ Key design patterns used on Build Journey pages:
 
 The Anthropic mark SVG (13-ray starburst, `fill="currentColor"`, `viewBox="0 0 100 100"`) is inlined directly in the HTML wherever the Claude icon is needed; the icon colour is set via `color: var(--red)` on the containing element. No external SVG file.
 
-**First build journey:** `instruments/cooking-without-going-in-the-kitchen/index.html` — the recipe app build story.
+**First build journey:** `instruments/cooking-without-entering-the-kitchen/index.html` — the recipe app build story.
 
 ## Content archetypes
 
@@ -406,7 +407,7 @@ The `.md` file is authored by Wim — reproduce it exactly as written, no edits 
 
 ## Adding a new Build Journey
 
-1. Create `instruments/<slug>/index.html` — use `instruments/cooking-without-going-in-the-kitchen/index.html` as the template.
+1. Create `instruments/<slug>/index.html` — use `instruments/cooking-without-entering-the-kitchen/index.html` as the template.
 2. Add the entry to `instruments/index.html` under the "Build Journeys" section (newest-first).
 3. Add a sublink to the Book 04 row in `index.html` (inside `.m-book-sublinks`).
 4. The page uses rail + content layout. Sections get `id` attributes for scroll-spy. Use `<h2 data-num="NN">` for numbered section ornaments.
