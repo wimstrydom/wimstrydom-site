@@ -43,7 +43,6 @@
   display: flex;
   justify-content: flex-start;
   padding: 5.5vh 6vw 9vh;
-  border-bottom: 1px solid var(--ink-faint);
 }
 .m-intro-inner { max-width: 460px; }
 .m-label {
@@ -64,6 +63,9 @@
 /* ── RECENT MACHINATIONS ── */
 .m-recent { padding-top: 20px; }
 .m-section-wrap { padding: 0 6vw; }
+/* Rule sits below the "Recent Machinations" heading; the heading is a section
+   title, the cards a balanced block between this rule and the books line. */
+.m-recent-rule { height: 1px; background: var(--ink-faint); margin: 18px 6vw 0; }
 .m-recent-strip {
   display: flex;
   overflow-x: auto;
@@ -256,6 +258,7 @@
   <div class="m-section-wrap">
     <span class="m-label">Recent Machinations</span>
   </div>
+  <div class="m-recent-rule"></div>
   <div class="m-recent-strip">
     <div class="m-recent-item">
       <span class="m-recent-cat">Narrative</span>
