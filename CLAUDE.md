@@ -207,11 +207,13 @@ explorations/space-sim/index.html                       Legacy orbital-mechanics
 instruments/index.html                                  Book 04 — Instruments index (Build Journeys + Tools sections)
 instruments/<slug>/index.html                           Individual Build Journey page
 
+salivations/index.html                                  Book 05 — Salivations index (recipe listing)
+salivations/recipe/index.html                           Recipe viewer (reads ?slug= param, fetches JSON)
+salivations/data/<slug>.json                            Exported recipe JSON (one file per recipe)
+salivations/data/index.json                             Recipe manifest (drives the listing page)
+
 style-guide/index.html                                  Design system style guide — colour tokens, typography, components, spacing
 ```
-
-Planned books (coming soon, shown on homepage but not yet built):
-- `salivations/` — Book 05, food and drink
 
 Definitions (Book 01) is live: the index page integrates the about/CV/contact material, and Philosophy is a full dedicated chapter. A standalone Coordinates chapter may still be added later.
 
@@ -298,6 +300,29 @@ The Anthropic mark SVG (13-ray starburst, `fill="currentColor"`, `viewBox="0 0 1
 
 **First build journey:** `instruments/cooking-without-entering-the-kitchen/index.html` — the recipe app build story.
 
+### Book 05 — Salivations
+
+#### Salivations index (`salivations/index.html`)
+Centred-container listing page (same pattern as narratives/index.html). Fetches `/salivations/data/index.json` at runtime and renders a `.link-list` of recipes. Each entry links to `salivations/recipe/?slug=<slug>`. No rail, no header — just `.container` with a giant heading.
+
+#### Recipe viewer (`salivations/recipe/index.html`)
+Single shared viewer for all recipes. Reads `?slug=` from the URL, fetches `/salivations/data/<slug>.json`, and builds the content entirely in JS. Uses the standard rail + content layout: sticky header (wordmark → `../../`), reading progress bar, fixed left rail with a scale multiplier (×N, +/− buttons), unit toggle (Standard / Metric), and section nav (Ingredients, Method).
+
+**Split-view reading.** The viewer mirrors the recipe app's read mode: ingredients and method sit side by side in a CSS grid (`.r-split`, `0.82fr / 1.18fr`), with the ingredients column **pinned** (`position: sticky`) while the longer method scrolls. At ≤860px the grid collapses to a single column (ingredients above method, no longer sticky), the rail is hidden, and a `.r-mobile-controls` strip below the title carries the same scale + unit controls. The viewer page gets a wider canvas than the default reading column via `.content.recipe-viewer { --content-max: 940px }`.
+
+Uses the `.recipe` archetype classes from `style.css` (`.r-split`, `.r-col-ing`, `.r-col-method`, `.r-section-head`, `.r-ing-list`, `.r-ing`, `.r-ing-measure`, `.r-ing-qty`, `.r-ing-unit`, `.r-ing-name`, `.r-ing-prep`, `.r-ing-opt`, `.r-step-list`, `.r-step`, `.r-step-num`, `.r-step-text`, `.r-step-badge`, `.r-group-label`) plus the viewer controls (`.r-control`, `.r-scale`, `.r-unit-toggle`, `.r-mobile-controls`). The page file itself carries **no** formatting CSS — everything lives in the `.recipe` archetype.
+
+**Unit + temperature conversion.** This is a faithful vanilla-JS port of the recipe app's deterministic helpers (`apps/web/components/recipe/recipe-helpers.ts` in recipe-scanner) — keep them in sync. Standard mode shows quantities as written (cups, tsp, °F…), just scaled and relabelled. Metric mode converts volume→volume and weight→weight via a canonical unit table (`tsp`/`tbsp`/`cup`/`fl_oz`/`pint`/`quart`/`gallon` → ml/l; `oz`/`lb` → g/kg), choosing the largest target unit that keeps the quantity ≥ 1, then snapping to cooking-friendly values (1 tsp → 5 ml, 1 tbsp → 15 ml, 1 cup → 250 ml). **Volume↔weight is never attempted.** Custom/non-canonical units (tin, packet) pass through verbatim. Temperatures convert °F↔°C (rounded to the nearest 5°) in Metric mode. Vulgar fractions (¼ ½ ¾ ⅓ ⅔) are used for source quantities; decimals after conversion. Generic group labels (`Ingredients`, `Method`, etc.) are suppressed.
+
+#### Recipe data format (`salivations/data/<slug>.json`)
+Exported from the recipe-scanner app via the `export-recipe` Claude skill (in the recipe-scanner project). Fields: `slug`, `name`, `description`, `yield`, `source` (book + era), `ingredient_groups`, `step_groups`, `categorization`, `exported_at`. English only — no bilingual fields, no pipeline metadata.
+
+#### Manifest (`salivations/data/index.json`)
+JSON array: `[{ slug, name, description, categories, source }]`. Updated automatically by the export skill when a new recipe is added. Powers the listing page.
+
+#### Adding a new recipe
+Use the `export-recipe` skill in the recipe-scanner Claude session: "export [recipe name] from [library] to the site". The skill writes the JSON file and updates the manifest. Then push to main to publish.
+
 ## Content archetypes
 
 Content archetypes are self-contained CSS classes defined in `style.css` that provide complete rendering for a content type. Individual narrative pages set the archetype class on the rendered content div and need zero formatting CSS of their own.
@@ -318,9 +343,13 @@ Applied to poem documents. Covers: base text (20px / line-height 2), stanza para
 <div id="story-body" class="poem">${poemHtml}</div>
 ```
 
+### `.recipe` — recipe viewer
+
+Applied to the ingredient and step containers inside `salivations/recipe/index.html`. Covers: the split-view layout (`.r-split`, `.r-col-ing` sticky, `.r-col-method`, `.r-section-head`), ingredient rows (`.r-ing`, `.r-ing-measure`, `.r-ing-qty`, `.r-ing-unit`, `.r-ing-name`, `.r-ing-prep`, `.r-ing-opt`), step rows (`.r-step`, `.r-step-num`, `.r-step-text`, `.r-step-badge`), group labels (`.r-group-label`), the viewer controls (`.r-control`, `.r-scale`, `.r-unit-toggle`, `.r-mobile-controls`), the `.recipe-meta` line, and the `.r-state` loading/error message. The wider viewer canvas is set via `.content.recipe-viewer`.
+
 ### Adding a new archetype
 
-If a new content type is needed (e.g. `.recipe`), add a complete self-contained archetype section to `style.css` after the existing archetypes. Do not put any of its rules in the page file.
+If a new content type is needed beyond the existing three, add a complete self-contained archetype section to `style.css` after the `.recipe` section. Do not put any of its rules in the page file.
 
 ## Content rules
 

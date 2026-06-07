@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DC8TCGZT0C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DC8TCGZT0C');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salivations — Wim Strydom</title>
+<meta name="description" content="Food and drink worth remembering. Recipes I've made, inherited, and loved.">
+<meta property="og:title" content="Salivations — Wim Strydom">
+<meta property="og:description" content="Food and drink worth remembering. Recipes I've made, inherited, and loved.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wimstrydom.com/salivations">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  padding: 48px 32px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.back {
+  display: block;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink-dim);
+  text-decoration: none;
+  margin-bottom: 56px;
+  transition: color 0.18s;
+}
+.back:hover { color: var(--ink); }
+
+.heading {
+  font-size: clamp(60px, 12vw, 108px);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--ink-bright);
+  margin-bottom: 64px;
+  letter-spacing: -1px;
+}
+
+.section-label {
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  display: block;
+  margin-bottom: 16px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--ink-faint);
+  margin-bottom: 8px;
+}
+
+.link-list {
+  list-style: none;
+}
+
+.link-list li {
+  border-bottom: 1px solid var(--ink-faint);
+}
+
+.link-list a {
+  display: block;
+  padding: 13px 0;
+  font-size: 20px;
+  line-height: 1;
+  text-decoration: none;
+  color: var(--ink);
+  transition: color 0.18s;
+}
+.link-list a:hover { color: var(--gold); }
+
+.recipe-meta {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink-dim);
+  margin-top: 3px;
+  display: block;
+}
+
+.empty {
+  font-size: 16px;
+  font-style: italic;
+  color: var(--ink-dim);
+  padding: 16px 0;
+}
+
+@media (max-width: 480px) {
+  .container { padding: 36px 24px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="../" class="back">← Wim Strydom</a>
+  <h1 class="heading">Salivations</h1>
+
+  <span class="section-label">Recipes</span>
+  <div class="divider"></div>
+  <ul class="link-list" id="recipe-list">
+    <li><span class="empty">Loading…</span></li>
+  </ul>
+</div>
+
+<script>
+fetch('/salivations/data/index.json')
+  .then(r => r.json())
+  .then(recipes => {
+    const list = document.getElementById('recipe-list');
+    if (!recipes.length) {
+      list.innerHTML = '<li><span class="empty">Nothing here yet.</span></li>';
+      return;
+    }
+    list.innerHTML = recipes.map(r => {
+      const cats = (r.categories || []).map(c => c[0].toUpperCase() + c.slice(1)).join(', ');
+      const meta = [cats, r.source].filter(Boolean).join(' · ');
+      return `<li>
+        <a href="recipe/?slug=${r.slug}">
+          ${r.name}
+          <span class="recipe-meta">${meta}</span>
+        </a>
+      </li>`;
+    }).join('');
+  })
+  .catch(() => {
+    document.getElementById('recipe-list').innerHTML =
+      '<li><span class="empty">Could not load recipes.</span></li>';
+  });
+</script>
+</body>
+</html>

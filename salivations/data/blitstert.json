@@ -1,0 +1,293 @@
+{
+  "slug": "blitstert",
+  "name": "Blitstert",
+  "description": "This is a traditional layer cake with a cream-milk filling.",
+  "yield": null,
+  "source": {
+    "book": "Ma se Resepteboek",
+    "era": null
+  },
+  "ingredient_groups": [
+    {
+      "label": "Cake Batter",
+      "ingredients": [
+        {
+          "id": "ing_butter_cake",
+          "quantity": 0.5,
+          "unit": {
+            "normalized": "cup",
+            "original": "k"
+          },
+          "name": "butter",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_sugar_cake",
+          "quantity": 0.5,
+          "unit": {
+            "normalized": "cup",
+            "original": "k"
+          },
+          "name": "sugar",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_egg_yolks",
+          "quantity": 4,
+          "unit": null,
+          "name": "egg yolks",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_milk_cake",
+          "quantity": 0.5,
+          "unit": {
+            "normalized": "cup",
+            "original": "k."
+          },
+          "name": "milk",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_flour",
+          "quantity": 1,
+          "unit": {
+            "normalized": "cup",
+            "original": "k"
+          },
+          "name": "flour",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_bp",
+          "quantity": 2,
+          "unit": {
+            "normalized": "tsp",
+            "original": "tl."
+          },
+          "name": "baking powder",
+          "preparation": "leveled off",
+          "optional": false
+        },
+        {
+          "id": "ing_salt",
+          "quantity": null,
+          "unit": null,
+          "name": "salt",
+          "preparation": null,
+          "optional": true
+        },
+        {
+          "id": "ing_vanilla",
+          "quantity": 1,
+          "unit": {
+            "normalized": "tsp",
+            "original": "tl."
+          },
+          "name": "vanilla",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_egg_whites",
+          "quantity": null,
+          "unit": null,
+          "name": "egg whites",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_sugar_topping",
+          "quantity": 1,
+          "unit": {
+            "normalized": "cup",
+            "original": "koppie"
+          },
+          "name": "sugar",
+          "preparation": null,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "label": "Filling",
+      "ingredients": [
+        {
+          "id": "ing_milk_filling",
+          "quantity": 1,
+          "unit": {
+            "normalized": "cup",
+            "original": "k."
+          },
+          "name": "milk",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_sugar_filling",
+          "quantity": 0.5,
+          "unit": {
+            "normalized": "cup",
+            "original": "k"
+          },
+          "name": "sugar",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_flour_filling",
+          "quantity": 1,
+          "unit": {
+            "normalized": "tbsp",
+            "original": "El."
+          },
+          "name": "flour",
+          "preparation": "heaped",
+          "optional": false
+        },
+        {
+          "id": "ing_egg_filling",
+          "quantity": 1,
+          "unit": null,
+          "name": "egg",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_milk_filling_2",
+          "quantity": 2,
+          "unit": {
+            "normalized": "tbsp",
+            "original": "El."
+          },
+          "name": "milk",
+          "preparation": null,
+          "optional": false
+        },
+        {
+          "id": "ing_cream_filling",
+          "quantity": null,
+          "unit": null,
+          "name": "cream",
+          "preparation": null,
+          "optional": false
+        }
+      ]
+    }
+  ],
+  "step_groups": [
+    {
+      "label": null,
+      "steps": [
+        {
+          "number": 1,
+          "instruction": "Beat butter and sugar.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 2,
+          "instruction": "Beat egg yolks and milk.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 3,
+          "instruction": "Add to butter and sugar.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 4,
+          "instruction": "Add little by little the flour and baking powder.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 5,
+          "instruction": "Add salt and vanilla.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 6,
+          "instruction": "Pour into two layer cake pans.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 7,
+          "instruction": "Beat egg whites with sugar and place on top of cake portion.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 8,
+          "instruction": "Bake at 400°F.",
+          "duration_minutes": null,
+          "temperature": {
+            "unit": "F",
+            "value": 400
+          }
+        }
+      ]
+    },
+    {
+      "label": "Filling",
+      "steps": [
+        {
+          "number": 9,
+          "instruction": "Boil milk.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 10,
+          "instruction": "Mix flour, sugar and egg.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 11,
+          "instruction": "Add milk.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 12,
+          "instruction": "Stir into boiling milk and cook until done.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 13,
+          "instruction": "Allow to cool.",
+          "duration_minutes": null,
+          "temperature": null
+        },
+        {
+          "number": 14,
+          "instruction": "Mix with cream until slack enough.",
+          "duration_minutes": null,
+          "temperature": null
+        }
+      ]
+    }
+  ],
+  "categorization": {
+    "categories": [
+      "dessert",
+      "baking"
+    ],
+    "tags": [
+      "traditional",
+      "layer-cake"
+    ]
+  },
+  "exported_at": "2026-06-07T14:14:45.815Z"
+}
