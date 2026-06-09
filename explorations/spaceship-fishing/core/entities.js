@@ -40,19 +40,21 @@ export class Atmosphere {
     this.thickness       = thickness;       // shell thickness in px (shell mode only)
   }
 
-  // Returns drag force vector for a given position and velocity.
-  dragAt(position, velocity) {
-    let k = this.dragCoefficient;
-
+  // Relative air density at a position: 1 at the surface, 0 at the outer edge
+  // (shell mode), or uniformly 1 (field mode). Used for drag and aero heating.
+  densityAt(position) {
     if (this.mode === 'shell' && this.planet) {
       const dist  = vec2.distance(position, this.planet.position);
       const inner = this.planet.radius;     // atmosphere starts at surface
       const outer = inner + this.thickness; // outer edge set by thickness slider
-      // t = 1 at surface, 0 at outer edge — matches visual gradient
-      const t = 1 - Math.max(0, Math.min(1, (dist - inner) / (outer - inner)));
-      k = this.dragCoefficient * t;
+      return 1 - Math.max(0, Math.min(1, (dist - inner) / (outer - inner)));
     }
+    return 1;
+  }
 
+  // Returns drag force vector for a given position and velocity.
+  dragAt(position, velocity) {
+    const k = this.dragCoefficient * this.densityAt(position);
     return vec2.scale(velocity, -k);
   }
 }

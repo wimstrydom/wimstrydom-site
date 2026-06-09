@@ -1,4 +1,5 @@
 import { Rocket, Planet, Atmosphere } from './core/entities.js';
+import { Chain } from './core/chain.js';
 import { SETUPS } from './core/setups.js';
 import { SvgRenderer } from './render/svg-renderer.js';
 import { SimLoop } from './loop.js';
@@ -38,7 +39,20 @@ function buildEntities(cfg, dims) {
     engineDirection: rCfg.engineDirection || 'rear',
   });
 
-  return { rocket, planet, atmosphere };
+  let chain = null;
+  if (cfg.chain) {
+    chain = new Chain(cfg.chain);
+    layoutChain(chain, cfg, rocket);
+  }
+
+  return { rocket, planet, atmosphere, chain };
+}
+
+// Lay the chain out along its configured initial direction.
+// cfg.chain.initAngle is radians from straight-down (0 = hanging vertically).
+function layoutChain(chain, cfg, rocket) {
+  const a = cfg.chain.initAngle || 0;
+  chain.layout(rocket, { x: Math.sin(a), y: Math.cos(a) });
 }
 
 // ── ENGINE BUTTON ─────────────────────────────────────────────────────────────
@@ -90,39 +104,51 @@ export function mount(mountEl, setupName, options = {}) {
   const height = options.height || mountEl.clientHeight || 400;
   const dims   = { width, height };
 
-  let { rocket, planet, atmosphere } = buildEntities(cfg, dims);
+  let { rocket, planet, atmosphere, chain } = buildEntities(cfg, dims);
+
+  const flatWorld = cfg.flatWorld
+    ? { atmoTopY: resolve(cfg.flatWorld.atmoTopY, dims) }
+    : null;
 
   const rendererConfig = {
     width, height,
-    planet:        planet  ? { position: planet.position,  radius: planet.radius } : null,
-    atmosphere:    cfg.atmosphere || null,
+    // Flat-world setups use a huge off-screen planet for uniform gravity —
+    // it provides physics only and must not be drawn.
+    planet:        (planet && !flatWorld) ? { position: planet.position, radius: planet.radius } : null,
+    atmosphere:    flatWorld ? null : (cfg.atmosphere || null),
+    flatWorld,
+    chain:         !!chain,
+    plume:         cfg.plume || null,
     showOrbitPath: cfg.showOrbitPath || false,
     orbitRadius:   cfg.orbitRadius  || null,
     planetLabel:   cfg.planetLabel  || null,
+    planetLabelSize: cfg.planetLabelSize || null,
+    rocketScale:   cfg.rocketScale  || 1,
     hideRocket:    cfg.hideRocket   || false,
   };
 
   const renderer = new SvgRenderer(mountEl, rendererConfig);
 
   // Initial static render
-  renderer.update({ rocket, fadeAlpha: 1 }, 0);
+  renderer.update({ rocket, chain, fadeAlpha: 1 }, 0);
 
   let buttonHandle = null;
   if (cfg.controls?.showButton) {
     buttonHandle = createEngineButton(mountEl, rocket);
   }
 
-  // Crash callout overlay — HTML element shown at the rocket's crash position.
+  // Callout overlay — HTML element shown at a sim-space position (rocket
+  // crash point, or the point where the chain burned through).
   let calloutEl = null;
-  function showCrashCallout(text) {
+  function showCallout(text, pos) {
     if (!text) return;
     calloutEl = document.createElement('div');
     calloutEl.className = 'sim-crash-callout';
     calloutEl.textContent = text;
-    const rx = rocket.position.x;
-    const ry = rocket.position.y;
-    calloutEl.style.left = rx + 'px';
-    calloutEl.style.top  = ry + 'px';
+    // Clamp into the panel so off-screen events (e.g. a burn at the edge on
+    // a narrow mobile panel) still show their callout.
+    calloutEl.style.left = Math.max(16, Math.min(width - 120, pos.x)) + 'px';
+    calloutEl.style.top  = Math.max(40, Math.min(height - 24, pos.y)) + 'px';
     mountEl.style.position = 'relative';
     mountEl.appendChild(calloutEl);
     void calloutEl.offsetWidth;
@@ -144,7 +170,7 @@ export function mount(mountEl, setupName, options = {}) {
 
     // Hold the crash frame so the callout (and the crash itself) is readable.
     const holdMs = cfg.crashHoldMs ?? (cfg.crashCallout ? 1400 : 0);
-    if (cfg.crashCallout) showCrashCallout(cfg.crashCallout);
+    if (cfg.crashCallout && loop._crashed) showCallout(cfg.crashCallout, rocket.position);
     loop.pause();
     if (holdMs > 0) await new Promise(r => setTimeout(r, holdMs));
     if (isDestroyed) { isResetting = false; return; }
@@ -160,6 +186,7 @@ export function mount(mountEl, setupName, options = {}) {
     rocket.thrustMagnitude = rebuilt.rocket.thrustMagnitude;
     rocket.engineDirection = cfg.rocket.engineDirection || 'rear';
     rocket.engineOn        = cfg.rocket.engineOn || false;
+    if (chain) layoutChain(chain, cfg, rocket);
 
     loop.resetSimTime();
     loop.setFadeAlpha(0);
@@ -168,13 +195,25 @@ export function mount(mountEl, setupName, options = {}) {
     isResetting = false;
   }
 
+  // Chain burn-through: show the callout at the burn point, let the severed
+  // chain fall for a beat (the loop keeps running), then reset.
+  let burnTimer = null;
+  function handleChainBurn(point) {
+    if (isResetting || isDestroyed) return;
+    showCallout(cfg.chainBurnCallout, point);
+    burnTimer = setTimeout(() => { burnTimer = null; reset(); }, 1600);
+  }
+
   const loop = new SimLoop({
-    rocket, planet, atmosphere,
+    rocket, planet, atmosphere, chain,
     renderer,
     bounds: { width, height },
     trackVelocity: cfg.trackVelocity !== false,
     controller:  cfg.controller  || null,
     autoResetAt: cfg.autoResetAt ?? null,
+    plume:       cfg.plume       || null,
+    onChainBurn: (cfg.chain && cfg.plume) ? handleChainBurn : null,
+    forwardAirspeed: cfg.forwardAirspeed || 0,
     onCrash:     cfg.resetWhen === 'crash'     ? reset : undefined,
     onOffscreen: cfg.resetWhen === 'offscreen' ? reset : undefined,
     onAutoReset: reset,
@@ -201,6 +240,7 @@ export function mount(mountEl, setupName, options = {}) {
     reset:   ()  => reset(),
     destroy: () => {
       isDestroyed = true;
+      if (burnTimer) { clearTimeout(burnTimer); burnTimer = null; }
       loop.destroy();
       renderer.destroy();
       observer?.disconnect();

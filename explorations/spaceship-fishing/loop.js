@@ -8,7 +8,7 @@ const MAX_DT    = 0.1;       // cap real dt to prevent spiral-of-death on tab re
 // One instance per mount. Drives physics sub-stepping and hands snapshots to the renderer.
 
 export class SimLoop {
-  constructor({ rocket, planet, atmosphere, renderer, onCrash, onOffscreen, onAutoReset, bounds, trackVelocity = true, controller = null, autoResetAt = null }) {
+  constructor({ rocket, planet, atmosphere, renderer, onCrash, onOffscreen, onAutoReset, bounds, trackVelocity = true, controller = null, autoResetAt = null, chain = null, plume = null, onChainBurn = null, forwardAirspeed = 0 }) {
     this.rocket      = rocket;
     this.planet      = planet;
     this.atmosphere  = atmosphere;
@@ -20,6 +20,11 @@ export class SimLoop {
     this.controller  = controller;     // (rocket, simTime, dt, ctx) => void — drives scripted scenes
     this.autoResetAt = autoResetAt;    // seconds; null = no auto reset
     this.bounds      = bounds;         // { width, height } — sim canvas dimensions
+    this.chain       = chain;          // Chain instance or null
+    this.plume       = plume;          // { mode, originY, halfAngleDeg, length, heatRate, aeroHeatK } or null
+    this.onChainBurn = onChainBurn;    // (point) => void — fired once when any link reaches heat 1
+    this.forwardAirspeed = forwardAirspeed;  // out-of-plane airspeed (px/s) added to aero heating only
+    this._chainBurnFired = false;
 
     this._rafId       = null;
     this._accumulator = 0;
@@ -42,12 +47,14 @@ export class SimLoop {
     this._lastTime = null;
     this._simTime  = 0;
     this._autoResetFired = false;
+    this._chainBurnFired = false;
     this._tick(performance.now());
   }
 
   resetSimTime() {
     this._simTime = 0;
     this._autoResetFired = false;
+    this._chainBurnFired = false;
   }
 
   pause()  { this._paused = true; }
@@ -84,9 +91,75 @@ export class SimLoop {
 
     // Renderer update
     this.renderer.update(
-      { rocket: this.rocket, fadeAlpha: this._fadeAlpha },
+      { rocket: this.rocket, chain: this.chain, fadeAlpha: this._fadeAlpha },
       dt
     );
+  }
+
+  // World-space exhaust geometry for the current rocket pose: nozzle point and
+  // unit exhaust direction (anti-facing, i.e. local +y rotated into the world).
+  _exhaustGeometry() {
+    const a = this.rocket.angle;
+    const c = Math.cos(a), s = Math.sin(a);
+    const oy = this.plume?.originY ?? 30;
+    return {
+      nozzle: {
+        x: this.rocket.position.x - oy * s,
+        y: this.rocket.position.y + oy * c,
+      },
+      dir: { x: -s, y: c },
+    };
+  }
+
+  // Chain heating: exhaust-plume immersion + aerodynamic heating. Fires
+  // onChainBurn once when any link reaches heat 1, severing the chain there.
+  _heatChain(dt) {
+    const chain = this.chain;
+    const plume = this.plume;
+
+    // Plume immersion — point-in-cone test against the exhaust cone.
+    if (plume && plume.mode === 'cone' && plume.heatRate && this.rocket.engineOn) {
+      const { nozzle, dir } = this._exhaustGeometry();
+      const tanHalf = Math.tan((plume.halfAngleDeg * Math.PI) / 180);
+      for (let i = 1; i < chain.points.length; i++) {
+        const p = chain.points[i];
+        const wx = p.x - nozzle.x;
+        const wy = p.y - nozzle.y;
+        const s = wx * dir.x + wy * dir.y;          // distance along the cone axis
+        if (s <= 0 || s >= plume.length) continue;
+        const rx = wx - s * dir.x;
+        const ry = wy - s * dir.y;
+        const radial = Math.hypot(rx, ry);
+        if (radial < 4 + s * tanHalf) {
+          // Hotter close to the nozzle.
+          p.heat += plume.heatRate * (1 - 0.5 * (s / plume.length)) * dt;
+        }
+      }
+    }
+
+    // Aerodynamic heating — scales with local air density and speed².
+    const aeroK = plume?.aeroHeatK;
+    if (aeroK && this.atmosphere) {
+      const fwd2 = this.forwardAirspeed * this.forwardAirspeed;
+      for (let i = 1; i < chain.points.length; i++) {
+        const p = chain.points[i];
+        const density = this.atmosphere.densityAt({ x: p.x, y: p.y });
+        if (density <= 0) continue;
+        const v = chain.pointVelocity(i, dt);
+        const speed2 = v.x * v.x + v.y * v.y + fwd2;
+        p.heat += aeroK * density * speed2 * dt;
+      }
+    }
+
+    // Burn-through.
+    if (!this._chainBurnFired && this.onChainBurn) {
+      const { value, index } = chain.maxHeat();
+      if (value >= 1) {
+        this._chainBurnFired = true;
+        chain.sever(index);
+        this.onChainBurn({ x: chain.points[index].x, y: chain.points[index].y });
+      }
+    }
   }
 
   _step(dt) {
@@ -96,7 +169,7 @@ export class SimLoop {
 
     // Scripted controller — mutates rocket (engineOn, angle, etc.) by sim time.
     if (this.controller) {
-      this.controller(this.rocket, this._simTime, dt, { planet: this.planet, bounds: this.bounds });
+      this.controller(this.rocket, this._simTime, dt, { planet: this.planet, bounds: this.bounds, chain: this.chain });
     }
 
     // Auto-reset by sim time (used to loop scenes that don't end in a crash).
@@ -122,6 +195,12 @@ export class SimLoop {
 
     this.rocket.position = position;
     this.rocket.velocity = velocity;
+
+    // Chain: step the pendulum dynamics, then apply heating.
+    if (this.chain) {
+      this.chain.step(dt, this.rocket, env);
+      this._heatChain(dt);
+    }
 
     // Auto-orient: smoothly rotate craft to face velocity direction.
     // Disabled for setups that specify a fixed orientation (hover, falling, hail-mary).

@@ -117,6 +117,32 @@ body.split .sim-panel { opacity: 1; }
   pointer-events: none;
 }
 
+/* Dual-view inset — a second, miniature sim in the panel's top-right
+   corner (the zig-zag page shows front view + side view together). */
+.sim-inset {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  width: 230px;
+  height: 190px;
+  border: 1px solid var(--ink-faint);
+  background: var(--bg);
+  display: none;
+}
+.sim-inset.active { display: block; }
+.sim-inset-label {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  pointer-events: none;
+  z-index: 1;
+}
+.sim-inset-mount { width: 100%; height: 100%; }
+
 /* ── CRASH CALLOUT ─────────────────────────────────────────────
    HTML overlay inserted into the sim mount at the rocket's crash
    position. The `left`/`top` are set inline by index.js. */
@@ -221,12 +247,47 @@ body.split .sim-panel { opacity: 1; }
   letter-spacing: 0.02em;
 }
 
+/* ── CTA (final page) ──────────────────────────────────────────── */
+.cta-row {
+  margin-top: 44px;
+  padding-top: 36px;
+  border-top: 1px solid var(--ink-faint);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.cta-note {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--ink-dim);
+  line-height: 1.5;
+}
+
 /* ── RESPONSIVE ────────────────────────────────────────────────
-   On narrow viewports we drop the right-side sim panel and keep
-   the prose centred (the page-turn UI still works). */
+   On narrow viewports the fixed right-side sim panel becomes an
+   inline block inside the active page, between the heading and
+   the prose — phone readers still get the animations. */
 @media (max-width: 960px) {
   .essay-page.has-sim { padding-right: 0; }
   .sim-panel { display: none; }
+  body.sim-inline .sim-panel {
+    display: flex;
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    height: 320px;
+    opacity: 1;
+    pointer-events: auto;
+    border-left: none;
+    border-top: 1px solid var(--ink-faint);
+    border-bottom: 1px solid var(--ink-faint);
+    margin: 4px 0 26px;
+  }
+  body.sim-inline .sim-label { top: 10px; left: 0; }
+  .sim-inset.active { display: none; }
   .essay-page { padding: 36px 0 100px; }
   .essay-page-inner { padding: 0 24px; }
 }
@@ -361,9 +422,80 @@ body.split .sim-panel { opacity: 1; }
       </div>
     </article>
 
-    <!-- TODO: continue from here.
-         Next pages (not yet built): the book version, the movie version,
-         why neither works, the actual zig-zag answer, and a final verdict. -->
+    <article class="essay-page has-sim" data-page-id="book-version" data-sim="fishing-book-pass" data-sim-label="The book's version">
+      <div class="essay-page-inner">
+        <section class="essay-section">
+          <h2>What the book does</h2>
+          <div class="body-text">
+            <p>In the book, the manoeuvre is handled the way a careful engineer would handle it: slowly. The <em>Hail Mary</em> comes down out of orbit and parks itself in a hover, nose to the stars, engines balancing the ship against Adrian's pull. The chain spools out below with the collector on the end, and the ship drifts gently across the sample zone — dipping its lure into the upper atmosphere at something like strolling pace.</p>
+            <p>Run that against our constraints and it starts beautifully. <strong>Imperative one: satisfied.</strong> The collector ambles through the air slowly enough to scoop up live <em>Taumoeba</em> rather than incinerate them.</p>
+            <p>But now watch the chain. A hovering ship is a ship whose engines fire straight down — and hanging directly below the ship, by construction, is the full length of the chain. The most powerful engine humanity ever built, burning continuously, aimed at its own fishing line.</p>
+            <div class="callout">
+              <p class="callout-label">An aside</p>
+              <p>It's arguably worse than it looks. The <em>Hail Mary</em>'s spin drives don't burn fuel at all — they emit a fantastically intense beam of infrared light. A plume of hot gas at least billows and spreads. This is closer to dangling your fishing line through an industrial laser.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </article>
+
+    <article class="essay-page has-sim" data-page-id="movie-version" data-sim="fishing-movie-swoop" data-sim-label="The movie's version">
+      <div class="essay-page-inner">
+        <section class="essay-section">
+          <h2>What the movie does</h2>
+          <div class="body-text">
+            <p>The film swaps patience for drama. Its <em>Hail Mary</em> swoops: it dives toward Adrian in a long arc, skims through the upper atmosphere at the bottom of the pass with the collector trailing behind, and climbs away on the far side. The engines never point anywhere near the chain. <strong>Imperative two: satisfied.</strong></p>
+            <p>The trouble is the speed. A swoop is just an orbit with a flair for theatre — a coasting ellipse whose lowest point grazes the air. And the lowest point of an ellipse has an iron rule attached: it's where you are moving <em>fastest</em>. Faster than a circular orbit at that same altitude — the very speed we ruled out two pages ago as instantly fatal to the collector.</p>
+            <p>Watch the pass. By the bottom of the arc the ship is doing roughly one and a half times circular orbital speed, and the collector isn't sampling the atmosphere so much as detonating against it.</p>
+          </div>
+        </section>
+      </div>
+    </article>
+
+    <article class="essay-page has-sim" data-page-id="tilt-version" data-sim="fishing-tilt-pass" data-sim-label="Just tilt the engines?">
+      <div class="essay-page-inner">
+        <section class="essay-section">
+          <h2>The chain always finds the fire</h2>
+          <div class="body-text">
+            <p>There's an obvious repair to the book's version: tilt. Hover crooked, so the exhaust points off to one side and the chain hangs clear on the other. Burn a touch harder to make up the vertical difference. Problem solved?</p>
+            <p>Watch what the chain does. It swings — calmly, deliberately — directly into the plume.</p>
+            <p>This is not bad luck; it's an identity. A hanging chain doesn't point toward the planet — it points along <em>apparent gravity</em>: real gravity minus the ship's own acceleration. Do that bookkeeping for a ship under thrust and almost everything cancels. The one term left standing is the thrust itself, with its sign flipped. <strong>A chain hanging from a ship under steady thrust settles exactly opposite the thrust vector — which is exactly the line of the exhaust.</strong></p>
+            <p>Tilt left, and the chain follows the fire left. Tilt right, it follows it right. Hover, descend, climb, drift — every flight plan you can hold ends with the chain hanging in the plume. The word doing all the damage is <em>steady</em>.</p>
+          </div>
+        </section>
+      </div>
+    </article>
+
+    <article class="essay-page has-sim" data-page-id="zigzag" data-sim="fishing-zigzag-front" data-sim-label="The zig-zag — seen from behind" data-sim2="fishing-zigzag-side" data-sim2-label="Meanwhile, from the side">
+      <div class="essay-page-inner">
+        <section class="essay-section">
+          <h2>So you swing it</h2>
+          <div class="body-text">
+            <p>If the chain always settles into the plume, the answer is to never let it settle. Keep the fire moving — and always toward where the chain <em>isn't</em>.</p>
+            <p>It works like pumping a playground swing. Tilt the engines toward the side the chain hangs, so the plume fires into the empty air opposite. The chain, obedient to apparent gravity, starts swinging across toward the exhaust — and the instant it passes beneath the ship, you flip the tilt. The plume snaps over to the side the chain just left. The chain swings on, reaches the top of its arc, comes back; you flip again. Forever.</p>
+            <p>The result is glorious nonsense. The ship bounces side to side every few seconds. The chain swings beneath it in great arcs, perpetually chasing the exhaust and never catching it, the collector dipping into the atmosphere at the bottom of every pass.</p>
+            <p>And the whole dance happens <em>sideways</em> — perpendicular to the direction of flight — so the slow forward drift across the sample zone stays slow and steady. The true flight path is three-dimensional: gliding forward, bouncing left and right, a pendulum swinging underneath. The main view here is what you'd see flying behind the ship; the inset is the same moment from the side, where it all looks deceptively dignified.</p>
+          </div>
+        </section>
+      </div>
+    </article>
+
+    <article class="essay-page" data-page-id="verdict">
+      <div class="essay-page-inner">
+        <section class="essay-section">
+          <h2>The verdict</h2>
+          <div class="body-text">
+            <p>So that's what it actually takes to go fishing with a spaceship: an interstellar vessel waddling across an alien sky, wagging its engines from side to side, flicking a column of fire left and right while a chain swings beneath it like a church censer — all of it inching forward, sampling the air a few seconds at a time.</p>
+            <p>Now imagine filming that. Imagine <em>writing</em> it — the tensest chapter of the novel, the mission's last hope, and the hero's ship is doing a little dance. There is no version of this scene that survives contact with the manoeuvre physics requires. The book chose quiet competence, the film chose a beautiful dive, and both were right to. Some things are true and unusable.</p>
+            <p>But the physics doesn't care about cinematography. The physics just wants the chain out of the fire — and now you can try to keep it there yourself.</p>
+            <div class="cta-row">
+              <a href="../fishing-simulator/" class="cta-btn">Take the helm →</a>
+              <span class="cta-note">Fly the manoeuvre yourself — autopilot or manual —<br>and try to bring a sample home.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </article>
 
   </div>
 </main>
@@ -372,6 +504,10 @@ body.split .sim-panel { opacity: 1; }
 <aside class="sim-panel" id="sim-panel" aria-hidden="true">
   <span class="sim-label" id="sim-label"></span>
   <div class="sim-mount" id="sim-mount"></div>
+  <div class="sim-inset" id="sim-inset">
+    <span class="sim-inset-label" id="sim-inset-label"></span>
+    <div class="sim-inset-mount" id="sim-inset-mount"></div>
+  </div>
 </aside>
 
 <!-- ── PAGE NAV ─────────────────────────────────────────────── -->
@@ -385,48 +521,102 @@ body.split .sim-panel { opacity: 1; }
 import { mount } from './index.js';
 
 // ── ELEMENTS ─────────────────────────────────────────────────────────────────
-const stripEl   = document.getElementById('essay-strip');
-const mountEl   = document.getElementById('sim-mount');
-const labelEl   = document.getElementById('sim-label');
-const panelEl   = document.getElementById('sim-panel');
-const prevBtn   = document.getElementById('page-prev');
-const nextBtn   = document.getElementById('page-next');
-const counterEl = document.getElementById('page-counter');
-const progress  = document.getElementById('progress-bar');
-const pages     = Array.from(stripEl.querySelectorAll('.essay-page'));
+const stripEl    = document.getElementById('essay-strip');
+const mountEl    = document.getElementById('sim-mount');
+const labelEl    = document.getElementById('sim-label');
+const panelEl    = document.getElementById('sim-panel');
+const insetEl    = document.getElementById('sim-inset');
+const insetMount = document.getElementById('sim-inset-mount');
+const insetLabel = document.getElementById('sim-inset-label');
+const prevBtn    = document.getElementById('page-prev');
+const nextBtn    = document.getElementById('page-next');
+const counterEl  = document.getElementById('page-counter');
+const progress   = document.getElementById('progress-bar');
+const pages      = Array.from(stripEl.querySelectorAll('.essay-page'));
+const pageNavEl  = document.querySelector('.page-nav');
+const mobileMq   = window.matchMedia('(max-width: 960px)');
 
 // ── SIM LIFECYCLE ────────────────────────────────────────────────────────────
-let currentSetup = null;
-let currentSim   = null;
-let pendingClear = null;
+// A page can carry a primary sim (data-sim) and an optional miniature inset
+// sim (data-sim2) for dual-view scenes.
+let currentSetup  = null;
+let currentSetup2 = null;
+let currentSim    = null;
+let currentSim2   = null;
+let pendingClear  = null;
 
-function mountSim(setupName, label) {
-  if (setupName === currentSetup) return;
-  currentSetup = setupName;
-  labelEl.textContent = label || setupName;
+function destroySims() {
+  if (currentSim)  { currentSim.destroy();  currentSim  = null; }
+  if (currentSim2) { currentSim2.destroy(); currentSim2 = null; }
+  mountEl.innerHTML   = '';
+  insetMount.innerHTML = '';
+}
+
+function mountSim(page, force = false) {
+  const setup  = page.dataset.sim;
+  const setup2 = page.dataset.sim2 || null;
+  if (!force && setup === currentSetup && setup2 === currentSetup2) return;
+  currentSetup  = setup;
+  currentSetup2 = setup2;
+  labelEl.textContent = page.dataset.simLabel || setup;
 
   if (pendingClear) { clearTimeout(pendingClear); pendingClear = null; }
-  if (currentSim) currentSim.destroy();
-  mountEl.innerHTML = '';
+  destroySims();
 
-  currentSim = mount(mountEl, setupName, {
+  currentSim = mount(mountEl, setup, {
     width:  mountEl.clientWidth,
     height: mountEl.clientHeight,
   });
+
+  insetEl.classList.toggle('active', !!setup2);
+  if (setup2) {
+    insetLabel.textContent = page.dataset.sim2Label || '';
+    // The inset is hidden on mobile — only mount when it has real dimensions.
+    if (insetMount.clientWidth > 0) {
+      currentSim2 = mount(insetMount, setup2, {
+        width:  insetMount.clientWidth,
+        height: insetMount.clientHeight,
+      });
+    }
+  }
 }
 
 function tearDownSim() {
-  if (!currentSim || pendingClear) return;
-  const toClear = currentSim;
-  currentSim   = null;
-  currentSetup = null;
+  if ((!currentSim && !currentSim2) || pendingClear) return;
+  const toClear  = currentSim;
+  const toClear2 = currentSim2;
+  currentSim    = null;
+  currentSim2   = null;
+  currentSetup  = null;
+  currentSetup2 = null;
   // Wait for the panel fade-out before destroying — keeps the last frame
   // visible until it's actually invisible to the reader.
   pendingClear = setTimeout(() => {
-    toClear.destroy();
-    mountEl.innerHTML = '';
+    toClear?.destroy();
+    toClear2?.destroy();
+    mountEl.innerHTML    = '';
+    insetMount.innerHTML = '';
     pendingClear = null;
   }, 600);
+}
+
+// ── PANEL PLACEMENT ──────────────────────────────────────────────────────────
+// Desktop: the panel is fixed to the right half of the viewport. Mobile: it
+// is moved inline into the active page, between the heading and the prose.
+function placePanel(page) {
+  const inline = mobileMq.matches && !!page.dataset.sim;
+  if (inline) {
+    const body = page.querySelector('.body-text');
+    if (body && panelEl.nextSibling !== body) {
+      body.parentNode.insertBefore(panelEl, body);
+    }
+    document.body.classList.add('sim-inline');
+  } else {
+    document.body.classList.remove('sim-inline');
+    if (panelEl.parentNode !== document.body) {
+      document.body.insertBefore(panelEl, pageNavEl);
+    }
+  }
 }
 
 // ── PAGE NAV ─────────────────────────────────────────────────────────────────
@@ -442,10 +632,11 @@ function applyPage(index) {
   const setup = page.dataset.sim || null;
 
   // Split ↔ centred mode, sim mount/teardown.
+  placePanel(page);
   if (setup) {
     document.body.classList.add('split');
     panelEl.setAttribute('aria-hidden', 'false');
-    mountSim(setup, page.dataset.simLabel);
+    mountSim(page);
   } else {
     document.body.classList.remove('split');
     panelEl.setAttribute('aria-hidden', 'true');
@@ -487,20 +678,14 @@ document.addEventListener('keydown', (e) => {
 });
 
 // Re-mount the active sim when the viewport resizes (so SVG fills the new
-// dimensions). Easiest: tear down and re-mount the current setup.
+// dimensions), and re-place the panel if the mobile breakpoint was crossed.
 let resizeTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
-    if (currentSim) {
-      const setup = currentSetup;
-      const label = labelEl.textContent;
-      currentSim.destroy();
-      currentSim = null;
-      currentSetup = null;
-      mountEl.innerHTML = '';
-      mountSim(setup, label);
-    }
+    const page = pages[current];
+    placePanel(page);
+    if (page.dataset.sim) mountSim(page, true);
   }, 200);
 });
 
