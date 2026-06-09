@@ -202,7 +202,7 @@ explorations/index.html                                 Book 03 — Explorations
 explorations/spin-station/index.html                    Spin Station essay page
 explorations/spin-station-calculator/index.html         Spin Station calculator
 explorations/spaceship-fishing/index.html               Spaceship Fishing essay (Hail Mary physics, scripted SVG sims)
-explorations/space-sim/index.html                       Legacy orbital-mechanics essay (will be deleted; superseded by spaceship-fishing)
+explorations/fishing-simulator/index.html               Hail Mary Fishing Simulator (interactive companion to the essay)
 
 instruments/index.html                                  Book 04 — Instruments index (Build Journeys + Tools sections)
 instruments/<slug>/index.html                           Individual Build Journey page
@@ -264,20 +264,23 @@ Interactive calculator built with Plotly. Lets users adjust station diameter, ta
 The Plotly chart colours and other chart/diagram constants are grouped at the top of the `<script>` block under "Design token mirrors". Update those constants if the corresponding `style.css` tokens change.
 
 #### Spaceship Fishing (`explorations/spaceship-fishing/index.html`)
-Essay: "How to go fishing with a spaceship — exploring the physics of *Project Hail Mary*'s most confusing scene". Built on a fork of the `space-sim` engine (a 2D SVG orbital sim with a scripted-controller layer). The page uses a **page-turn UI** instead of vertical scroll:
+Essay: "How to go fishing with a spaceship — exploring the physics of *Project Hail Mary*'s most confusing scene". Complete at 14 pages. Built on a 2D SVG orbital sim engine with a scripted-controller layer (the engine lives in this directory and is also imported by the fishing simulator). The page uses a **page-turn UI** instead of vertical scroll:
 
 - The document has `overflow: hidden`. All content lives inside `.essay-viewport`, a fixed-position container below the header.
 - Inside the viewport, `.essay-strip` is a horizontal flex row of `.essay-page` articles (one per page). The strip is translated by `translateX(-N × 100vw)` to reveal page N. The transition is 0.6s `cubic-bezier(.4, 0, .2, 1)`.
 - A floating `.page-nav` (prev / counter / next) sits bottom-centre. Arrow keys, Space, PageUp/PageDown, Home, and End all navigate. The top progress bar reflects `currentPage / (totalPages − 1)`.
 - Each page that has a paired simulation gets the `has-sim` class. In CSS this expands the page's `padding-right` to `50vw`, which reflows the inner column into the left half of the viewport. The sim panel (fixed to the right half) fades in via `body.split`. Horizontal padding lives on `.essay-page-inner` so the prose gutter travels with the column when it reflows.
-- On viewports ≤960px the split is disabled — `padding-right` reverts to 0 and the sim panel is hidden. The page-turn UI itself still works.
+- **Dual view:** a page may carry `data-sim2`/`data-sim2-label` to mount a second miniature sim in `.sim-inset` (230×190, top-right of the panel). Used by the zig-zag page (front view + side-view inset).
+- **Mobile (≤960px):** the sim panel is moved inline into the active page between the heading and the prose (`body.sim-inline`, 320px-tall block) — phone readers get the animations too. The inset is hidden on mobile.
 
-Animation beats are encoded as scripted **controllers** in `core/setups.js`. Each setup can define `controller(rocket, simTime, dt, ctx)` plus `autoResetAt` (seconds), `crashCallout` (e.g. "Bad. Bad. Bad."), `planetLabel` (e.g. "Adrian"), and `hideRocket`. The big planet "Adrian" scenes share `ADRIAN_R`, `ADRIAN_ORBIT_R`, and `ADRIAN_CENTER` constants at the top of `setups.js`, and they orbit **counterclockwise** visually (down at 9 o'clock → right at 6 → up at 3 → left at 12). See `explorations/spaceship-fishing/CLAUDE.md` for the engine-level details.
+Narrative arc: momentum → flip-and-burn → Adrian → stop-and-fall → orbital insertion → orbits are too fast (imperative one) → you can't just slow down → hover and the exhaust problem (imperative two) → the book's slow pass (chain cooks) → the movie's swoop (collector vaporises) → "just tilt" and the apparent-gravity lemma (a chain under steady thrust always settles anti-thrust — into the plume) → the zig-zag swing-pumping answer (dual view) → verdict with a CTA to `../fishing-simulator/`.
 
-The page deliberately leaves placeholder blocks (`.placeholder-ref`) on the title page for the book quote and movie still — Wim will fill these in. Pages beyond "imperative two" (book version, movie version, why neither works, the zig-zag answer) are sketched in an inline `<!-- TODO -->` comment but not yet built.
+Animation beats are encoded as scripted **controllers** in `core/setups.js`. Each setup can define `controller(rocket, simTime, dt, ctx)` plus `autoResetAt`, `crashCallout`, `chainBurnCallout`, `planetLabel`, `hideRocket`, `chain`, `plume`, `flatWorld`, and `rocketScale`. The engine includes a position-based-dynamics chain with per-link heat (plume immersion + aero heating), exhaust plume cone/halo rendering, and uniform-gravity "flat world" front-view scenes via a huge off-screen planet. The big planet "Adrian" scenes share constants at the top of `setups.js` and orbit **counterclockwise** visually (down at 9 o'clock → right at 6 → up at 3 → left at 12). See `explorations/spaceship-fishing/CLAUDE.md` for engine-level details — including the numerically verified zig-zag physics findings (swing-pumping bang-bang controller; do not re-derive casually).
 
-#### Space Sim — legacy (`explorations/space-sim/index.html`)
-Earlier essay page titled "Orbital Mechanics" that became the seed for the spaceship-fishing essay. Still present so existing links don't break, but to be removed after the new essay is live.
+The title page keeps two placeholder blocks (`.placeholder-ref`) for the book quote and movie still — Wim will fill these in.
+
+#### Hail Mary Fishing Simulator (`explorations/fishing-simulator/index.html`)
+Interactive companion to the essay, listed under Calculators. Imports the spaceship-fishing engine via relative paths (`../spaceship-fishing/core/...`). Front-view flat-world scene with chain + plume. **Autopilot** mode demos the swing-pumping controller; **Manual** mode hands the tilt to the player (←/→, A/D, or on-screen touch buttons). Live sliders: engine tilt (10–40°), forward drift (0–80 px/s, feeds aero heating via `loop.forwardAirspeed`), chain damping; chain links applies on restart. Win by accumulating 12 s of collector-in-atmosphere dwell ("Sample secured ✓"); fail by chain burn ("Chain incinerated") or drifting more than 46% of the panel width off centre ("Drifted off the sample field"). `R` restarts. Telemetry panel: chain-heat and sample-progress bars, collector airspeed, lateral velocity, chain swing angle.
 
 ### Book 04 — Instruments
 

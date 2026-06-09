@@ -14,9 +14,13 @@ const HOVER_ALT = 100;  // hover altitude above planet surface (px)
 // Used by the spaceship-fishing essay for the orbital scenes. The planet is
 // much larger than the default — it should dominate the panel and make the
 // rocket feel tiny by comparison.
-const ADRIAN_R       = 200;   // visual planet radius (px)
-const ADRIAN_ORBIT_R = 245;   // orbit radius from planet centre (px)
-const ADRIAN_CENTER  = ({ width, height }) => ({ x: width / 2, y: height * 0.62 });
+const ADRIAN_R          = 200;   // visual planet radius (px)
+const ADRIAN_ORBIT_R    = 245;   // orbit radius from planet centre (px)
+const ADRIAN_ATMO_THICK = 45;    // atmosphere band thickness — top sits exactly at ADRIAN_ORBIT_R
+// On short panels (mobile inline sims) the centre is floored at 400px so the
+// action above the planet — ships at up to r ≈ 360 — stays on screen; the
+// planet becomes a horizon filling the bottom of the panel.
+const ADRIAN_CENTER  = ({ width, height }) => ({ x: width / 2, y: Math.max(height * 0.62, 400) });
 const ADRIAN_ORBIT_V = Math.sqrt(SIM_G * ADRIAN_ORBIT_R);    // ≈ 108.5 px/s
 const ADRIAN_ORBIT_T = 2 * Math.PI * ADRIAN_ORBIT_R / ADRIAN_ORBIT_V; // ≈ 14.2s
 
@@ -633,7 +637,349 @@ export const SETUPS = {
     };
   })(),
 
-  // Hail Mary defaults — tune via sandbox.html.
+  // ── FISHING: THE BOOK'S VERSION ─────────────────────────────────────────────
+  // Slow nose-up hover pass over Adrian with the chain dangling into the
+  // atmosphere band. Imperative one satisfied — the collector ambles through
+  // the air. But the chain hangs along apparent gravity, which for a hovering
+  // ship is straight down the exhaust plume. It cooks in seconds.
+  'fishing-book-pass': (() => {
+    const DRIFT_V  = 22;
+    const CHAIN_REACH = 26 + 14 * 7;                       // anchor y + links
+    const SHIP_R   = ADRIAN_ORBIT_R - 10 + CHAIN_REACH;    // collector dips ~10px into the band
+    const THRUST   = SIM_G - (DRIFT_V * DRIFT_V) / SHIP_R; // hover balance with slow drift
+    return {
+      environment: 'atmosphere',
+      planet: {
+        position: ADRIAN_CENTER,
+        radius: ADRIAN_R,
+        g: SIM_G,
+      },
+      atmosphere: {
+        mode: 'shell',
+        dragCoefficient: 0.012,
+        thickness: ADRIAN_ATMO_THICK,
+      },
+      rocket: {
+        position: (dims) => ({
+          x: ADRIAN_CENTER(dims).x,
+          y: ADRIAN_CENTER(dims).y - SHIP_R,
+        }),
+        velocity: () => ({ x: -DRIFT_V, y: 0 }),
+        angle: 0,
+        thrustMagnitude: THRUST,
+        engineOn: true,
+        engineDirection: 'rear',
+      },
+      chain: {
+        links: 14, linkLength: 7,
+        anchorOffset: { x: -8, y: 26 },
+        damping: 1.2,
+      },
+      plume: {
+        mode: 'cone', originY: 30, halfAngleDeg: 8, length: 150,
+        heatRate: 0.3, aeroHeatK: 2.6e-4,
+      },
+      chainBurnCallout: '…and the chain is cooked.',
+      controls: { showButton: false },
+      trackVelocity: false,
+      resetWhen: 'never',
+      autoResetAt: 18,
+      planetLabel: 'Adrian',
+      showOrbitPath: false,
+      // Radial attitude lock — nose always points away from Adrian.
+      controller: (rocket, t, dt, ctx) => {
+        const dx = rocket.position.x - ctx.planet.position.x;
+        const dy = rocket.position.y - ctx.planet.position.y;
+        rocket.angle = Math.atan2(dx, -dy);
+        rocket.engineOn = true;
+      },
+    };
+  })(),
+
+  // ── FISHING: "JUST TILT THE ENGINES" ────────────────────────────────────────
+  // The obvious repair to the book's version: hover crooked, so the plume
+  // points off to one side. But the chain settles along apparent gravity,
+  // which is exactly anti-thrust — i.e. wherever the plume goes, the chain
+  // follows. It swings into the fire and cooks anyway.
+  'fishing-tilt-pass': (() => {
+    const DRIFT_V  = 22;
+    const TILT     = 20 * Math.PI / 180;
+    const CHAIN_REACH = 26 + 14 * 7;
+    const SHIP_R   = ADRIAN_ORBIT_R - 10 + CHAIN_REACH;
+    const THRUST   = (SIM_G - (DRIFT_V * DRIFT_V) / SHIP_R) / Math.cos(TILT);
+    return {
+      environment: 'atmosphere',
+      planet: {
+        position: ADRIAN_CENTER,
+        radius: ADRIAN_R,
+        g: SIM_G,
+      },
+      atmosphere: {
+        mode: 'shell',
+        dragCoefficient: 0.012,
+        thickness: ADRIAN_ATMO_THICK,
+      },
+      rocket: {
+        position: (dims) => ({
+          x: ADRIAN_CENTER(dims).x,
+          y: ADRIAN_CENTER(dims).y - SHIP_R,
+        }),
+        velocity: () => ({ x: -DRIFT_V, y: 0 }),
+        angle: TILT,
+        thrustMagnitude: THRUST,
+        engineOn: true,
+        engineDirection: 'rear',
+      },
+      chain: {
+        links: 14, linkLength: 7,
+        anchorOffset: { x: -8, y: 26 },
+        damping: 1.2,
+      },
+      plume: {
+        mode: 'cone', originY: 30, halfAngleDeg: 8, length: 150,
+        heatRate: 0.5, aeroHeatK: 2.6e-4,
+      },
+      chainBurnCallout: 'The chain follows the fire.',
+      controls: { showButton: false },
+      trackVelocity: false,
+      resetWhen: 'never',
+      autoResetAt: 12,
+      planetLabel: 'Adrian',
+      showOrbitPath: false,
+      // Attitude lock: radial-out plus a constant tilt. The tangential thrust
+      // component slowly accelerates the ship sideways — also part of why
+      // "hover crooked" isn't a steady answer.
+      controller: (rocket, t, dt, ctx) => {
+        const dx = rocket.position.x - ctx.planet.position.x;
+        const dy = rocket.position.y - ctx.planet.position.y;
+        rocket.angle = Math.atan2(dx, -dy) + TILT;
+        rocket.engineOn = true;
+      },
+    };
+  })(),
+
+  // ── FISHING: THE MOVIE'S VERSION ────────────────────────────────────────────
+  // The swooping arc: a coasting ellipse whose periapsis grazes the
+  // atmosphere band. Pure physics — the rocket spawns at apoapsis below the
+  // planet and gravity does the rest. The trouble: at the bottom of any
+  // coasting arc you're moving *faster* than a circular orbit there
+  // (v_peri ≈ 1.5 × v_circ here), so the trailing collector flash-heats and
+  // vaporises right around the low point.
+  'fishing-movie-swoop': (() => {
+    const R_APO  = 395;
+    const R_PERI = ADRIAN_ORBIT_R - 13;       // 13px inside the band
+    const V_APO  = Math.sqrt(2 * SIM_G * R_PERI * R_PERI / (R_APO + R_PERI));
+    return {
+      environment: 'atmosphere',
+      planet: {
+        position: ADRIAN_CENTER,
+        radius: ADRIAN_R,
+        g: SIM_G,
+      },
+      atmosphere: {
+        mode: 'shell',
+        dragCoefficient: 0.012,
+        thickness: ADRIAN_ATMO_THICK,
+      },
+      rocket: {
+        // Apoapsis at 6 o'clock, moving right → counterclockwise pass whose
+        // low point sweeps over the top of the planet.
+        position: (dims) => ({
+          x: ADRIAN_CENTER(dims).x,
+          y: ADRIAN_CENTER(dims).y + R_APO,
+        }),
+        velocity: () => ({ x: V_APO, y: 0 }),
+        angle: Math.PI / 2,
+        thrustMagnitude: 0,
+        engineOn: false,
+        engineDirection: 'rear',
+      },
+      chain: {
+        links: 9, linkLength: 7,
+        anchorOffset: { x: -8, y: 26 },
+        damping: 0.8,
+      },
+      // No engine, no visible plume — only aerodynamic heating.
+      plume: { mode: 'aero', aeroHeatK: 2.9e-4 },
+      chainBurnCallout: 'Vaporised.',
+      controls: { showButton: false },
+      trackVelocity: true,
+      resetWhen: 'never',
+      autoResetAt: 26,
+      planetLabel: 'Adrian',
+      showOrbitPath: false,
+    };
+  })(),
+
+  // ── FISHING: THE ZIG-ZAG ────────────────────────────────────────────────────
+  // The actual answer, front view: camera looks along the direction of
+  // flight, the upper atmosphere is the band at the bottom of the panel.
+  // Uniform gravity comes from a huge off-screen planet (constant-magnitude
+  // gravity makes this exact, not an approximation).
+  //
+  // The controller is a bang-bang swing pump: thrust always tilts TOWARD the
+  // side the chain currently hangs, which puts the plume on the empty side.
+  // The chain falls toward the plume (its equilibrium is anti-thrust — see
+  // the tilt-pass scene), and the moment it swings through vertical the tilt
+  // flips, so plume and chain trade sides forever. The ship bounces
+  // side-to-side (±60px, ~8s round trip) and the collector dips into the air
+  // at the bottom of every swing. Numerically verified: the chain's max heat
+  // saturates around 0.3 — it never burns.
+  'fishing-zigzag-front': (() => {
+    const PHI   = 28 * Math.PI / 180;   // tilt magnitude
+    const EPS   = 3 * Math.PI / 180;    // chain-angle flip trigger
+    const RATE  = 2 * PHI / 0.35;       // tilt slew rate (full flip in 0.35s)
+    const LINKS = 20;
+    const REACH = 10 + LINKS * 7;       // anchor y + chain
+    const MEGA_R = 1e5;
+    const atmoTopY  = ({ height }) => height * 0.74;
+    const surfaceY  = ({ height }) => height * 0.74 + 260;
+
+    let side  = 1;
+    let prevT = -1;
+
+    return {
+      environment: 'atmosphere',
+      planet: {
+        position: (dims) => ({ x: dims.width / 2, y: surfaceY(dims) + MEGA_R }),
+        radius: MEGA_R,
+        g: SIM_G,
+      },
+      atmosphere: {
+        mode: 'shell',
+        dragCoefficient: 0.02,
+        thickness: 260,
+      },
+      flatWorld: { atmoTopY },
+      rocket: {
+        // Seeded near the limit cycle: chain out at 50°, ship moving right.
+        // Starts left of centre — the start-up transient and the slow walk
+        // (~1px/s, from the anchor asymmetry) both head right, so the bounce
+        // pattern spends its life crossing the middle of the panel.
+        position: (dims) => ({
+          x: dims.width / 2 - Math.min(120, dims.width * 0.17),
+          y: atmoTopY(dims) + 30 - REACH,
+        }),
+        velocity: { x: 45, y: 0 },
+        angle: PHI,
+        thrustMagnitude: SIM_G / Math.cos(PHI),
+        engineOn: true,
+        engineDirection: 'rear',
+      },
+      chain: {
+        links: LINKS, linkLength: 7,
+        anchorOffset: { x: -14, y: 10 },
+        damping: 1.2,
+        initAngle: 50 * Math.PI / 180,
+      },
+      plume: {
+        mode: 'cone', originY: 30, halfAngleDeg: 8, length: 260,
+        heatRate: 0.55, aeroHeatK: 2.6e-4,
+      },
+      controls: { showButton: false },
+      trackVelocity: false,
+      resetWhen: 'never',
+      autoResetAt: 48,
+      showOrbitPath: false,
+      controller: (rocket, t, dt, ctx) => {
+        if (t < prevT) side = 1;          // closure state reset on loop
+        prevT = t;
+
+        const chain = ctx.chain;
+        const a0  = chain.points[0];
+        const tip = chain.collector;
+        const theta = Math.atan2(tip.x - a0.x, tip.y - a0.y);
+
+        // Flip the moment the chain swings through vertical: plume goes to
+        // the side the chain just left.
+        if (theta >  EPS) side =  1;
+        if (theta < -EPS) side = -1;
+
+        // Boundary steering: outside a dead zone around the panel centre,
+        // bias the tilt magnitude (never the flip timing — that's keyed to
+        // the chain and changing it puts the plume on the wrong side). The
+        // clamp keeps the bias too small to break the chain–plume geometry.
+        const xc  = ctx.bounds.width / 2;
+        const dx  = rocket.position.x - xc;
+        const out = Math.abs(dx) - ctx.bounds.width * 0.06;
+        let corr  = 0;
+        if (out > 0) {
+          corr = Math.max(-0.1, Math.min(0.1,
+            0.0008 * out * Math.sign(dx) + 0.0025 * rocket.velocity.x));
+        }
+
+        // Rate-limited tilt toward ±PHI; throttle coupled to tilt so the
+        // vertical thrust component is exactly g at every instant.
+        const target = side * PHI - corr;
+        const da = target - rocket.angle;
+        rocket.angle += Math.sign(da) * Math.min(Math.abs(da), RATE * dt);
+        rocket.thrustMagnitude = SIM_G / Math.cos(rocket.angle);
+        rocket.engineOn = true;
+      },
+    };
+  })(),
+
+  // ── FISHING: THE ZIG-ZAG, SIDE VIEW (inset) ─────────────────────────────────
+  // Companion inset for the zig-zag page: the same manoeuvre seen from the
+  // side, in miniature. From here the bouncing is along the camera axis and
+  // all you see is the slow forward drift along the band — plus the engine
+  // glow as a halo, because the plume points out of the viewing plane.
+  'fishing-zigzag-side': (() => {
+    const MINI_R     = 58;
+    const MINI_ATMO  = 16;
+    const DRIFT_V    = 8;
+    const REACH      = 10 + 5 * 4;
+    const SHIP_R     = MINI_R + MINI_ATMO - 5 + REACH;   // tip dips ~5px into the band
+    const THRUST     = SIM_G - (DRIFT_V * DRIFT_V) / SHIP_R;
+    const CENTER     = ({ width, height }) => ({ x: width / 2, y: height * 0.66 });
+    return {
+      environment: 'atmosphere',
+      planet: {
+        position: CENTER,
+        radius: MINI_R,
+        g: SIM_G,
+      },
+      atmosphere: {
+        mode: 'shell',
+        dragCoefficient: 0.012,
+        thickness: MINI_ATMO,
+      },
+      rocket: {
+        // Starts right of centre so the leftward drift crosses the panel.
+        position: (dims) => ({
+          x: CENTER(dims).x + 18,
+          y: CENTER(dims).y - SHIP_R,
+        }),
+        velocity: () => ({ x: -DRIFT_V, y: 0 }),
+        angle: 0,
+        thrustMagnitude: THRUST,
+        engineOn: true,
+        engineDirection: 'rear',
+      },
+      chain: {
+        links: 5, linkLength: 4,
+        anchorOffset: { x: -4, y: 10 },
+        damping: 1.2,
+      },
+      plume: { mode: 'halo', originY: 30 },
+      rocketScale: 0.55,
+      controls: { showButton: false },
+      trackVelocity: false,
+      resetWhen: 'never',
+      autoResetAt: 15,
+      planetLabel: 'Adrian',
+      planetLabelSize: 16,
+      showOrbitPath: false,
+      controller: (rocket, t, dt, ctx) => {
+        const dx = rocket.position.x - ctx.planet.position.x;
+        const dy = rocket.position.y - ctx.planet.position.y;
+        rocket.angle = Math.atan2(dx, -dy);
+        rocket.engineOn = true;
+      },
+    };
+  })(),
+
+  // Hail Mary defaults — legacy tuning setup from the old sandbox.
   'hail-mary-hover': {
     environment: 'atmosphere',
     planet: {
