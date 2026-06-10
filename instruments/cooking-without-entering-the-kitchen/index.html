@@ -12,9 +12,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cooking Without Entering the Kitchen — Wim Strydom</title>
-<meta name="description" content="How I built a family recipe preservation app with Claude — 244 prompts, zero lines of code, three weeks.">
+<meta name="description" content="How I built a family recipe preservation app with Claude — 244 prompts, ~30 specs, three weeks.">
 <meta property="og:title" content="Cooking Without Entering the Kitchen — Wim Strydom">
-<meta property="og:description" content="How I built a family recipe preservation app with Claude — 244 prompts, zero lines of code, three weeks.">
+<meta property="og:description" content="How I built a family recipe preservation app with Claude — 244 prompts, ~30 specs, three weeks.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://wimstrydom.com/instruments/cooking-without-entering-the-kitchen">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -164,14 +164,14 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
         <span class="stat-note">Every message I typed</span>
       </div>
       <div class="stat-block">
-        <span class="stat-num">Zero</span>
-        <span class="stat-label">Lines of code from me</span>
-        <span class="stat-note">I didn't even read the code</span>
+        <span class="stat-num">~30</span>
+        <span class="stat-label">Specs &amp; planning docs</span>
+        <span class="stat-note">Vision, scope, architecture, sprint plans — written in markdown</span>
       </div>
       <div class="stat-block">
         <span class="stat-num">152</span>
         <span class="stat-label">Git commits</span>
-        <span class="stat-note">All Claude's</span>
+        <span class="stat-note">Executed by Claude, directed by me</span>
       </div>
       <div class="stat-block">
         <span class="stat-num">104,663</span>
@@ -180,7 +180,7 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
       </div>
     </div>
 
-    <p class="collab-note">Full disclosure: I have <strong>no idea</strong> if these figures are 100% correct, it's just what Claude told me. All I do know is that the App <strong>works</strong>, and does <strong>everything I need it to.</strong> Pieces of this post were written by Claude. I flag them, and occasionally add commentary <em>[in brackets].</em></p>
+    <p class="collab-note">Full disclosure: Pieces of this post were written by Claude. I flag them, and occasionally add commentary <em>[in brackets].</em></p>
 
     <div class="page-divider"></div>
 
@@ -212,7 +212,7 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
       <h2 data-num="03">How I Approached It</h2>
       <div class="body-text">
         <p>I'm really not a coder. I know my way around querying a SQL database, and I took a Python course in uni, but let's be real, I'm not here to become a software engineer. I'm here to bake a pudding.</p>
-        <p>When I asked Claude to help me gather some facts for this piece, it informed me that across the entire build I had never once written a single line of code myself. It's right. I didn't. I didn't even read the code. So, what did I do? What lopsided role did I play in building this monument of culinary code?</p>
+        <p>When I asked Claude to help me gather some facts for this piece, it informed me that across the entire build I had never once written a single line of code myself. It's right. I only read the code for the most part. So, what did I do? What role did I play in building this monument of culinary code?</p>
         <p>Well, I'm also not a total layman. I work as a strategy consultant primarily in the AI space, helping large companies design AI visions, nailing down product roadmaps, and filling various product manager roles across different stages in the AI/tech use-case lifecycle. I know what the process and workflow of a highly skilled software engineering team looks like. I've spent plenty of time translating senior leadership's <em>thoughts, feelings, frustrations and ideas</em> into a concrete set of requirements for the dev team to go build. So this time it was just my own thoughts and ideas I needed to translate into requirements for Claude.</p>
         <p>I primarily acted as the product manager and used Claude as a dev team that I could iterate the planning with before giving approval. Eyeballing it, I'd say my time and energy was split 70/10/20 between planning and aligning key decisions (70%), actually executing the plan to build the app (10%), and bug fixes (20%).</p>
       </div>
@@ -235,7 +235,7 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
                 <li><strong>By raw count</strong>, <strong>109 (45%)</strong> were planning, scoping, architecture, or process — deciding <em>what</em> to build and <em>how we'd work</em>. <strong>69 (28%)</strong> were "build this feature," and <strong>66 (27%)</strong> were "here's a bug or a quirk, work out why."</li>
                 <li>But counts flatter the building. Most "build" messages were tiny green-lights — <em>"go ahead," "yes, do all three"</em> — with a median length of <strong>67 characters</strong>. His planning messages averaged about <strong>550</strong> characters; his build and bug reports about <strong>280</strong> (setting aside the error logs he pasted in). His single longest message of the whole project — <strong>2,949</strong> characters — was a mid-build product review, not a feature request.</li>
                 <li>So when you weight each message by <em>how much he actually wrote</em> — a better proxy for where his energy went than a flat head-count — the split lands at <strong>61% planning, 10% building, 28% bug-fixing.</strong> Against his eyeballed <strong>70/10/20</strong>, that's an uncannily good gut. <span class="wim-note">[aww shucks, thanks Claude]</span></li>
-                <li>Before he wrote a single line of production code, we'd already exchanged about <strong>37,000</strong> tokens settling the vision and architecture — part of roughly <strong>46,500</strong> tokens across <strong>7</strong> separate planning conversations in total.</li>
+                <li>Before a single line of production code existed, we'd already exchanged about <strong>37,000</strong> tokens settling the vision and architecture — part of roughly <strong>46,500</strong> tokens across <strong>7</strong> separate planning conversations in total.</li>
                 <li>He had me create and maintain about <strong>30</strong> planning and specification documents — vision, scope, architecture, roadmap, <strong>~15</strong> sprint plans, and a rules file — plus <strong>11</strong> sprint retrospectives, which he reviewed and redirected rather than writing himself.</li>
                 <li>Over the build he flagged roughly <strong>65</strong> bugs or output quirks for me to fix, and explicitly reverted or told me to rethink my work about <strong>4</strong> times.</li>
               </ul>
