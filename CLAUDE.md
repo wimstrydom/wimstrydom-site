@@ -204,8 +204,11 @@ explorations/spin-station-calculator/index.html         Spin Station calculator
 explorations/spaceship-fishing/index.html               Spaceship Fishing essay (Hail Mary physics, scripted SVG sims)
 explorations/space-sim/index.html                       Legacy orbital-mechanics essay (will be deleted; superseded by spaceship-fishing)
 
-instruments/index.html                                  Book 04 — Instruments index (Build Journeys + Tools sections)
-instruments/<slug>/index.html                           Individual Build Journey page
+instruments/index.html                                  Book 04 — Instruments index (Workshop Notes + Specifications, Standards & Tools sections)
+instruments/<slug>/index.html                           Individual Workshop Notes page (build journeys + vision essays)
+instruments/build-yourself-a-kitchen/index.html         Sanitude vision essay — scroll-driven economics chart, reused Claude callouts, neutral disclosure
+instruments/sanitude-spec/index.html                    Sanitude spec viewer (renders sanitude-spec.md via the narratives Markdown renderer)
+instruments/sanitude-spec/sanitude-spec.md              Sanitude spec content (Markdown; replace this file to publish a new version)
 
 salivations/index.html                                  Book 05 — Salivations index (recipe listing)
 salivations/recipe/index.html                           Recipe viewer (reads ?slug= param, fetches JSON)
@@ -282,12 +285,12 @@ Earlier essay page titled "Orbital Mechanics" that became the seed for the space
 ### Book 04 — Instruments
 
 #### Instruments index (`instruments/index.html`)
-Two-section list page. "Build Journeys" section and "Tools" section. Follows the same centred-container layout as the explorations index (no rail, no header — just `.container` with a giant heading). Tools may link to external apps (e.g. `malva.recipes`, opened with `target="_blank"`).
+Two-section list page. "Workshop Notes" section (long-form build journeys and vision essays, newest-first) and "Specifications, Standards & Tools" section (the Sanitude spec at the top, then external tools). Follows the same centred-container layout as the explorations index (no rail, no header — just `.container` with a giant heading). Tools may link to external apps (e.g. `malva.recipes`, opened with `target="_blank"`).
 
-#### Build Journey pages (`instruments/<slug>/index.html`)
-Long-form narrative pages documenting a complete app build. Use the standard rail + content layout (same shell as the philosophy page): sticky header with wordmark → `../../`, reading progress bar, fixed left rail with section links that highlight on scroll via IntersectionObserver.
+#### Workshop Notes pages (`instruments/<slug>/index.html`)
+Long-form narrative pages — build journeys (documenting a complete app build) and vision essays. Use the standard rail + content layout (same shell as the philosophy page): sticky header with wordmark → `../../`, reading progress bar, fixed left rail with section links that highlight on scroll via IntersectionObserver.
 
-Key design patterns used on Build Journey pages:
+Key design patterns used on Workshop Notes pages:
 - **Section number ornaments:** `<h2 data-num="01">` with `h2[data-num]::before { content: attr(data-num) }` in the page `<style>` — renders a small dim ordinal above the heading.
 - **`.step-carousel`** (see Interactive components below) — used for all numbered multi-step process lists.
 - **`.stat-grid`** (see Interactive components below) — used for hero stats and any large-number dashboards.
@@ -299,6 +302,16 @@ Key design patterns used on Build Journey pages:
 The Anthropic mark SVG (13-ray starburst, `fill="currentColor"`, `viewBox="0 0 100 100"`) is inlined directly in the HTML wherever the Claude icon is needed; the icon colour is set via `color: var(--red)` on the containing element. No external SVG file.
 
 **First build journey:** `instruments/cooking-without-entering-the-kitchen/index.html` — the recipe app build story.
+
+#### Sanitude vision essay (`instruments/build-yourself-a-kitchen/index.html`)
+"Build Yourself a Kitchen" — a vision essay (not a build journey) for self-building, hyper-personalised software, in the Workshop Notes section. Hand-built page on the standard rail + content shell with five numbered sections. Page-specific patterns:
+- **Scroll-driven chart (`.scrolly`):** the "Why Now?" section is a scrollytelling figure. `.scrolly` is a 2-column grid — prose `.scrolly-step` blocks on the left, a `position: sticky` `.scrolly-fig` (inline SVG) on the right. Each step carries a `data-state` (0–6); an IntersectionObserver (`rootMargin: -48% 0 -48%`) reads it and toggles `.is-visible` on the SVG's `.fig-layer` groups to build the chart up layer by layer (cost curve → value lines → availability → selection points → cost drops → availability widens). On ≤860px the grid collapses to one column and the figure becomes sticky at the top. **The SVG uses CSS classes (not presentation attributes) for all colour, so it reads the real design tokens — no hardcoded hex and no JS colour mirror needed** (unlike the spin-station canvas). Value lines map yellow→`--amber`, blue→`--blue`, green→`--green`; cost→`--red`. The default (no-JS) state shows the final layer set.
+- **Neutral disclosure (`.disclosure`):** a collapsible for Wim's own content (the "five aims"), same `grid-template-rows: 0fr → 1fr` mechanism as `.claude-callout` but without the Claude badge.
+- **Reused `.claude-callout`:** the "What is MCP?" and "What is a PoC and MVP?" From-Claude definitions use the global `.claude-callout` component verbatim (inlined Anthropic mark, collapsed by default).
+- The collapse toggles (Claude callouts + disclosures) and the scrolly observer live in the page `<script>`.
+
+#### Sanitude spec viewer (`instruments/sanitude-spec/index.html` + `sanitude-spec.md`)
+The Sanitude specification, in the Specifications, Standards & Tools section. Reuses the **narratives Markdown renderer** so the spec can be updated by replacing one `.md` file. The page is a near-verbatim copy of the narrative template (`loadSpec` instead of `loadStory`), with two changes: it pulls a leading `# Title` out of the body via `extractTitleFromBody` (so the `.md` can start with `# Sanitude` without duplicating the page title), and it renders an optional `version` front-matter field as `Version X · <date>` in the meta line. **Versioning is latest-only:** there is one `sanitude-spec.md`; replace it to publish a new version (git keeps the history) and bump the `version:` field in its front matter. Keep the `.md` top structure intact (`--- front matter --- / # Title / *subtitle* / body`) — see the HTML comment in the page. The rail is auto-built from `##`/`###` headings.
 
 ### Book 05 — Salivations
 
@@ -434,11 +447,15 @@ For poems, use `Poetry` in place of `Short Fiction` in the meta span.
 
 The `.md` file is authored by Wim — reproduce it exactly as written, no edits or paraphrasing. Do not add front matter to the markdown file; metadata is set in the HTML.
 
-## Adding a new Build Journey
+## Adding a new Workshop Notes page (build journey or vision essay)
 
-1. Create `instruments/<slug>/index.html` — use `instruments/cooking-without-entering-the-kitchen/index.html` as the template.
-2. Add the entry to `instruments/index.html` under the "Build Journeys" section (newest-first).
-3. Add a sublink to the Book 04 row in `index.html` (inside `.m-book-sublinks`).
+1. Create `instruments/<slug>/index.html` — use `instruments/cooking-without-entering-the-kitchen/index.html` (build journey) or `instruments/build-yourself-a-kitchen/index.html` (vision essay) as the template.
+2. Add the entry to `instruments/index.html` under the "Workshop Notes" section (newest-first).
+3. Optionally add a sublink to the Book 04 row in `index.html` (inside `.m-book-sublinks`); the homepage currently keeps the book rows clean with no sublinks, so this is not required.
 4. The page uses rail + content layout. Sections get `id` attributes for scroll-spy. Use `<h2 data-num="NN">` for numbered section ornaments.
-5. For numbered process steps: use `.step-carousel-wrap` + dot JS. For large stats: use `.stat-grid`. For Claude commentary: use `.claude-callout` (collapsed by default) with the inlined Anthropic SVG mark.
+5. For numbered process steps: use `.step-carousel-wrap` + dot JS. For large stats: use `.stat-grid`. For Claude commentary: use `.claude-callout` (collapsed by default) with the inlined Anthropic SVG mark. For a neutral collapsible of your own content: use `.disclosure`.
 6. Wim's inline editorial comments inside Claude-authored text get `<span class="wim-note">` (styled in the page `<style>` as `color: var(--ink-dim); font-style: italic`).
+
+## Updating the Sanitude spec
+
+Replace `instruments/sanitude-spec/sanitude-spec.md` with the new version and bump the `version:` field in its front matter. Keep the top structure (`--- front matter --- / # Sanitude / *Specification & Reference Implementation* / body`). No HTML changes needed — the viewer renders whatever the `.md` contains. Push to `main` to publish.
