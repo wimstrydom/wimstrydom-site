@@ -206,7 +206,7 @@ explorations/space-sim/index.html                       Legacy orbital-mechanics
 
 instruments/index.html                                  Book 04 — Instruments index (Workshop Notes + Specifications, Standards & Tools sections)
 instruments/<slug>/index.html                           Individual Workshop Notes page (build journeys + vision essays)
-instruments/build-yourself-a-kitchen/index.html         Sanitude vision essay — scroll-driven economics chart, reused Claude callouts, neutral disclosure
+instruments/build-yourself-a-software-kitchen/index.html Sanitude vision essay — full-width scroll-driven economics chart, reused Claude callouts, neutral disclosure
 instruments/sanitude-spec/index.html                    Sanitude spec viewer (renders sanitude-spec.md via the narratives Markdown renderer)
 instruments/sanitude-spec/sanitude-spec.md              Sanitude spec content (Markdown; replace this file to publish a new version)
 
@@ -303,9 +303,9 @@ The Anthropic mark SVG (13-ray starburst, `fill="currentColor"`, `viewBox="0 0 1
 
 **First build journey:** `instruments/cooking-without-entering-the-kitchen/index.html` — the recipe app build story.
 
-#### Sanitude vision essay (`instruments/build-yourself-a-kitchen/index.html`)
-"Build Yourself a Kitchen" — a vision essay (not a build journey) for self-building, hyper-personalised software, in the Workshop Notes section. Hand-built page on the standard rail + content shell with five numbered sections. Page-specific patterns:
-- **Scroll-driven chart (`.scrolly`):** the "Why Now?" section is a scrollytelling figure. `.scrolly` is a 2-column grid — prose `.scrolly-step` blocks on the left, a `position: sticky` `.scrolly-fig` (inline SVG) on the right. Each step carries a `data-state` (0–6); an IntersectionObserver (`rootMargin: -48% 0 -48%`) reads it and toggles `.is-visible` on the SVG's `.fig-layer` groups to build the chart up layer by layer (cost curve → value lines → availability → selection points → cost drops → availability widens). On ≤860px the grid collapses to one column and the figure becomes sticky at the top. **The SVG uses CSS classes (not presentation attributes) for all colour, so it reads the real design tokens — no hardcoded hex and no JS colour mirror needed** (unlike the spin-station canvas). Value lines map yellow→`--amber`, blue→`--blue`, green→`--green`; cost→`--red`. The default (no-JS) state shows the final layer set.
+#### Sanitude vision essay (`instruments/build-yourself-a-software-kitchen/index.html`)
+"Build Yourself a Software Kitchen" — a vision essay (not a build journey) for self-building, hyper-personalised software, in the Workshop Notes section. Hand-built page on the standard rail + content shell with five numbered sections. Page-specific patterns:
+- **Scroll-driven chart (`.scrolly`):** the "Why Now?" section is a scrollytelling figure. The `.scrolly-fig` (inline SVG) is **full-width and pinned to the top** (`position: sticky; top: var(--header-h)`, bled to the content edges with `margin: 0 -48px`); the `.scrolly-step` prose blocks scroll beneath it. Each step carries a `data-state` (0–6); an IntersectionObserver (`rootMargin: -50% 0 -42%`) reads it and toggles `.is-visible` on the SVG's `.fig-layer` groups to build the chart up layer by layer (cost curve → availability → value lines → selection points → cost drops → availability widens). Each app's "selection" marker sits at the **right edge of the shaded available region** (the cheapest still-available point), with `.fig-note` annotations ("viable" / "not viable"). **The SVG uses CSS classes (not presentation attributes) for all colour, so it reads the real design tokens — no hardcoded hex and no JS colour mirror needed** (unlike the spin-station canvas). Value lines map yellow→`--amber`, blue→`--blue`, green→`--green`; cost→`--red`. The default (no-JS) state shows the final layer set.
 - **Neutral disclosure (`.disclosure`):** a collapsible for Wim's own content (the "five aims"), same `grid-template-rows: 0fr → 1fr` mechanism as `.claude-callout` but without the Claude badge.
 - **Reused `.claude-callout`:** the "What is MCP?" and "What is a PoC and MVP?" From-Claude definitions use the global `.claude-callout` component verbatim (inlined Anthropic mark, collapsed by default).
 - The collapse toggles (Claude callouts + disclosures) and the scrolly observer live in the page `<script>`.
@@ -449,7 +449,7 @@ The `.md` file is authored by Wim — reproduce it exactly as written, no edits 
 
 ## Adding a new Workshop Notes page (build journey or vision essay)
 
-1. Create `instruments/<slug>/index.html` — use `instruments/cooking-without-entering-the-kitchen/index.html` (build journey) or `instruments/build-yourself-a-kitchen/index.html` (vision essay) as the template.
+1. Create `instruments/<slug>/index.html` — use `instruments/cooking-without-entering-the-kitchen/index.html` (build journey) or `instruments/build-yourself-a-software-kitchen/index.html` (vision essay) as the template.
 2. Add the entry to `instruments/index.html` under the "Workshop Notes" section (newest-first).
 3. Optionally add a sublink to the Book 04 row in `index.html` (inside `.m-book-sublinks`); the homepage currently keeps the book rows clean with no sublinks, so this is not required.
 4. The page uses rail + content layout. Sections get `id` attributes for scroll-spy. Use `<h2 data-num="NN">` for numbered section ornaments.
