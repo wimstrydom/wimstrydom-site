@@ -93,18 +93,18 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
   z-index: 5;
   background: var(--bg);
   margin: 0 -48px;
-  padding: 16px 48px 14px;
+  padding: 14px 48px 12px;
   border-bottom: 1px solid var(--ink-faint);
 }
 .scrolly-fig svg { width: 100%; height: auto; display: block; font-family: var(--serif); }
-.scrolly-steps { margin-top: 5vh; }
+.scrolly-steps { margin-top: 4vh; }
 .scrolly-step {
-  min-height: 46vh;
+  min-height: 32vh;
   display: flex; flex-direction: column; justify-content: center;
   font-size: 19px; line-height: 1.62; color: var(--ink);
 }
-.scrolly-step:first-child { min-height: 28vh; }
-.scrolly-step:last-child { min-height: 38vh; }
+.scrolly-step:first-child { min-height: 18vh; }
+.scrolly-step:last-child { min-height: 24vh; }
 .scrolly-step p { text-align: left; margin: 0; }
 .scrolly-step strong { color: var(--ink-bright); font-weight: 500; }
 .scrolly-step em { color: var(--gold); font-style: italic; }
@@ -112,27 +112,28 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
 /* figure layers */
 .fig-layer { opacity: 0; transition: opacity 0.55s ease; }
 .fig-layer.is-visible { opacity: 1; }
+.fig-title { fill: var(--ink-bright); font-size: 17px; letter-spacing: 0.01em; }
 .fig-axis { stroke: var(--ink-faint); stroke-width: 1; fill: none; }
-.fig-axislabel { fill: var(--ink-dim); font-size: 13px; font-style: italic; }
-.fig-ylabel { fill: var(--ink-dim); font-size: 13px; font-style: italic; letter-spacing: 0.04em; }
-.fig-cost { stroke: var(--red); stroke-width: 2.2; fill: none; stroke-linecap: round; }
-.fig-cost-ghost { stroke: var(--red-dim); stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; stroke-linecap: round; }
-.fig-costlabel { fill: var(--red); font-size: 13px; font-style: italic; }
-.fig-val { stroke-width: 2; fill: none; }
+.fig-axislabel { fill: var(--ink-dim); font-size: 14px; font-style: italic; }
+.fig-ylabel { fill: var(--ink-dim); font-size: 14px; font-style: italic; letter-spacing: 0.04em; }
+.fig-cost { stroke: var(--red); stroke-width: 2.4; fill: none; stroke-linecap: round; }
+.fig-cost-ghost { stroke: var(--red-dim); stroke-width: 1.5; fill: none; stroke-dasharray: 5 5; stroke-linecap: round; }
+.fig-costlabel { fill: var(--red); font-size: 14px; font-style: italic; }
+.fig-val { stroke-width: 2.2; fill: none; }
 .fig-val.blue { stroke: var(--blue); }
 .fig-val.amber { stroke: var(--amber); }
 .fig-val.green { stroke: var(--green); }
-.fig-vallabel { font-size: 12.5px; font-style: italic; }
+.fig-vallabel { font-size: 13.5px; font-style: italic; }
 .fig-vallabel.blue { fill: var(--blue); }
 .fig-vallabel.amber { fill: var(--amber); }
 .fig-vallabel.green { fill: var(--green); }
 .fig-avail { fill: var(--ink-faint); }
 .fig-frontier { stroke: var(--ink-dim); stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
-.fig-availlabel { fill: var(--ink-dim); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+.fig-availlabel { fill: var(--ink-dim); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
 .fig-arrow { stroke: var(--ink-dim); stroke-width: 1; fill: none; stroke-linecap: round; }
-.fig-x { stroke: var(--red); stroke-width: 2; stroke-linecap: round; }
+.fig-x { stroke: var(--red); stroke-width: 2.2; stroke-linecap: round; }
 .fig-dot { fill: var(--gold); }
-.fig-note { font-size: 12px; font-style: italic; }
+.fig-note { font-size: 13px; font-style: italic; }
 .fig-note.ok { fill: var(--gold); }
 .fig-note.no { fill: var(--red); }
 
@@ -142,14 +143,15 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
 
 @media (max-width: 860px) {
   .scrolly-fig { margin: 0 -24px; padding: 12px 24px; }
-  .scrolly-step { font-size: 18px; min-height: 52vh; }
+  .scrolly-step { font-size: 18px; min-height: 38vh; }
   .content h2 { font-size: 22px; }
 }
 @media (max-width: 480px) {
   .scrolly-fig { margin: 0 -20px; padding: 10px 20px; }
-  .fig-axislabel, .fig-ylabel, .fig-costlabel { font-size: 18px; }
-  .fig-vallabel, .fig-note { font-size: 17px; }
-  .fig-availlabel { font-size: 15px; }
+  .fig-title { font-size: 21px; }
+  .fig-axislabel, .fig-ylabel, .fig-costlabel { font-size: 19px; }
+  .fig-vallabel, .fig-note { font-size: 18px; }
+  .fig-availlabel { font-size: 16px; }
 }
 </style>
 </head>
@@ -184,19 +186,19 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
     <p class="page-meta">June 2026</p>
 
     <div class="body-text">
-      <p>I've been building a lot of personal apps with Claude in the last few months. One example is <a href="../cooking-without-entering-the-kitchen/">Malva</a>, a web app for scanning my grandmother's handwritten Afrikaans recipes, translating and standardising them into easily readable digital recipes. It's a fairly niche use-case. While Malva will eventually become publicly accessible, I have many other apps that are for me only, and that are even more bespoke to the point that I wouldn't ever bother with trying to distribute them.</p>
-      <p>When getting started on my next app after building Malva, I realised that I'm redoing and redefining a lot of the same things. Setting up the same infrastructure, telling Claude to follow the same processes, etc. It felt a bit wasteful and inefficient. Surely there must be a way so I can re-use the process of setting up an app. I want my apps to be able to talk to each other without putting in loads of effort building connectors. I don't want to design my finance app's database from scratch when this is surely well trodden ground. <strong>There ought to be a way for me (or my AI) to leverage best practices at a higher level of abstraction than going looking for open source code.</strong></p>
-      <p>Judging from my Reddit feed, many others have also been vibe coding these types of <em>userbase=1</em>, hyper-personalised, apps with Claude Code, CODEX, Cursor, and dozens of other AI coding platforms. Vibe coding has lowered the cost and barrier to entry for building your own custom software so much that there has been an explosion of incredibly niche apps that are useful for pretty much only their creators. But, others are also bumping into these issues, and it can lead to a slow-down in momentum after initial experimentation. Building the personalised features is fun. Redoing all the boring stuff, not so much.</p>
-      <p><strong>The lift required for the average user is still fairly high for standing up and maintaining your own software from scratch.</strong></p>
-      <p>Selfishly, I would like to be able to build apps customised to my exact preferences and needs with as little effort and as quickly as possible. <strong>I think all the right technological building blocks now exist for a particularly exciting vision of the future, and all that is needed is to arrange them in the right way.</strong></p>
+      <p>Over the last few months I've built a lot of software that only me or my family will ever use. One example is <a href="../cooking-without-entering-the-kitchen/">Malva</a>, a web app that scans my grandmother's handwritten Afrikaans recipes and turns them into clean, translated, digital ones. About as niche as my love of cheddar and strawberry jam on toast. Malva is en route to going public, but most of what I build is even more niche and won't ever see a user other than me. It's all too specific to my own life.</p>
+      <p>I started feeling an itch after getting started on my next app after Malva. I kept rebuilding the same things: the same infrastructure, the same setup steps, the same instructions to Claude about how to work. I didn't want to design my finance app's database from scratch (surely well-trodden ground) and I wanted my apps to talk to each other without hand-building a connector every time. I was feeling the kind of itch that usually comes just before deciding to build an app for dealing with a problem. But in this case, the problem was the building of an app itself.</p>
+      <p>If building your own personal app is like cooking a meal, then what I need is a kitchen. I don't want to be handed finished meals, but I don't want to farm my own wheat either. I want a well-stocked kitchen and good recipes for at least the basics. <strong>There ought to be a way for me, or my AI, to reach for best practice at a higher level of abstraction than hunting down open-source code.</strong></p>
+      <p>I'm not alone in this. My Reddit feed is full of people vibe-coding the same kind of <em>userbase = 1</em> apps with Claude Code, Codex, Cursor, and a dozen others. The barrier has dropped so far that these niche, personal apps are everywhere now. But after an initial wave of excitement, I noticed people are hitting a wall. Building the personal features is the fun part; redoing the plumbing underneath, every single time, and rediscovering the macro-process of how software is built is dampening the momentum.</p>
+      <p>Selfishly, I'd like to build software shaped exactly to my needs, as quickly and with as little effort as possible. Which is now my next project. <strong>All the building blocks for building my dream kitchen already exist. I only need to arrange them in the right way.</strong></p>
       <p>There's a lot of existing work on these topics under various names, and this exploration builds on a few of these ideas, the main ones being:</p>
       <ul class="cite-list">
         <li>Robin Sloan, <a href="https://www.robinsloan.com/notes/home-cooked-app/"><em>"An app can be a home-cooked meal"</em></a> (2020) — the case for software lovingly made for a handful of people.</li>
         <li>Maggie Appleton, <a href="https://maggieappleton.com/home-cooked-software"><em>"Home-Cooked Software and Barefoot Developers"</em></a> — her closing keynote at the Local-First Conference (Berlin, 2024).</li>
         <li>Geoffrey Litt, Josh Horowitz, Peter van Hardenberg &amp; Todd Matthews (Ink &amp; Switch), <a href="https://www.inkandswitch.com/essay/malleable-software/"><em>"Malleable Software"</em></a> (2025).</li>
       </ul>
-      <p>I try to answer some key questions that emerge from these discussions.</p>
-      <p>Robin Sloan, when building the app that he would describe as a home-cooked meal, made use of an open source component, without which he said the project would not have been possible. In the food metaphor, he used a box of pasta. He didn't cultivate a wheat field and rear some chickens to then get flour and eggs for truly making pasta from scratch. And maybe that meal is niche and specific to his family, and not worth sharing, but a more abstract <em>Recipe</em> for how to build an app <em>like</em> that could be useful.</p>
+      <p>Many of the same questions that were bothering me are raised in these works, and so I decided to explore them and try to come up with some proposed answers.</p>
+      <p>Robin Sloan, when building the app that he would describe as a home-cooked meal, made use of an open source component, without which he said the project would not have been possible. In the app-as-food metaphor, that I so dearly love, and which I am extending here, he used a box of pasta. He didn't cultivate a wheat field and rear chickens to obtain flour and eggs for making pasta from scratch. While you might not want to invite the whole world to use your exact niche app, an abstract <em>Recipe</em> for how to build an app <em>like</em> that could be useful.</p>
       <p class="lead-q"><strong>How can we make recipes and quality ingredients available to everyone for cooking at home?</strong></p>
       <p>When speaking of the "glue" that's needed to combine the different LEGO blocks of code from AI agents into working software, <a href="https://maggieappleton.com/home-cooked-software">Maggie Appleton</a> said, "We first need language model agents that are designed to act as central orchestrators for home-cooked software projects... And then we also need tools that are designed to talk to and work with these orchestration agents."</p>
       <p class="lead-q"><strong>What form might these orchestrators and tools take?</strong></p>
@@ -274,101 +276,103 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
     <section id="why-now">
       <h2 data-num="03">Why Now?</h2>
 
+      <div class="body-text">
+        <p>I studied economics, and still think of the world in those terms, so some charts will be involved. Bear with me here. Think of three things plotted against a single horizontal axis that runs from <strong>fully bespoke</strong> on the left to <strong>fully off-the-shelf</strong> on the right.</p>
+      </div>
+
       <div class="scrolly">
         <div class="scrolly-fig" data-state="0" aria-hidden="true">
-          <svg viewBox="0 0 640 200" role="img" aria-label="A chart of cost versus value across the bespoke-to-off-the-shelf spectrum, showing which apps become viable to procure as cost falls and availability widens.">
-            <!-- Axes -->
+          <svg viewBox="0 0 640 400" role="img" aria-label="A chart of cost versus value across the bespoke-to-off-the-shelf spectrum, showing which apps become viable to procure as cost falls and availability widens.">
+            <!-- Axes + title -->
             <g class="fig-layer is-visible" data-layer="axes">
-              <path class="fig-axis" d="M54 162 L566 162"/>
-              <path class="fig-axis" d="M54 22 L54 162"/>
-              <text class="fig-axislabel" x="54" y="180" text-anchor="start">Fully bespoke</text>
-              <text class="fig-axislabel" x="560" y="180" text-anchor="end">Off-the-shelf</text>
-              <text class="fig-ylabel" transform="rotate(-90 18 92)" x="18" y="92" text-anchor="middle">Cost / value</text>
+              <text class="fig-title" x="54" y="34" text-anchor="start">The economics of getting an app</text>
+              <path class="fig-axis" d="M54 336 L566 336"/>
+              <path class="fig-axis" d="M54 78 L54 336"/>
+              <text class="fig-axislabel" x="54" y="358" text-anchor="start">Fully bespoke</text>
+              <text class="fig-axislabel" x="560" y="358" text-anchor="end">Off-the-shelf</text>
+              <text class="fig-ylabel" transform="rotate(-90 22 207)" x="22" y="207" text-anchor="middle">Cost / value</text>
             </g>
             <!-- Availability: narrow sliver (left-anchored) -->
             <g class="fig-layer" data-layer="availNarrow">
-              <rect class="fig-avail" x="54" y="22" width="136" height="140"/>
-              <path class="fig-frontier" d="M190 22 L190 162"/>
-              <text class="fig-availlabel" x="58" y="17" text-anchor="start">available</text>
+              <rect class="fig-avail" x="54" y="78" width="136" height="258"/>
+              <path class="fig-frontier" d="M190 78 L190 336"/>
+              <text class="fig-availlabel" x="58" y="69" text-anchor="start">available</text>
             </g>
             <!-- Availability: widened -->
             <g class="fig-layer is-visible" data-layer="availWide">
-              <rect class="fig-avail" x="54" y="22" width="276" height="140"/>
-              <path class="fig-frontier" d="M330 22 L330 162"/>
-              <text class="fig-availlabel" x="58" y="17" text-anchor="start">available</text>
-              <path class="fig-arrow" d="M196 14 L324 14 M316 10 L324 14 L316 18"/>
+              <rect class="fig-avail" x="54" y="78" width="276" height="258"/>
+              <path class="fig-frontier" d="M330 78 L330 336"/>
+              <text class="fig-availlabel" x="58" y="69" text-anchor="start">available</text>
+              <path class="fig-arrow" d="M196 63 L324 63 M316 58 L324 63 L316 68"/>
             </g>
             <!-- Value lines -->
             <g class="fig-layer is-visible" data-layer="values">
-              <path class="fig-val blue" d="M54 70 L560 70"/>
-              <path class="fig-val amber" d="M54 106 L560 106"/>
-              <path class="fig-val green" d="M54 140 L560 140"/>
-              <text class="fig-vallabel blue" x="566" y="73" text-anchor="start">Housemate</text>
-              <text class="fig-vallabel amber" x="566" y="109" text-anchor="start">Customs</text>
-              <text class="fig-vallabel green" x="566" y="143" text-anchor="start">Calculator</text>
+              <path class="fig-val blue" d="M54 166 L560 166"/>
+              <path class="fig-val amber" d="M54 233 L560 233"/>
+              <path class="fig-val green" d="M54 296 L560 296"/>
+              <text class="fig-vallabel blue" x="566" y="170" text-anchor="start">Housemate</text>
+              <text class="fig-vallabel amber" x="566" y="237" text-anchor="start">Customs</text>
+              <text class="fig-vallabel green" x="566" y="300" text-anchor="start">Calculator</text>
             </g>
             <!-- Cost curve (high) -->
             <g class="fig-layer" data-layer="costHigh">
-              <path class="fig-cost" d="M54 42 C 230 48, 430 148, 560 150"/>
-              <text class="fig-costlabel" x="60" y="40" text-anchor="start">Cost</text>
+              <path class="fig-cost" d="M54 115 C 230 126, 430 310, 560 314"/>
+              <text class="fig-costlabel" x="60" y="111" text-anchor="start">Cost</text>
             </g>
             <!-- Cost curve (ghost of old high position) -->
             <g class="fig-layer is-visible" data-layer="costGhost">
-              <path class="fig-cost-ghost" d="M54 42 C 230 48, 430 148, 560 150"/>
+              <path class="fig-cost-ghost" d="M54 115 C 230 126, 430 310, 560 314"/>
             </g>
             <!-- Cost curve (low, after AI) -->
             <g class="fig-layer is-visible" data-layer="costLow">
-              <path class="fig-cost" d="M54 84 C 185 88, 360 146, 560 158"/>
-              <text class="fig-costlabel" x="60" y="80" text-anchor="start">Cost ↓</text>
+              <path class="fig-cost" d="M54 192 C 185 200, 360 307, 560 329"/>
+              <text class="fig-costlabel" x="60" y="188" text-anchor="start">Cost ↓</text>
             </g>
             <!-- Calculator: viable at the off-the-shelf end (available all the way across) -->
             <g class="fig-layer is-visible" data-layer="calcDot">
-              <circle class="fig-dot" cx="552" cy="140" r="4.5"/>
-              <text class="fig-note ok" x="548" y="156" text-anchor="end">viable</text>
+              <circle class="fig-dot" cx="552" cy="296" r="5.5"/>
+              <text class="fig-note ok" x="548" y="316" text-anchor="end">viable</text>
             </g>
             <!-- Housemate: not viable before AI, at the available frontier -->
             <g class="fig-layer" data-layer="houseX">
-              <path class="fig-x" d="M185 65 L195 75 M195 65 L185 75"/>
-              <text class="fig-note no" x="201" y="86" text-anchor="start">not viable</text>
+              <path class="fig-x" d="M184 160 L196 172 M196 160 L184 172"/>
+              <text class="fig-note no" x="202" y="192" text-anchor="start">not viable</text>
             </g>
             <!-- Housemate: now viable after AI, at the available frontier -->
             <g class="fig-layer" data-layer="houseDotN">
-              <circle class="fig-dot" cx="190" cy="70" r="4.5"/>
-              <text class="fig-note ok" x="201" y="86" text-anchor="start">now viable</text>
+              <circle class="fig-dot" cx="190" cy="166" r="5.5"/>
+              <text class="fig-note ok" x="202" y="192" text-anchor="start">now viable</text>
             </g>
             <!-- Housemate: viable at the widened frontier -->
             <g class="fig-layer is-visible" data-layer="houseDotW">
-              <circle class="fig-dot" cx="330" cy="70" r="4.5"/>
-              <text class="fig-note ok" x="341" y="86" text-anchor="start">viable</text>
+              <circle class="fig-dot" cx="330" cy="166" r="5.5"/>
+              <text class="fig-note ok" x="342" y="192" text-anchor="start">viable</text>
             </g>
             <!-- Customs: not viable, at the available frontier -->
             <g class="fig-layer" data-layer="bulgX">
-              <path class="fig-x" d="M185 101 L195 111 M195 101 L185 111"/>
-              <text class="fig-note no" x="201" y="122" text-anchor="start">not viable</text>
+              <path class="fig-x" d="M184 227 L196 239 M196 227 L184 239"/>
+              <text class="fig-note no" x="202" y="259" text-anchor="start">not viable</text>
             </g>
             <!-- Customs: now viable once availability widens -->
             <g class="fig-layer is-visible" data-layer="bulgDotW">
-              <circle class="fig-dot" cx="330" cy="106" r="4.5"/>
-              <text class="fig-note ok" x="341" y="122" text-anchor="start">now viable</text>
+              <circle class="fig-dot" cx="330" cy="233" r="5.5"/>
+              <text class="fig-note ok" x="342" y="259" text-anchor="start">now viable</text>
             </g>
           </svg>
         </div>
 
         <div class="scrolly-steps">
-          <div class="scrolly-step" data-state="0">
-            <p>I studied economics, and still think of the world in those terms, so some charts will be involved. Bear with me here. Think of three things plotted against a single horizontal axis that runs from <strong>fully bespoke</strong> on the left to <strong>fully off-the-shelf</strong> on the right.</p>
-          </div>
           <div class="scrolly-step" data-state="1">
             <p><strong>In general, the cost of getting a given app</strong> slopes downward from left to right: building something fully bespoke is expensive in time, effort, risk, and money (far left), and getting something ready-made off the shelf is relatively cheap and easy by comparison (far right). So the <strong>cost curve</strong> decreases as you move rightward toward ready-made. How steep that curve is depends both on your skills and the specific app in question.</p>
           </div>
           <div class="scrolly-step" data-state="2">
-            <p><strong>Availability</strong> is a shaded region, always anchored on the left. Anyone can get a calculator app, so its availability stretches all the way across. But the more niche, less mature, or smaller-audience the app, the narrower that shaded region becomes, until it is a thin sliver hugging the left-hand, fully custom side. The housemate travel schedule app exists <em>nowhere</em> on the app store or the internet. You cannot download it. The demand has never justified building a company around it. The only way of getting it is by building it yourself.</p>
-          </div>
-          <div class="scrolly-step" data-state="3">
             <p><strong>The value of a given app</strong> is a flat horizontal line, but <em>where</em> that line sits is entirely personal. A Bulgarian-family-customs app is worth almost nothing to almost everyone, so for them the line sits on the floor. For the person marrying into that family, the line sits high. Same app, completely different value, depending on whose life it's in.</p>
           </div>
+          <div class="scrolly-step" data-state="3">
+            <p><strong>Availability</strong> is a shaded region, always anchored on the left. Anyone can get a calculator app, so its availability stretches all the way across. But the more niche, less mature, or smaller-audience the app, the narrower that shaded region becomes, until it is a thin sliver hugging the left-hand, fully custom side. The housemate travel schedule app exists <em>nowhere</em> on the app store or the internet. You cannot download it. The demand has never justified building a company around it. The only way of getting it is by building it yourself.</p>
+          </div>
           <div class="scrolly-step" data-state="4">
-            <p>The sensible move, for any app, is to pick the point where <strong>value most exceeds cost</strong>, <em>but only within the shaded, available region.</em> For a long time that constraint kept most of us using only apps to the far right. If the only place value beat cost was out in "off-the-shelf" territory, but availability didn't reach that far, you simply went without. Most of the software your life could use didn't exist as a ready-made app and was too expensive to custom build.</p>
+            <p>The sensible move, for any app, is to pick the point where <strong>value most exceeds cost</strong>, <em>but only within the shaded, available region.</em> Because cost falls as you move right, the best spot is the rightmost point that's still inside the shaded region. This is the cheapest you can get it while it's still available. For a long time that constraint kept most of us using only apps to the far right. If the only place value beat cost was out in "off-the-shelf" territory, but availability didn't reach that far, you simply went without. Most of the software your life could use didn't exist as a ready-made app and was too expensive to custom build.</p>
           </div>
           <div class="scrolly-step" data-state="5">
             <p><strong>AI changed things.</strong> It has dropped the cost curve dramatically. Things that were once prohibitively expensive to build are now cheap and easy enough that, for many people, their personal value finally clears the cost. The economics now say <em>yes, build it</em> for many more apps.</p>
@@ -527,9 +531,9 @@ document.querySelectorAll('.claude-callout-header, .disclosure-header').forEach(
     costHigh:    [1, 2, 3, 4],
     costGhost:   [5, 6],
     costLow:     [5, 6],
-    availNarrow: [2, 3, 4, 5],
+    values:      [2, 3, 4, 5, 6],
+    availNarrow: [3, 4, 5],
     availWide:   [6],
-    values:      [3, 4, 5, 6],
     calcDot:     [4, 5, 6],
     houseX:      [4],
     houseDotN:   [5],
@@ -549,7 +553,7 @@ document.querySelectorAll('.claude-callout-header, .disclosure-header').forEach(
     entries.forEach(e => {
       if (e.isIntersecting) render(parseInt(e.target.dataset.state, 10) || 0);
     });
-  }, { rootMargin: '-50% 0px -42% 0px', threshold: 0 });
+  }, { rootMargin: '-62% 0px -26% 0px', threshold: 0 });
   steps.forEach(s => obs.observe(s));
 })();
 </script>
