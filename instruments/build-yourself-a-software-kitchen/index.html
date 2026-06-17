@@ -93,19 +93,32 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
   z-index: 5;
   background: var(--bg);
   margin: 0 -48px;
-  padding: 14px 48px 12px;
+  padding: 14px 48px 14px;
   border-bottom: 1px solid var(--ink-faint);
 }
 .scrolly-fig svg { width: 100%; height: auto; display: block; font-family: var(--serif); }
-.scrolly-steps { margin-top: 4vh; }
-.scrolly-step {
-  min-height: 32vh;
-  display: flex; flex-direction: column; justify-content: center;
-  font-size: 19px; line-height: 1.62; color: var(--ink);
+.fig-mobile { display: none; }
+
+/* Legend (HTML, below the plot — wraps responsively) */
+.fig-legend {
+  display: flex; flex-wrap: wrap; gap: 7px 22px;
+  margin-top: 12px; padding: 0 2px;
 }
-.scrolly-step:first-child { min-height: 18vh; }
-.scrolly-step:last-child { min-height: 24vh; }
-.scrolly-step p { text-align: left; margin: 0; }
+.fig-leg-item {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13px; font-style: italic; color: var(--ink-dim);
+}
+.fig-leg-sw { width: 18px; height: 2px; flex-shrink: 0; display: inline-block; }
+.fig-leg-sw.cost  { background: var(--red); }
+.fig-leg-sw.blue  { background: var(--blue); }
+.fig-leg-sw.amber { background: var(--amber); }
+.fig-leg-sw.green { background: var(--green); }
+
+/* Steps read as ordinary prose; the chart advances from scroll position. */
+.scrolly-steps { margin-top: 20px; }
+.scrolly-step { font-size: 18px; line-height: 1.44; color: var(--ink); }
+.scrolly-step p { margin-bottom: 18px; text-align: justify; }
+.scrolly-step:last-child p { margin-bottom: 0; }
 .scrolly-step strong { color: var(--ink-bright); font-weight: 500; }
 .scrolly-step em { color: var(--gold); font-style: italic; }
 
@@ -123,10 +136,6 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
 .fig-val.blue { stroke: var(--blue); }
 .fig-val.amber { stroke: var(--amber); }
 .fig-val.green { stroke: var(--green); }
-.fig-vallabel { font-size: 13.5px; font-style: italic; }
-.fig-vallabel.blue { fill: var(--blue); }
-.fig-vallabel.amber { fill: var(--amber); }
-.fig-vallabel.green { fill: var(--green); }
 .fig-avail { fill: var(--ink-faint); }
 .fig-frontier { stroke: var(--ink-dim); stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
 .fig-availlabel { fill: var(--ink-dim); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
@@ -137,21 +146,29 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
 .fig-note.ok { fill: var(--gold); }
 .fig-note.no { fill: var(--red); }
 
+/* Mobile portrait chart: larger type + strokes for the taller viewBox */
+.fig-mobile .fig-title { font-size: 23px; }
+.fig-mobile .fig-axislabel, .fig-mobile .fig-ylabel, .fig-mobile .fig-costlabel { font-size: 20px; }
+.fig-mobile .fig-availlabel { font-size: 16px; }
+.fig-mobile .fig-note { font-size: 19px; }
+.fig-mobile .fig-cost { stroke-width: 3.2; }
+.fig-mobile .fig-cost-ghost { stroke-width: 2; }
+.fig-mobile .fig-val { stroke-width: 3; }
+.fig-mobile .fig-x { stroke-width: 3; }
+
 @media (prefers-reduced-motion: reduce) {
   .fig-layer { transition: none; }
 }
 
 @media (max-width: 860px) {
   .scrolly-fig { margin: 0 -24px; padding: 12px 24px; }
-  .scrolly-step { font-size: 18px; min-height: 38vh; }
   .content h2 { font-size: 22px; }
 }
 @media (max-width: 480px) {
   .scrolly-fig { margin: 0 -20px; padding: 10px 20px; }
-  .fig-title { font-size: 21px; }
-  .fig-axislabel, .fig-ylabel, .fig-costlabel { font-size: 19px; }
-  .fig-vallabel, .fig-note { font-size: 18px; }
-  .fig-availlabel { font-size: 16px; }
+  .fig-desktop { display: none; }
+  .fig-mobile { display: block; }
+  .fig-legend { font-size: 14px; gap: 6px 16px; }
 }
 </style>
 </head>
@@ -282,7 +299,7 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
 
       <div class="scrolly">
         <div class="scrolly-fig" data-state="0" aria-hidden="true">
-          <svg viewBox="0 0 640 400" role="img" aria-label="A chart of cost versus value across the bespoke-to-off-the-shelf spectrum, showing which apps become viable to procure as cost falls and availability widens.">
+          <svg class="fig-desktop" viewBox="0 0 640 400" role="img" aria-label="A chart of cost versus value across the bespoke-to-off-the-shelf spectrum.">
             <!-- Axes + title -->
             <g class="fig-layer is-visible" data-layer="axes">
               <text class="fig-title" x="54" y="34" text-anchor="start">The economics of getting an app</text>
@@ -305,14 +322,11 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
               <text class="fig-availlabel" x="58" y="69" text-anchor="start">available</text>
               <path class="fig-arrow" d="M196 63 L324 63 M316 58 L324 63 L316 68"/>
             </g>
-            <!-- Value lines -->
+            <!-- Value lines (labelled by the legend below) -->
             <g class="fig-layer is-visible" data-layer="values">
               <path class="fig-val blue" d="M54 166 L560 166"/>
               <path class="fig-val amber" d="M54 233 L560 233"/>
               <path class="fig-val green" d="M54 296 L560 296"/>
-              <text class="fig-vallabel blue" x="566" y="170" text-anchor="start">Housemate</text>
-              <text class="fig-vallabel amber" x="566" y="237" text-anchor="start">Customs</text>
-              <text class="fig-vallabel green" x="566" y="300" text-anchor="start">Calculator</text>
             </g>
             <!-- Cost curve (high) -->
             <g class="fig-layer" data-layer="costHigh">
@@ -333,32 +347,101 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
               <circle class="fig-dot" cx="552" cy="296" r="5.5"/>
               <text class="fig-note ok" x="548" y="316" text-anchor="end">viable</text>
             </g>
-            <!-- Housemate: not viable before AI, at the available frontier -->
+            <!-- Housemate tracker: not viable before AI, at the available frontier -->
             <g class="fig-layer" data-layer="houseX">
               <path class="fig-x" d="M184 160 L196 172 M196 160 L184 172"/>
               <text class="fig-note no" x="202" y="192" text-anchor="start">not viable</text>
             </g>
-            <!-- Housemate: now viable after AI, at the available frontier -->
+            <!-- Housemate tracker: now viable after AI, at the available frontier -->
             <g class="fig-layer" data-layer="houseDotN">
               <circle class="fig-dot" cx="190" cy="166" r="5.5"/>
               <text class="fig-note ok" x="202" y="192" text-anchor="start">now viable</text>
             </g>
-            <!-- Housemate: viable at the widened frontier -->
+            <!-- Housemate tracker: viable at the widened frontier -->
             <g class="fig-layer is-visible" data-layer="houseDotW">
               <circle class="fig-dot" cx="330" cy="166" r="5.5"/>
               <text class="fig-note ok" x="342" y="192" text-anchor="start">viable</text>
             </g>
-            <!-- Customs: not viable, at the available frontier -->
+            <!-- Bulgarian customs: not viable, at the available frontier -->
             <g class="fig-layer" data-layer="bulgX">
               <path class="fig-x" d="M184 227 L196 239 M196 227 L184 239"/>
               <text class="fig-note no" x="202" y="259" text-anchor="start">not viable</text>
             </g>
-            <!-- Customs: now viable once availability widens -->
+            <!-- Bulgarian customs: now viable once availability widens -->
             <g class="fig-layer is-visible" data-layer="bulgDotW">
               <circle class="fig-dot" cx="330" cy="233" r="5.5"/>
               <text class="fig-note ok" x="342" y="259" text-anchor="start">now viable</text>
             </g>
           </svg>
+
+          <svg class="fig-mobile" viewBox="0 0 600 520" role="img" aria-label="A chart of cost versus value across the bespoke-to-off-the-shelf spectrum.">
+            <g class="fig-layer is-visible" data-layer="axes">
+              <text class="fig-title" x="52" y="40" text-anchor="start">The economics of getting an app</text>
+              <path class="fig-axis" d="M52 470 L570 470"/>
+              <path class="fig-axis" d="M52 90 L52 470"/>
+              <text class="fig-axislabel" x="52" y="495" text-anchor="start">Fully bespoke</text>
+              <text class="fig-axislabel" x="560" y="495" text-anchor="end">Off-the-shelf</text>
+              <text class="fig-ylabel" transform="rotate(-90 22 280)" x="22" y="280" text-anchor="middle">Cost / value</text>
+            </g>
+            <g class="fig-layer" data-layer="availNarrow">
+              <rect class="fig-avail" x="52" y="90" width="137" height="380"/>
+              <path class="fig-frontier" d="M189 90 L189 470"/>
+              <text class="fig-availlabel" x="56" y="82" text-anchor="start">available</text>
+            </g>
+            <g class="fig-layer is-visible" data-layer="availWide">
+              <rect class="fig-avail" x="52" y="90" width="277" height="380"/>
+              <path class="fig-frontier" d="M329 90 L329 470"/>
+              <text class="fig-availlabel" x="56" y="82" text-anchor="start">available</text>
+              <path class="fig-arrow" d="M195 75 L323 75 M315 70 L323 75 L315 80"/>
+            </g>
+            <g class="fig-layer is-visible" data-layer="values">
+              <path class="fig-val blue" d="M52 220 L560 220"/>
+              <path class="fig-val amber" d="M52 318 L560 318"/>
+              <path class="fig-val green" d="M52 411 L560 411"/>
+            </g>
+            <g class="fig-layer" data-layer="costHigh">
+              <path class="fig-cost" d="M52 145 C 228 161, 428 432, 558 438"/>
+              <text class="fig-costlabel" x="60" y="140" text-anchor="start">Cost</text>
+            </g>
+            <g class="fig-layer is-visible" data-layer="costGhost">
+              <path class="fig-cost-ghost" d="M52 145 C 228 161, 428 432, 558 438"/>
+            </g>
+            <g class="fig-layer is-visible" data-layer="costLow">
+              <path class="fig-cost" d="M52 258 C 183 270, 358 427, 558 460"/>
+              <text class="fig-costlabel" x="60" y="253" text-anchor="start">Cost ↓</text>
+            </g>
+            <g class="fig-layer is-visible" data-layer="calcDot">
+              <circle class="fig-dot" cx="552" cy="411" r="8"/>
+              <text class="fig-note ok" x="548" y="435" text-anchor="end">viable</text>
+            </g>
+            <g class="fig-layer" data-layer="houseX">
+              <path class="fig-x" d="M180 211 L198 229 M198 211 L180 229"/>
+              <text class="fig-note no" x="204" y="250" text-anchor="start">not viable</text>
+            </g>
+            <g class="fig-layer" data-layer="houseDotN">
+              <circle class="fig-dot" cx="189" cy="220" r="8"/>
+              <text class="fig-note ok" x="204" y="250" text-anchor="start">now viable</text>
+            </g>
+            <g class="fig-layer is-visible" data-layer="houseDotW">
+              <circle class="fig-dot" cx="329" cy="220" r="8"/>
+              <text class="fig-note ok" x="343" y="250" text-anchor="start">viable</text>
+            </g>
+            <g class="fig-layer" data-layer="bulgX">
+              <path class="fig-x" d="M180 309 L198 327 M198 309 L180 327"/>
+              <text class="fig-note no" x="204" y="348" text-anchor="start">not viable</text>
+            </g>
+            <g class="fig-layer is-visible" data-layer="bulgDotW">
+              <circle class="fig-dot" cx="329" cy="318" r="8"/>
+              <text class="fig-note ok" x="343" y="348" text-anchor="start">now viable</text>
+            </g>
+          </svg>
+
+          <div class="fig-legend">
+            <span class="fig-leg-item"><span class="fig-leg-sw cost"></span>Cost</span>
+            <span class="fig-leg-item"><span class="fig-leg-sw blue"></span>Housemate Tracker Value</span>
+            <span class="fig-leg-item"><span class="fig-leg-sw amber"></span>Bulgarian Customs Value</span>
+            <span class="fig-leg-item"><span class="fig-leg-sw green"></span>Calculator Value</span>
+          </div>
         </div>
 
         <div class="scrolly-steps">
@@ -520,7 +603,8 @@ document.querySelectorAll('.claude-callout-header, .disclosure-header').forEach(
   });
 });
 
-// Scrollytelling chart
+// Scrollytelling chart — the chart state follows scroll position deterministically,
+// so it is always correct for where the reader is (no flaky observer timing).
 (function () {
   const fig = document.querySelector('.scrolly-fig');
   if (!fig) return;
@@ -541,20 +625,35 @@ document.querySelectorAll('.claude-callout-header, .disclosure-header').forEach(
     bulgX:       [4, 5],
     bulgDotW:    [6]
   };
+  let cur = -1;
   function render(state) {
+    if (state === cur) return;
+    cur = state;
     fig.dataset.state = state;
     layers.forEach(l => {
       const set = VIS[l.dataset.layer];
       l.classList.toggle('is-visible', !!set && set.includes(state));
     });
   }
-  render(0);
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) render(parseInt(e.target.dataset.state, 10) || 0);
-    });
-  }, { rootMargin: '-62% 0px -26% 0px', threshold: 0 });
-  steps.forEach(s => obs.observe(s));
+  function currentState() {
+    // Trigger line: just below the pinned chart, or 55% down on tall screens.
+    const line = Math.max(window.innerHeight * 0.55, fig.getBoundingClientRect().bottom + 28);
+    let state = 0;
+    for (const step of steps) {
+      if (step.getBoundingClientRect().top <= line) state = parseInt(step.dataset.state, 10) || 0;
+      else break;
+    }
+    return state;
+  }
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { render(currentState()); ticking = false; });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  render(currentState());
 })();
 </script>
 </body>
