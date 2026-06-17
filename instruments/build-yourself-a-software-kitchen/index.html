@@ -97,7 +97,7 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
   border-bottom: 1px solid var(--ink-faint);
 }
 .scrolly-fig svg { width: 100%; height: auto; display: block; font-family: var(--serif); }
-.fig-mobile { display: none; }
+.scrolly-fig .fig-mobile { display: none; }
 
 /* Legend (HTML, below the plot — wraps responsively) */
 .fig-legend {
@@ -166,8 +166,8 @@ section { margin-bottom: 80px; scroll-margin-top: 76px; }
 }
 @media (max-width: 480px) {
   .scrolly-fig { margin: 0 -20px; padding: 10px 20px; }
-  .fig-desktop { display: none; }
-  .fig-mobile { display: block; }
+  .scrolly-fig .fig-desktop { display: none; }
+  .scrolly-fig .fig-mobile { display: block; }
   .fig-legend { font-size: 14px; gap: 6px 16px; }
 }
 </style>
@@ -636,8 +636,10 @@ document.querySelectorAll('.claude-callout-header, .disclosure-header').forEach(
     });
   }
   function currentState() {
-    // Trigger line: just below the pinned chart, or 55% down on tall screens.
-    const line = Math.max(window.innerHeight * 0.55, fig.getBoundingClientRect().bottom + 28);
+    // Trigger line: the pinned chart's bottom edge (or 55% down on tall screens).
+    // A step only activates once it scrolls up to meet the chart, so the chart
+    // stays blank (state 0, axes only) as it enters and pins.
+    const line = Math.max(window.innerHeight * 0.55, fig.getBoundingClientRect().bottom);
     let state = 0;
     for (const step of steps) {
       if (step.getBoundingClientRect().top <= line) state = parseInt(step.dataset.state, 10) || 0;
