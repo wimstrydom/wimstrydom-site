@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DC8TCGZT0C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DC8TCGZT0C');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build Yourself a Software Kitchen — Wim Strydom</title>
+<meta name="description" content="An exploration of the infrastructure needed to enable self-building, hyper-personalised software — and Sanitude, a specification for it.">
+<meta property="og:title" content="Build Yourself a Software Kitchen — Wim Strydom">
+<meta property="og:description" content="An exploration of the infrastructure needed to enable self-building, hyper-personalised software — and Sanitude, a specification for it.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://wimstrydom.com/instruments/build-yourself-a-software-kitchen">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+/* ── HEADINGS ── */
+.content h2 {
+  font-size: 26px; font-weight: 400; color: var(--ink-bright);
+  line-height: 1.2; margin: 0 0 26px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--ink-faint);
+  scroll-margin-top: 80px;
+}
+.content h2[data-num]::before {
+  content: attr(data-num);
+  display: block; font-size: 11px; letter-spacing: 0.18em;
+  color: var(--ink-dim); margin-bottom: 10px;
+  font-style: normal; font-weight: 400;
+}
+
+/* ── SECTION SPACING ── */
+section { margin-bottom: 80px; scroll-margin-top: 76px; }
+
+/* ── LEAD QUESTION (bold standalone prompts) ── */
+.lead-q { margin-bottom: 18px; text-align: left; }
+.lead-q strong { color: var(--gold); font-weight: 500; }
+
+/* ── DISCLOSURE (neutral collapsible) ── */
+.disclosure {
+  border-left: 2px solid var(--gold-dim);
+  padding: 16px 20px; margin: 24px 0;
+  background: var(--gold-tint);
+}
+.disclosure-header {
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; user-select: none;
+  width: 100%; background: none; border: none;
+  font-family: var(--serif); text-align: left; padding: 0;
+}
+.disclosure-summary {
+  font-size: 15px; font-style: italic; color: var(--ink);
+  flex: 1; min-width: 0; transition: color 0.18s;
+}
+.disclosure-header:hover .disclosure-summary { color: var(--ink-bright); }
+.disclosure-caret {
+  font-size: 10px; color: var(--ink-dim); flex-shrink: 0;
+  transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+}
+.disclosure.open .disclosure-caret { transform: rotate(180deg); }
+.disclosure-body {
+  display: grid; grid-template-rows: 0fr;
+  transition: grid-template-rows 0.38s cubic-bezier(0.4,0,0.2,1);
+}
+.disclosure.open .disclosure-body { grid-template-rows: 1fr; }
+.disclosure-body-inner { overflow: hidden; }
+.disclosure-body-pad { padding-top: 14px; font-size: 16px; line-height: 1.55; color: var(--ink); }
+.disclosure-body-pad ul { padding-left: 0; margin: 0; list-style: none; }
+.disclosure-body-pad li { line-height: 1.5; margin-bottom: 12px; }
+.disclosure-body-pad li:last-child { margin-bottom: 0; }
+.disclosure-body-pad strong { color: var(--ink-bright); font-weight: 500; }
+.disclosure-body-pad em { color: var(--gold); font-style: italic; }
+
+/* ── CTA WRAP ── */
+.cta-wrap { margin: 40px 0 8px; }
+
+/* ── CITATIONS ── */
+.cite-list li { margin-bottom: 0.7em; }
+.cite-list li:last-child { margin-bottom: 0; }
+
+/* ── SCROLLYTELLING (Why Now chart) — full-width figure pinned at the top ── */
+.scrolly { position: relative; margin: 8px 0 32px; }
+.scrolly-fig {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 5;
+  background: var(--bg);
+  margin: 0 -48px;
+  padding: 14px 48px 14px;
+  border-bottom: 1px solid var(--ink-faint);
+}
+.scrolly-fig svg { width: 100%; height: auto; display: block; font-family: var(--serif); }
+.scrolly-fig .fig-mobile { display: none; }
+
+/* Legend (HTML, below the plot — wraps responsively) */
+.fig-legend {
+  display: flex; flex-wrap: wrap; gap: 7px 22px;
+  margin-top: 12px; padding: 0 2px;
+}
+.fig-leg-item {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13px; font-style: italic; color: var(--ink-dim);
+}
+.fig-leg-sw { width: 18px; height: 2px; flex-shrink: 0; display: inline-block; }
+.fig-leg-sw.cost  { background: var(--red); }
+.fig-leg-sw.blue  { background: var(--blue); }
+.fig-leg-sw.amber { background: var(--amber); }
+.fig-leg-sw.green { background: var(--green); }
+
+/* Steps read as ordinary prose; the chart advances from scroll position. */
+.scrolly-steps { margin-top: 20px; }
+.scrolly-step { font-size: 18px; line-height: 1.44; color: var(--ink); }
+.scrolly-step p { margin-bottom: 18px; text-align: justify; }
+.scrolly-step:last-child p { margin-bottom: 0; }
+.scrolly-step strong { color: var(--ink-bright); font-weight: 500; }
+.scrolly-step em { color: var(--gold); font-style: italic; }
+
+/* figure layers */
+.fig-layer { opacity: 0; transition: opacity 0.55s ease; }
+.fig-layer.is-visible { opacity: 1; }
+.fig-title { fill: var(--ink-bright); font-size: 17px; letter-spacing: 0.01em; }
+.fig-axis { stroke: var(--ink-faint); stroke-width: 1; fill: none; }
+.fig-axislabel { fill: var(--ink-dim); font-size: 14px; font-style: italic; }
+.fig-ylabel { fill: var(--ink-dim); font-size: 14px; font-style: italic; letter-spacing: 0.04em; }
+.fig-cost { stroke: var(--red); stroke-width: 2.4; fill: none; stroke-linecap: round; }
+.fig-cost-ghost { stroke: var(--red-dim); stroke-width: 1.5; fill: none; stroke-dasharray: 5 5; stroke-linecap: round; }
+.fig-costlabel { fill: var(--red); font-size: 14px; font-style: italic; }
+.fig-val { stroke-width: 2.2; fill: none; }
+.fig-val.blue { stroke: var(--blue); }
+.fig-val.amber { stroke: var(--amber); }
+.fig-val.green { stroke: var(--green); }
+.fig-avail { fill: var(--ink-faint); }
+.fig-frontier { stroke: var(--ink-dim); stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+.fig-availlabel { fill: var(--ink-dim); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+.fig-arrow { stroke: var(--ink-dim); stroke-width: 1; fill: none; stroke-linecap: round; }
+.fig-x { stroke: var(--red); stroke-width: 2.2; stroke-linecap: round; }
+.fig-dot { fill: var(--gold); }
+.fig-note { font-size: 13px; font-style: italic; }
+.fig-note.ok { fill: var(--gold); }
+.fig-note.no { fill: var(--red); }
+
+/* Mobile portrait chart: larger type + strokes for the taller viewBox */
+.fig-mobile .fig-title { font-size: 23px; }
+.fig-mobile .fig-axislabel, .fig-mobile .fig-ylabel, .fig-mobile .fig-costlabel { font-size: 20px; }
+.fig-mobile .fig-availlabel { font-size: 16px; }
+.fig-mobile .fig-note { font-size: 19px; }
+.fig-mobile .fig-cost { stroke-width: 3.2; }
+.fig-mobile .fig-cost-ghost { stroke-width: 2; }
+.fig-mobile .fig-val { stroke-width: 3; }
+.fig-mobile .fig-x { stroke-width: 3; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fig-layer { transition: none; }
+}
+
+@media (max-width: 860px) {
+  .scrolly-fig { margin: 0 -24px; padding: 12px 24px; }
+  .content h2 { font-size: 22px; }
+}
+@media (max-width: 480px) {
+  .scrolly-fig { margin: 0 -20px; padding: 10px 20px; }
+  .scrolly-fig .fig-desktop { display: none; }
+  .scrolly-fig .fig-mobile { display: block; }
+  .fig-legend { font-size: 14px; gap: 6px 16px; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header>
+  <a href="../../" class="wordmark">Wim Strydom</a>
+</header>
+
+<div class="page-outer">
+
+  <!-- Rail -->
+  <nav class="rail">
+    <a href="../" class="rail-back">← Instruments</a>
+    <div class="rail-divider"></div>
+    <span class="rail-label">Sections</span>
+    <a class="rail-item active" data-target="the-vision" href="#the-vision">The Vision</a>
+    <a class="rail-item" data-target="why-this" href="#why-this">Why This?</a>
+    <a class="rail-item" data-target="why-now" href="#why-now">Why Now?</a>
+    <a class="rail-item" data-target="how" href="#how">How?</a>
+    <a class="rail-item" data-target="what-next" href="#what-next">What Next?</a>
+  </nav>
+
+  <!-- Content -->
+  <main class="content">
+
+    <span class="page-eyebrow">Workshop Notes · Book 04</span>
+    <h1 class="page-title">Build Yourself a Software Kitchen</h1>
+    <p class="page-intro">An exploration of the infrastructure needed to enable self-building, hyper-personalised software.</p>
+    <p class="page-meta">June 2026</p>
+
+    <div class="body-text">
+      <p>Over the last few months I've built a lot of software that only me or my family will ever use. One example is <a href="../cooking-without-entering-the-kitchen/">Malva</a>, a web app that scans my grandmother's handwritten Afrikaans recipes and turns them into clean, translated, digital ones. About as niche as my love of cheddar and strawberry jam on toast. Malva is en route to going public, but most of what I build is even more niche and won't ever see a user other than me. It's all too specific to my own life.</p>
+      <p>I started feeling an itch after getting started on my next app after Malva. I kept rebuilding the same things: the same infrastructure, the same setup steps, the same instructions to Claude about how to work. I didn't want to design my finance app's database from scratch (surely well-trodden ground) and I wanted my apps to talk to each other without hand-building a connector every time. I was feeling the kind of itch that usually comes just before deciding to build an app for dealing with a problem. But in this case, the problem was the building of an app itself.</p>
+      <p>If building your own personal app is like cooking a meal, then what I need is a kitchen. I don't want to be handed finished meals, but I don't want to farm my own wheat either. I want a well-stocked kitchen and good recipes for at least the basics. <strong>There ought to be a way for me, or my AI, to reach for best practice at a higher level of abstraction than hunting down open-source code.</strong></p>
+      <p>I'm not alone in this. My Reddit feed is full of people vibe-coding the same kind of <em>userbase = 1</em> apps with Claude Code, Codex, Cursor, and a dozen others. The barrier has dropped so far that these niche, personal apps are everywhere now. But after an initial wave of excitement, I noticed people are hitting a wall. Building the personal features is the fun part; redoing the plumbing underneath, every single time, and rediscovering the macro-process of how software is built is dampening the momentum.</p>
+      <p>Selfishly, I'd like to build software shaped exactly to my needs, as quickly and with as little effort as possible. Which is now my next project. <strong>All the building blocks for building my dream kitchen already exist. I only need to arrange them in the right way.</strong></p>
+      <p>There's a lot of existing work on these topics under various names, and this exploration builds on a few of these ideas, the main ones being:</p>
+      <ul class="cite-list">
+        <li>Robin Sloan, <a href="https://www.robinsloan.com/notes/home-cooked-app/"><em>"An app can be a home-cooked meal"</em></a> (2020) — the case for software lovingly made for a handful of people.</li>
+        <li>Maggie Appleton, <a href="https://maggieappleton.com/home-cooked-software"><em>"Home-Cooked Software and Barefoot Developers"</em></a> — her closing keynote at the Local-First Conference (Berlin, 2024).</li>
+        <li>Geoffrey Litt, Josh Horowitz, Peter van Hardenberg &amp; Todd Matthews (Ink &amp; Switch), <a href="https://www.inkandswitch.com/essay/malleable-software/"><em>"Malleable Software"</em></a> (2025).</li>
+      </ul>
+      <p>Many of the same questions that were bothering me are raised in these works, and so I decided to explore them and try to come up with some proposed answers.</p>
+      <p>Robin Sloan, when building the app that he would describe as a home-cooked meal, made use of an open source component, without which he said the project would not have been possible. In the app-as-food metaphor, that I so dearly love, and which I am extending here, he used a box of pasta. He didn't cultivate a wheat field and rear chickens to obtain flour and eggs for making pasta from scratch. While you might not want to invite the whole world to use your exact niche app, an abstract <em>Recipe</em> for how to build an app <em>like</em> that could be useful.</p>
+      <p class="lead-q"><strong>How can we make recipes and quality ingredients available to everyone for cooking at home?</strong></p>
+      <p>When speaking of the "glue" that's needed to combine the different LEGO blocks of code from AI agents into working software, <a href="https://maggieappleton.com/home-cooked-software">Maggie Appleton</a> said, "We first need language model agents that are designed to act as central orchestrators for home-cooked software projects... And then we also need tools that are designed to talk to and work with these orchestration agents."</p>
+      <p class="lead-q"><strong>What form might these orchestrators and tools take?</strong></p>
+      <p>In <a href="https://www.inkandswitch.com/essay/malleable-software/">Malleable Software</a>, the authors share a very similar vision to what I'm calling hyper-personalised software. They raise two challenges around how data ought to be shared between tools and there being the right infrastructure for communal creation: "If we're going to use different software tools together in coordination to get a job done, it's essential that those tools can operate on one shared reality." and "With the right infrastructure, we can work together to craft our software."</p>
+      <p class="lead-q"><strong>How could tools have this shared reality, and what is the right infrastructure to enable this world?</strong></p>
+    </div>
+
+    <div class="page-divider"></div>
+
+    <!-- 01 The Vision -->
+    <section id="the-vision">
+      <h2 data-num="01">The Vision</h2>
+      <div class="body-text">
+        <p>What's needed, in my view, is an ecosystem for durable, hyper-personalised, self-building software that improves over time. This would include a framework, standards and sharing capabilities for how AI agents build apps for you, how to maintain them, how apps integrate and how the useful parts are shared and reused.</p>
+      </div>
+
+      <div class="disclosure" id="aims">
+        <button class="disclosure-header" aria-expanded="false" aria-controls="aims-body">
+          <span class="disclosure-summary">The vision statement decomposes into five aims</span>
+          <span class="disclosure-caret">▾</span>
+        </button>
+        <div class="disclosure-body" id="aims-body">
+          <div class="disclosure-body-inner">
+            <div class="disclosure-body-pad">
+              <ul>
+                <li><strong>An ecosystem.</strong> Apps work together and communicate to deliver more than the sum of their parts.</li>
+                <li><strong>Durable.</strong> The software is easily maintained and upgraded, with mechanisms built in to support its stability and security.</li>
+                <li><strong>Hyper-personalised.</strong> Each piece is built to suit its owner specifically, exactly their needs and no more, and stays malleable as those needs change.</li>
+                <li><strong>Self-building.</strong> You specify what you want in plain language, and the software builds itself in line with the other aims.</li>
+                <li><strong>Improves over time.</strong> The forces of natural selection act on the ecosystem, with incentives that enhance the quality and utility of the software.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="body-text">
+        <p>Before getting into the specifics of the framework I propose for the above, I'd like to share my vision of what this would look like for an end-user.</p>
+        <p>Please meet Steve.</p>
+        <p>Steve has a finance app. It isn't a finance app that millions of other people also have. It knows he splits rent with two housemates, gets paid in two currencies, has three credit cards and is trying to spend less on eating out. It has the connections to pull data from each of his accounts, and even reconciles shared expenses with an API from the cost-splitting app he and his housemates use. Every Sunday morning, a short brief lands in his inbox: how his last week went against his budget, which expenses he forgot to put on Splitwise, and anything else worth flagging. On a monthly basis, it reviews his investment performance and flags any potential opportunities based on his preferences, and reminds him to follow up with his pension fund on the question he had last month. It notices that his internet bill has increased, and informs him that he can reduce this by negotiating with Virgin Media. He didn't configure any of this from a settings menu. He just described his life, and the app was built around the description.</p>
+        <p>He also has:</p>
+        <ul>
+          <li>A travel planning app that matches his style and process of planning trips around food.</li>
+          <li>A leave planning app that is a simple calendar tracking his annual leave days and nothing more.</li>
+          <li>A flight booking helper that also holds his points balances, knows he'll fly business on long-haul redemptions and not otherwise, and watches for the routes he actually cares about.</li>
+          <li>A fitness app that knows his training history and goals.</li>
+          <li>A small, almost silly, app that keeps track of when his housemates are travelling so they can plan dinners.</li>
+        </ul>
+        <p>The apps are not islands. When Steve plans a trip, the travel app already knows what the finance app knows about his budget and what the flight planning app knows about his points balances. When he's hosting, the recipe app he scanned his family's handwritten cookbook into can hand a shopping list to his grocery list app. His blog-writing assistant can reach into the recipe app, pull the dish and its original photo, and help him draft a post about it. Nothing here required a company to negotiate a partnership or build an integration. The apps share one foundation.</p>
+        <p>Other people touch Steve's system too, on his terms. His accountant has a login and can see exactly the financial records they need. His optician and doctors' PAs email his medical records to a dedicated email address so his files get stored into his personal medical records repository. When he's planning a trip with friends who don't have systems of their own, they open a page he shares and see the itinerary and how much they owe him. Software works on Steve's behalf while he's asleep, and the people in his life plug into it effortlessly.</p>
+        <p class="lead-q"><strong>How did Steve get here?</strong></p>
+        <p>He set it up on a Sunday afternoon.</p>
+        <p>In the first few minutes, the foundation stood itself up. The domain, the hosting, the storage, the database, the sign-in, and a core set of agents that run the place. Then Steve described how he wanted everything to look and feel: <em>like my iPhone</em>, he could have said, or <em>like a comic book</em>, or <em>like an 80s news broadcast</em>. That became the house style every app would inherit.</p>
+        <p>He told the architect agent he wanted to manage his money. The agent asked what he needed, suggested some ideas, and then went looking. There's a public shelf of app and module <em>recipes</em> that people around the world have published. Steve and the Architect agent talked through the options, from "deploy the popular one mostly as-is" to "build something fully bespoke." Steve picked the most-loved personal-finance app recipe, plus two add-on modules that fit him. For one feature he wanted, nothing off-the-shelf existed, so they sketched the design together.</p>
+        <p>He repeated the rhythm for travel and for fitness, mostly recipes, a little custom. For the housemate travel schedules app nothing on the shelf was close, so he spent an hour with the architect agent designing it from scratch in a back-and-forth where the architect facilitated and drove the conversation. While he went on a run in the park, builder agents assembled all his apps. By the time he was done with his post-run shower, all of his apps were ready, waiting for initial setup.</p>
+        <p>Things also keep moving without his input. When the recipes Steve built on get better, his builders pick up the improvements and offer them to him. He chooses which new features to take and bug fixes happen in the background. Because the architect agent knows his life and his taste, it occasionally surfaces something new that others have published: <em>This seems like the sort of app you might like. Want it?</em></p>
+        <p>That's the end state: <strong>a suite of software that fits like a glove, that you own outright, that builds and maintains itself, and that works for you and the people you trust.</strong></p>
+      </div>
+    </section>
+
+    <!-- 02 Why This? -->
+    <section id="why-this">
+      <h2 data-num="02">Why This?</h2>
+      <div class="body-text">
+        <p>The authors I reference at the start of this piece have done an excellent job at articulating the case for this type of software. But for those unfamiliar, and to set the scene for what follows, below is my personal motivation for why I believe this ecosystem would be desirable.</p>
+        <p><strong>It fits.</strong> Mass-market software is a compromise by definition. It's fast food. It has to serve millions, so it serves no one exactly. Software built for one person can drop every compromise. It's a home cooked meal by your mom, who knows you don't like peas. (Truly the worst vegetable.) The result isn't a marginally nicer app. It's a category of usefulness that previously couldn't exist. Most of the software a full life would benefit from simply doesn't exist, because the audience is too small to justify a company. E.g. the app that teaches you Bulgarian family customs because you're marrying into a Bulgarian family.</p>
+        <p><strong>You own it.</strong> Today you rent almost everything. The apps you use today change their terms, raise their prices, introduce annoying ads, sunset the features you love, or shut down and take your data with them. In this model you own the stack. Nothing gets discontinued out from under you. Nothing holds your data hostage.</p>
+        <p><strong>It's cheaper.</strong> When you pay for a subscription, you're covering the provider's compute and storage <em>plus</em> their staff, marketing, investors, and profit margin. Or you're paying with your attention and your data. Here you pay only for the underlying utilities: compute, storage, the model calls. Those are the same input costs every software company pays before adding everything else on top. Cutting out everything on top makes this permanently cheaper than a commercial alternative (except in investor-funded, loss-making pricing cases, which you'll be paying for later anyway when return on investment comes due).</p>
+        <p><strong>No ads, no surveillance, no <em>algo</em>.</strong> There's no business sitting between you and your software with an incentive to monetise your attention. The only recommendations you get are the ones you asked to be built.</p>
+        <p><strong>It's all connected.</strong> You can link together whatever you want. Your weight-loss tracker linked to your hiking planner linked to your recipes linked to your grocery order linked to your weight-lifting targets.</p>
+      </div>
+    </section>
+
+    <!-- 03 Why Now? -->
+    <section id="why-now">
+      <h2 data-num="03">Why Now?</h2>
+
+      <div class="body-text">
+        <p>I studied economics, and still think of the world in those terms, so some charts will be involved. Bear with me here. Think of three things plotted against a single horizontal axis that runs from <strong>fully bespoke</strong> on the left to <strong>fully off-the-shelf</strong> on the right.</p>
+      </div>
+
+      <div class="scrolly">
+        <div class="scrolly-fig" data-state="0" aria-hidden="true">
+          <svg class="fig-desktop" viewBox="0 0 640 400" role="img" aria-label="A chart of cost versus value across the bespoke-to-off-the-shelf spectrum.">
+            <!-- Axes + title -->
+            <g class="fig-layer is-visible" data-layer="axes">
+              <text class="fig-title" x="54" y="34" text-anchor="start">The economics of getting an app</text>
+              <path class="fig-axis" d="M54 336 L566 336"/>
+              <path class="fig-axis" d="M54 78 L54 336"/>
+              <text class="fig-axislabel" x="54" y="358" text-anchor="start">Fully bespoke</text>
+              <text class="fig-axislabel" x="560" y="358" text-anchor="end">Off-the-shelf</text>
+              <text class="fig-ylabel" transform="rotate(-90 22 207)" x="22" y="207" text-anchor="middle">Cost / value</text>
+            </g>
+            <!-- Availability: narrow sliver (left-anchored) -->
+            <g class="fig-layer" data-layer="availNarrow">
+              <rect class="fig-avail" x="54" y="78" width="136" height="258"/>
+              <path class="fig-frontier" d="M190 78 L190 336"/>
+              <text class="fig-availlabel" x="58" y="69" text-anchor="start">available</text>
+            </g>
+            <!-- Availability: widened -->
+            <g class="fig-layer is-visible" data-layer="availWide">
+              <rect class="fig-avail" x="54" y="78" width="276" height="258"/>
+              <path class="fig-frontier" d="M330 78 L330 336"/>
+              <text class="fig-availlabel" x="58" y="69" text-anchor="start">available</text>
+              <path class="fig-arrow" d="M196 63 L324 63 M316 58 L324 63 L316 68"/>
+            </g>
+            <!-- Value lines (labelled by the legend below) -->
+            <g class="fig-layer is-visible" data-layer="values">
+              <path class="fig-val blue" d="M54 166 L560 166"/>
+              <path class="fig-val amber" d="M54 233 L560 233"/>
+              <path class="fig-val green" d="M54 296 L560 296"/>
+            </g>
+            <!-- Cost curve (high) -->
+            <g class="fig-layer" data-layer="costHigh">
+              <path class="fig-cost" d="M54 115 C 230 126, 430 310, 560 314"/>
+              <text class="fig-costlabel" x="60" y="111" text-anchor="start">Cost</text>
+            </g>
+            <!-- Cost curve (ghost of old high position) -->
+            <g class="fig-layer is-visible" data-layer="costGhost">
+              <path class="fig-cost-ghost" d="M54 115 C 230 126, 430 310, 560 314"/>
+            </g>
+            <!-- Cost curve (low, after AI) -->
+            <g class="fig-layer is-visible" data-layer="costLow">
+              <path class="fig-cost" d="M54 192 C 185 200, 360 307, 560 329"/>
+              <text class="fig-costlabel" x="60" y="188" text-anchor="start">Cost ↓</text>
+            </g>
+            <!-- Calculator: viable at the off-the-shelf end (available all the way across) -->
+            <g class="fig-layer is-visible" data-layer="calcDot">
+              <circle class="fig-dot" cx="552" cy="296" r="5.5"/>
+              <text class="fig-note ok" x="548" y="316" text-anchor="end">viable</text>
+            </g>
+            <!-- Housemate tracker: not viable before AI, at the available frontier -->
+            <g class="fig-layer" data-layer="houseX">
+              <path class="fig-x" d="M184 160 L196 172 M196 160 L184 172"/>
+              <text class="fig-note no" x="202" y="192" text-anchor="start">not viable</text>
+            </g>
+            <!-- Housemate tracker: now viable after AI, at the available frontier -->
+            <g class="fig-layer" data-layer="houseDotN">
+              <circle class="fig-dot" cx="190" cy="166" r="5.5"/>
+              <text class="fig-note ok" x="202" y="192" text-anchor="start">now viable</text>
+            </g>
+            <!-- Housemate tracker: viable at the widened frontier -->
+            <g class="fig-layer is-visible" data-layer="houseDotW">
+              <circle class="fig-dot" cx="330" cy="166" r="5.5"/>
+              <text class="fig-note ok" x="342" y="192" text-anchor="start">viable</text>
+            </g>
+            <!-- Bulgarian customs: not viable, at the available frontier -->
+            <g class="fig-layer" data-layer="bulgX">
+              <path class="fig-x" d="M184 227 L196 239 M196 227 L184 239"/>
+              <text class="fig-note no" x="202" y="259" text-anchor="start">not viable</text>
+            </g>
+            <!-- Bulgarian customs: now viable once availability widens -->
+            <g class="fig-layer is-visible" data-layer="bulgDotW">
+              <circle class="fig-dot" cx="330" cy="233" r="5.5"/>
+              <text class="fig-note ok" x="342" y="259" text-anchor="start">now viable</text>
+            </g>
+          </svg>
+
+          <svg class="fig-mobile" viewBox="0 0 600 520" role="img" aria-label="A chart of cost versus value across the bespoke-to-off-the-shelf spectrum.">
+            <g class="fig-layer is-visible" data-layer="axes">
+              <text class="fig-title" x="52" y="40" text-anchor="start">The economics of getting an app</text>
+              <path class="fig-axis" d="M52 470 L570 470"/>
+              <path class="fig-axis" d="M52 90 L52 470"/>
+              <text class="fig-axislabel" x="52" y="495" text-anchor="start">Fully bespoke</text>
+              <text class="fig-axislabel" x="560" y="495" text-anchor="end">Off-the-shelf</text>
+              <text class="fig-ylabel" transform="rotate(-90 22 280)" x="22" y="280" text-anchor="middle">Cost / value</text>
+            </g>
+            <g class="fig-layer" data-layer="availNarrow">
+              <rect class="fig-avail" x="52" y="90" width="137" height="380"/>
+              <path class="fig-frontier" d="M189 90 L189 470"/>
+              <text class="fig-availlabel" x="56" y="82" text-anchor="start">available</text>
+            </g>
+            <g class="fig-layer is-visible" data-layer="availWide">
+              <rect class="fig-avail" x="52" y="90" width="277" height="380"/>
+              <path class="fig-frontier" d="M329 90 L329 470"/>
+              <text class="fig-availlabel" x="56" y="82" text-anchor="start">available</text>
+              <path class="fig-arrow" d="M195 75 L323 75 M315 70 L323 75 L315 80"/>
+            </g>
+            <g class="fig-layer is-visible" data-layer="values">
+              <path class="fig-val blue" d="M52 220 L560 220"/>
+              <path class="fig-val amber" d="M52 318 L560 318"/>
+              <path class="fig-val green" d="M52 411 L560 411"/>
+            </g>
+            <g class="fig-layer" data-layer="costHigh">
+              <path class="fig-cost" d="M52 145 C 228 161, 428 432, 558 438"/>
+              <text class="fig-costlabel" x="60" y="140" text-anchor="start">Cost</text>
+            </g>
+            <g class="fig-layer is-visible" data-layer="costGhost">
+              <path class="fig-cost-ghost" d="M52 145 C 228 161, 428 432, 558 438"/>
+            </g>
+            <g class="fig-layer is-visible" data-layer="costLow">
+              <path class="fig-cost" d="M52 258 C 183 270, 358 427, 558 460"/>
+              <text class="fig-costlabel" x="60" y="253" text-anchor="start">Cost ↓</text>
+            </g>
+            <g class="fig-layer is-visible" data-layer="calcDot">
+              <circle class="fig-dot" cx="552" cy="411" r="8"/>
+              <text class="fig-note ok" x="548" y="435" text-anchor="end">viable</text>
+            </g>
+            <g class="fig-layer" data-layer="houseX">
+              <path class="fig-x" d="M180 211 L198 229 M198 211 L180 229"/>
+              <text class="fig-note no" x="204" y="250" text-anchor="start">not viable</text>
+            </g>
+            <g class="fig-layer" data-layer="houseDotN">
+              <circle class="fig-dot" cx="189" cy="220" r="8"/>
+              <text class="fig-note ok" x="204" y="250" text-anchor="start">now viable</text>
+            </g>
+            <g class="fig-layer is-visible" data-layer="houseDotW">
+              <circle class="fig-dot" cx="329" cy="220" r="8"/>
+              <text class="fig-note ok" x="343" y="250" text-anchor="start">viable</text>
+            </g>
+            <g class="fig-layer" data-layer="bulgX">
+              <path class="fig-x" d="M180 309 L198 327 M198 309 L180 327"/>
+              <text class="fig-note no" x="204" y="348" text-anchor="start">not viable</text>
+            </g>
+            <g class="fig-layer is-visible" data-layer="bulgDotW">
+              <circle class="fig-dot" cx="329" cy="318" r="8"/>
+              <text class="fig-note ok" x="343" y="348" text-anchor="start">now viable</text>
+            </g>
+          </svg>
+
+          <div class="fig-legend">
+            <span class="fig-leg-item"><span class="fig-leg-sw cost"></span>Cost</span>
+            <span class="fig-leg-item"><span class="fig-leg-sw blue"></span>Housemate Tracker Value</span>
+            <span class="fig-leg-item"><span class="fig-leg-sw amber"></span>Bulgarian Customs Value</span>
+            <span class="fig-leg-item"><span class="fig-leg-sw green"></span>Calculator Value</span>
+          </div>
+        </div>
+
+        <div class="scrolly-steps">
+          <div class="scrolly-step" data-state="1">
+            <p><strong>In general, the cost of getting a given app</strong> slopes downward from left to right: building something fully bespoke is expensive in time, effort, risk, and money (far left), and getting something ready-made off the shelf is relatively cheap and easy by comparison (far right). So the <strong>cost curve</strong> decreases as you move rightward toward ready-made. How steep that curve is depends both on your skills and the specific app in question.</p>
+          </div>
+          <div class="scrolly-step" data-state="2">
+            <p><strong>The value of a given app</strong> is a flat horizontal line, but <em>where</em> that line sits is entirely personal. A Bulgarian-family-customs app is worth almost nothing to almost everyone, so for them the line sits on the floor. For the person marrying into that family, the line sits high. Same app, completely different value, depending on whose life it's in.</p>
+          </div>
+          <div class="scrolly-step" data-state="3">
+            <p><strong>Availability</strong> is a shaded region, always anchored on the left. Anyone can get a calculator app, so its availability stretches all the way across. But the more niche, less mature, or smaller-audience the app, the narrower that shaded region becomes, until it is a thin sliver hugging the left-hand, fully custom side. The housemate travel schedule app exists <em>nowhere</em> on the app store or the internet. You cannot download it. The demand has never justified building a company around it. The only way of getting it is by building it yourself.</p>
+          </div>
+          <div class="scrolly-step" data-state="4">
+            <p>The sensible move, for any app, is to pick the point where <strong>value most exceeds cost</strong>, <em>but only within the shaded, available region.</em> Because cost falls as you move right, the best spot is the rightmost point that's still inside the shaded region. This is the cheapest you can get it while it's still available. For a long time that constraint kept most of us using only apps to the far right. If the only place value beat cost was out in "off-the-shelf" territory, but availability didn't reach that far, you simply went without. Most of the software your life could use didn't exist as a ready-made app and was too expensive to custom build.</p>
+          </div>
+          <div class="scrolly-step" data-state="5">
+            <p><strong>AI changed things.</strong> It has dropped the cost curve dramatically. Things that were once prohibitively expensive to build are now cheap and easy enough that, for many people, their personal value finally clears the cost. The economics now say <em>yes, build it</em> for many more apps.</p>
+          </div>
+          <div class="scrolly-step" data-state="5">
+            <p><strong>But availability didn't move.</strong> It's still that thin sliver on the left. The shelf doesn't carry your hyper-personal app just because it's now affordable to make. It might carry someone else's hyper-personal app that they decided to make public, but it's a bit like sleeping in someone else's bed. It won't quite be <em>exactly for you.</em></p>
+          </div>
+          <div class="scrolly-step" data-state="5">
+            <p><strong>Reinventing the wheel.</strong> Today, when people are vibe-coding bespoke apps for themselves out at the far-left edge they are often reinventing the same wheels every single time. Even when they reuse some open-source code, the <em>process</em> has to be redone from scratch: the same prompting tricks, the same setup steps, the same tech stack, over and over.</p>
+          </div>
+          <div class="scrolly-step" data-state="6">
+            <p><strong>The opportunity is to widen the shaded region rightward.</strong> People are starting to trade fragments to help each other, CLAUDE.md and packaged skill sharing. But it's a fairly informal system, and shifts the availability only a little bit to the right. I see the potential for making the sweet spot for most apps in the middle-ground between fully-bespoke and off-the-shelf. Not by making bespoke software cheaper still, but by making <em>reuse</em> systematic, so that "available" stretches across far more of the axis. To where an even lower cost portion of the curve becomes part of the available region. Now even the Bulgarian-family-customs app becomes accessible to people.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="body-text">
+        <p>There's a clean precedent in MCP. Before MCP, every connector between an AI and an external tool was built from the ground up, every time. MCP gave that a standard, and the ecosystem of connectors exploded. <strong>This is the same move, one level up: a standard framework for building hyper-personalised software, designed so that there is maximum reuse and minimal waste.</strong></p>
+      </div>
+
+      <div class="claude-callout" id="callout-mcp">
+        <button class="claude-callout-header" aria-expanded="false" aria-controls="callout-mcp-body">
+          <div class="claude-callout-badge">
+            <svg class="claude-callout-badge-icon" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(50 50)"><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(0)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(27.69)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(55.38)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(83.08)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(110.77)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(138.46)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(166.15)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(193.85)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(221.54)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(249.23)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(276.92)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(304.62)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(332.31)"/><circle r="18"/></g></svg>
+            <span class="claude-callout-badge-label">Claude</span>
+          </div>
+          <span class="claude-callout-summary">What is MCP?</span>
+          <span class="claude-callout-caret">▾</span>
+        </button>
+        <div class="claude-callout-body" id="callout-mcp-body">
+          <div class="claude-callout-body-inner">
+            <div class="claude-callout-body-pad">
+              <p>MCP (the Model Context Protocol) is an open standard Anthropic released in late 2024 for connecting AI assistants to external tools and data. Before it, every AI-to-tool integration was hand-built; MCP gave them a common socket, roughly what USB-C did for chargers.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="body-text">
+        <p>The key insight is what gets shared. Even in the left-hand half of the spectrum, today, sharing software often means sharing <em>finished source code</em>. You clone it and run it as-is and any customisation is a new venture. But instead of shipping finished code, you can ship a <strong>Recipe</strong>: a structural skeleton with a reusable, semi-finished core, written from the start <em>to be customised by an AI agent</em>. A Recipe is never meant to run as-is. It's only a seed.</p>
+        <p>Crucially, its documentation isn't written for a human engineer to read. Rather, it's written for a builder <em>agent</em> to follow, including instructions on how to interview a non-technical person and turn their answers into their own version of the app. The repo is designed from the ground up to grow into a self-building app shaped to one person's exact needs, contrasting with today where the entire set of norms, culture, and tools (e.g. GitHub) has evolved around human engineers. This is how I imagine <strong>consumer open-source software to radically shift,</strong> from being built to be understood and deployed by human engineers with finite time and energy for customisation to being designed for AI agents to deploy.</p>
+        <p>This requires rethinking what software documentation even is. Every norm we have, READMEs, setup guides, API docs, assumes a human will read it and write the code. When the builder is an agent, a lot of those surfaces are obsolete and new ones are needed. CLAUDE.md and agents.md are the first signs of this shift.</p>
+        <p>The tools we have today, Claude Code, Codex, Lovable, etc. aren't enough on their own to reach "set up in an afternoon," because the norms and structures around how we build software mean they still rebuild too much from scratch. When I vibe-code an app, only something like 10–20% of the effort goes into building the core differentiating <em>hyper-personal</em> features. The other 80% is plumbing that's been built thousands of times before, plus the grind of standing up a tech stack every single time.</p>
+        <p>Which exposes the final point. For a public company, sharing one tech stack between a finance app and a recipe app would be madness. But these apps have a user base with 100% overlap of exactly one user (<em>you</em>). Running twenty separate tech stacks for your twenty personal tools is also madness. The sane design is one shared foundation that every app lives on. That foundation is the OS for your personal app ecosystem. Standing up a new app stops being an infrastructure project and becomes a pure act of building the one thing that's different. The distance from PoC to MVP becomes tiny.</p>
+      </div>
+
+      <div class="claude-callout" id="callout-poc">
+        <button class="claude-callout-header" aria-expanded="false" aria-controls="callout-poc-body">
+          <div class="claude-callout-badge">
+            <svg class="claude-callout-badge-icon" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(50 50)"><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(0)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(27.69)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(55.38)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(83.08)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(110.77)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(138.46)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(166.15)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(193.85)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(221.54)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(249.23)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(276.92)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(304.62)"/><rect x="-4" y="-47" width="8" height="31" rx="3.5" transform="rotate(332.31)"/><circle r="18"/></g></svg>
+            <span class="claude-callout-badge-label">Claude</span>
+          </div>
+          <span class="claude-callout-summary">What is a PoC and MVP?</span>
+          <span class="claude-callout-caret">▾</span>
+        </button>
+        <div class="claude-callout-body" id="callout-poc-body">
+          <div class="claude-callout-body-inner">
+            <div class="claude-callout-body-pad">
+              <p>A <em>PoC</em> (proof of concept) is a rough build that shows an idea can work at all; an <em>MVP</em> (minimum viable product) is the smallest version polished enough for real use. The stretch between them is usually where most of the unglamorous engineering hides.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="body-text">
+        <p>So the need I see is for a standard, widely-adopted way of doing this that merges two concepts often at odds: the no-waste discipline of maximum reuse, and the freedom of fully personal software.</p>
+      </div>
+    </section>
+
+    <!-- 04 How? -->
+    <section id="how">
+      <h2 data-num="04">How?</h2>
+      <div class="body-text">
+        <p><strong>I propose Sanitude.</strong></p>
+        <p><strong>Sanitude is a Specification, not a company.</strong> There's no commercialisation layer, no platform fee, no one in the middle. You pay for your own tech stack and utilities, and nothing else. The Specification states what a system must provide to be compliant with the vision and principles I defined above, independent of any particular technology; alongside it sits a Reference Implementation, one opinionated (and very probably wrong-in-places) set of concrete choices, there to prove the thing can be built and to learn from for improving the specification. The rest of this section is the shape of that Specification at a high level.</p>
+        <p><strong>The Kernel.</strong> At the centre is one shared foundation that every app shares: hosting and storage; a single communal database built on a shared <em>ontology</em>; identity and access control; definitions for how apps communicate; and a design system. Apps don't each bring their own foundation, they're rooms in one house, or meals in one kitchen.</p>
+        <p><strong>Recipes.</strong> The unit of sharing isn't finished software, it's a <em>Recipe</em>: a customisable seed for an app, written from the start to be cooked by an agent into <em>your</em> version rather than run as-is. It's a flavour of open source code, designed to be easily plugged into an Instance of Sanitude. A Recipe describes what it offers (so an agent can judge whether it fits you), how to build it, how to check it still works after you've changed it, and how to implement its future updates.</p>
+        <p><strong>The agents.</strong> A small central cast of agents does the work. An <strong>Inception</strong> agent stands everything up once. An <strong>Architect</strong> interviews you, designs your apps, and finds and suggests Recipes to use. <strong>Builders</strong> do the construction and apply upgrades. A <strong>Harmony</strong> agent keeps apps coherent as new ones join and ensures the kitchen is kept tidy. A <strong>Guardian</strong> watches security throughout. And a <strong>Curator</strong> publishes a private app of yours into a clean, shareable Recipe.</p>
+        <p><strong>The lifecycle.</strong> Standing up the stack, <em>provisioning</em>, happens once, up front. After that, building an app is a conversation: you describe what you want, the Architect drafts a spec, the Builders realise it. Apps integrate by default because they share the foundation. Upgrades keep your existing code and patch it incrementally rather than regenerating it, and every change is reversible.</p>
+        <p><strong>The Commons.</strong> Recipes are published and discovered in a shared registry built for natural selection: replication rewarded, forking and variation made frictionless, and fitness signals, what people actually use and what works well, deciding what thrives.</p>
+        <p>Put together, the day-to-day looks like this:</p>
+        <ol>
+          <li>People publish Recipes, for whole apps or smaller add-on modules, that follow the standards.</li>
+          <li>You assemble your system from them, mostly off-the-shelf where good Recipes exist, custom where they don't.</li>
+          <li>Your apps share the foundation, so they integrate by default rather than by special effort.</li>
+          <li>When a Builder makes something genuinely new for you, the Curator can turn it into a sanitised, generic Recipe and offer it back, so the ecosystem grows every time anyone builds.</li>
+        </ol>
+        <p>This is a classic network-effect flywheel: the more people build, the more Recipes exist; the more Recipes exist, the more of the cost–value space becomes "available"; the wider availability gets, the more people can build. The value of the network grows with the number of people in it.</p>
+        <p>But crucially, even without a network Sanitude has value. Compared to building a suite of personalised apps freestyle, Sanitude provides a faster, more structured and durable outcome even when building everything in isolation from the shelf of published recipes.</p>
+        <p>I have put together a very early v0.1 spec and outline of what a Reference Implementation could look like for Sanitude. You can read it <a href="../sanitude-spec/">here</a>.</p>
+      </div>
+    </section>
+
+    <!-- 05 What Next? -->
+    <section id="what-next">
+      <h2 data-num="05">What Next?</h2>
+      <div class="body-text">
+        <p>Unfortunately, even if my v0.1 spec for Sanitude was perfect, the full vision of "set up in an afternoon" isn't reachable yet because <em>standing up the tech stack still needs a human.</em> Someone has to create the accounts, wire up the keys and tokens, and connect the pieces. An agent can't do that end-to-end yet. Additionally, the building of the app would likely have to happen outside the app itself. Hooking up AI models inside the OS for building its own apps as described would require paying API rates for your frontier AI models and thus be prohibitively expensive. You'll still need to use Claude Code or Codex or whatever to build outside the app itself. So today this would realistically still be for the fairly tech-savvy, not yet for everyone. But for those people, it should lower the effort required dramatically for building a suite of personalised software.</p>
+        <p>I expect that the "set up in an afternoon" experience could probably only arrive once a service buys into this philosophy and offers an all-in-one foundation, the whole stack provisioned for you across hosting, authentication, database, storage, etc. and also acting as an aggregator for the AI models that both build and run your apps. But that service isn't this project, and I don't think it should come first.</p>
+        <p>There are also a few unresolved open questions that I need to answer. The first is the Ontology: keeping the nouns of a life coherent within a single Instance is doable, since the Harmony agent can arbitrate as new Apps join, but the promise of strangers' Recipes slotting together rests on a shared, canonical vocabulary. I'm not sure if the Harmony agent will be able to deal with the drift between Instances seamlessly or if a more mechanically robust approach is needed to ensure vocabulary stays coherent across Instances. The second is trust in regenerated code: because a Recipe is cooked fresh into every Instance, albeit along a trailblazed path, rather than imported as a finished dependency, I'm not sure the verify suites and Guardian would be trustworthy enough to gate code that's reaching into my bank account. The third is keeping the Commons safe from bad actors: a malicious Recipe could in principle be written to read as benign to the Guardian and still slip something past its tests. "An agent reviewing another agent's work" is a potentially fragile last line of defence. There might be some trade-off to be made between flexibility and security at some point.</p>
+        <p>Across all of these, one of the main themes is that I may be putting too much faith in the capabilities of the AI agents. But that is sort of the whole point of Sanitude. I try to answer the question, "Given these incredibly advanced and powerful models, what's the best way to organise them together to build software for myself?" And on the question of whether models are going to be good enough, I think the safe money is in the other direction. I think the likelihood is higher that this framework becomes obsolete, because a single model can "one-shot" everything, than the models not being good enough to achieve what I describe.</p>
+        <p>For now, I'm going to be working on standing up a fully fledged reference implementation of Sanitude to test out the Spec. It's mostly only theoretical for now, and I'd like to test drive it to see how it works in practice. I'll be making posts here on my site as I do so and sharing repos for the Kernel and recipes of apps that I've built.</p>
+        <p>Even if my specific take on this ends up a dud, I expect that what I describe may be the natural direction for things to be moving in, and we'll inevitably get there at the current pace. Whichever way things play out, I'm incredibly excited for what software will look like in a few years from now.</p>
+      </div>
+
+      <div class="cta-wrap">
+        <a class="cta-btn" href="../sanitude-spec/">Read the Sanitude Spec →</a>
+      </div>
+    </section>
+
+    <div class="story-footer">
+      <a href="../" class="footer-back">← Instruments</a>
+      <span>Wim Strydom</span>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// Progress bar
+window.addEventListener('scroll', () => {
+  const p = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+  document.getElementById('progress-bar').style.transform = 'scaleX(' + Math.min(p, 1) + ')';
+}, { passive: true });
+
+// Rail scroll-spy
+const sections = document.querySelectorAll('section[id]');
+const railLinks = document.querySelectorAll('.rail-item[data-target]');
+const spy = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      railLinks.forEach(l => l.classList.toggle('active', l.dataset.target === id));
+    }
+  });
+}, { rootMargin: '-10% 0px -80% 0px', threshold: 0 });
+sections.forEach(s => spy.observe(s));
+
+// Collapsible toggles (Claude callouts + neutral disclosures)
+document.querySelectorAll('.claude-callout-header, .disclosure-header').forEach(header => {
+  header.addEventListener('click', () => {
+    const box = header.closest('.claude-callout, .disclosure');
+    box.classList.toggle('open');
+    header.setAttribute('aria-expanded', String(box.classList.contains('open')));
+  });
+});
+
+// Scrollytelling chart — the chart state follows scroll position deterministically,
+// so it is always correct for where the reader is (no flaky observer timing).
+(function () {
+  const fig = document.querySelector('.scrolly-fig');
+  if (!fig) return;
+  const steps = Array.from(document.querySelectorAll('.scrolly-step'));
+  const layers = Array.from(fig.querySelectorAll('.fig-layer'));
+  const VIS = {
+    axes:        [0, 1, 2, 3, 4, 5, 6],
+    costHigh:    [1, 2, 3, 4],
+    costGhost:   [5, 6],
+    costLow:     [5, 6],
+    values:      [2, 3, 4, 5, 6],
+    availNarrow: [3, 4, 5],
+    availWide:   [6],
+    calcDot:     [4, 5, 6],
+    houseX:      [4],
+    houseDotN:   [5],
+    houseDotW:   [6],
+    bulgX:       [4, 5],
+    bulgDotW:    [6]
+  };
+  let cur = -1;
+  function render(state) {
+    if (state === cur) return;
+    cur = state;
+    fig.dataset.state = state;
+    layers.forEach(l => {
+      const set = VIS[l.dataset.layer];
+      l.classList.toggle('is-visible', !!set && set.includes(state));
+    });
+  }
+  function currentState() {
+    // Trigger line: the pinned chart's bottom edge (or 55% down on tall screens).
+    // A step only activates once it scrolls up to meet the chart, so the chart
+    // stays blank (state 0, axes only) as it enters and pins.
+    const line = Math.max(window.innerHeight * 0.55, fig.getBoundingClientRect().bottom);
+    let state = 0;
+    for (const step of steps) {
+      if (step.getBoundingClientRect().top <= line) state = parseInt(step.dataset.state, 10) || 0;
+      else break;
+    }
+    return state;
+  }
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { render(currentState()); ticking = false; });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  render(currentState());
+})();
+</script>
+</body>
+</html>
