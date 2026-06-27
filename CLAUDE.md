@@ -199,6 +199,8 @@ narratives/<slug>/index.html                            Individual narrative pag
 narratives/<slug>/<Title>.md                            Narrative content (Markdown)
 
 explorations/index.html                                 Book 03 — Explorations index (Essays + Calculators)
+explorations/glp1s-are-a-miracle/index.html             GLP-1 essay — markdown-rendered, superscript citations + numbered source list
+explorations/glp1s-are-a-miracle/glp1s-are-a-miracle.md GLP-1 essay content (Markdown; [n]-style citations + ## Sources section)
 explorations/spin-station/index.html                    Spin Station essay page
 explorations/spin-station-calculator/index.html         Spin Station calculator
 explorations/spaceship-fishing/index.html               Spaceship Fishing essay (Hail Mary physics, scripted SVG sims)
@@ -255,6 +257,16 @@ Narrative pages carry **no formatting CSS** in their `<style>` block — all ren
 
 #### Explorations index (`explorations/index.html`)
 Two-section list page. "Essays" section and "Calculators" section, each with its own label + divider + `<ul class="link-list">`. Entries are newest-first within each section.
+
+#### GLP-1s are a miracle (`explorations/glp1s-are-a-miracle/index.html` + `.md`)
+Markdown-rendered essay. Reuses the **narratives Markdown renderer** (a near-verbatim copy of the narrative template, with `loadEssay` instead of `loadStory`) so the prose can be updated by replacing one `.md` file. Pulls the leading `# Title` and the italic subtitle out of the body (`extractTitleFromBody` + `extractSubtitle`), so the `.md` opens with `# GLP-1s are a miracle` / `*subtitle*` without duplicating the page title. Eyebrow is `Essay`. The rail is auto-built from `##` headings (the four Parts + Sources).
+
+**Citations are the one custom bit.** The `.md` is authored with plain `[n]`-style inline citations and a trailing `## Sources` section of `[n] …` definition lines. At render time:
+- `extractSources` splits the `## Sources` block off the body *before* parsing, collects each `[n] text` line into `{num, text}` (folding continuation lines), and `renderSources` emits an `<ol class="source-list">` with one `<li id="fn-N" value="N">` per source plus a `↩` back-link to `#ref-N`.
+- `inlineFormat` has an added rule that turns inline `[n]` runs (including grouped runs like `[1][2][3]`) into `<sup class="cite">` superscripts with comma-separated `<a href="#fn-N" id="ref-N">` links. Because the Sources block is removed first, the definition lines are never mis-parsed as superscripts.
+- The page `<style>` block styles `.prose sup.cite` (small gold links, no underline) and `.prose ol.source-list` (15px dim reference list, `scroll-margin-top` on each `li` so anchor jumps clear the sticky header, dim `.fn-back` arrows). Tokens only — no raw colour.
+
+To revise: replace the `.md` and push. Inline `[n]` brackets and a `## Sources` section are all the markup the renderer needs.
 
 #### Spin Station (`explorations/spin-station/index.html`)
 Essay page: "The weird gravity of spin-station transit". Two-column layout — prose on the left, sticky animated canvas diagram on the right showing a rotating station with two colour-coded carriage types (data accent A and B). Ends with a CTA linking to `../spin-station-calculator/`.

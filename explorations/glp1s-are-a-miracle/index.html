@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DC8TCGZT0C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DC8TCGZT0C');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLP-1s are a miracle — Wim Strydom</title>
+<meta name="description" content="Why thinking GLP-1 drugs are dangerous or 'cheating' is misguided — an essay on the biology, the maths of risk, and the social psychology of stigma.">
+<meta property="og:title" content="GLP-1s are a miracle — Wim Strydom">
+<meta property="og:description" content="Why thinking GLP-1 drugs are dangerous or 'cheating' is misguided — an essay on the biology, the maths of risk, and the social psychology of stigma.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://wimstrydom.com/explorations/glp1s-are-a-miracle">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+/* ── Citation superscripts ── */
+.prose sup.cite {
+  font-size: 0.62em;
+  line-height: 0;
+  margin-left: 1px;
+}
+.prose sup.cite a {
+  color: var(--gold);
+  border-bottom: none;
+  padding: 0 1px;
+}
+.prose sup.cite a:hover { opacity: 0.72; }
+
+/* ── Source / reference list ── */
+.prose ol.source-list {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-dim);
+  padding-left: 2.4em;
+}
+.prose ol.source-list li {
+  margin-bottom: 0.7em;
+  scroll-margin-top: 80px;
+  padding-left: 0.3em;
+}
+.prose ol.source-list li em { color: var(--ink-dim); }
+.prose ol.source-list .fn-back {
+  color: var(--ink-dim);
+  border-bottom: none;
+  margin-left: 4px;
+  font-style: normal;
+}
+.prose ol.source-list .fn-back:hover { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header>
+  <a href="../../" class="wordmark">Wim Strydom</a>
+  <span class="header-date" id="header-date"></span>
+</header>
+
+<div class="page-outer" id="top">
+
+  <nav class="rail hidden" id="rail">
+    <span class="rail-label">In this essay</span>
+    <div id="rail-links"></div>
+    <div class="rail-divider"></div>
+    <a href="../" class="rail-back">← all explorations</a>
+  </nav>
+
+  <main class="content no-rail" id="content">
+    <div class="state-msg" id="loading-msg">Loading…</div>
+  </main>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// MARKDOWN PARSER
+// ─────────────────────────────────────────────────────────────────────────────
+
+function parseMarkdown(md) {
+  const lines = md.split('\n');
+  let html = '';
+  let i = 0;
+
+  function inlineFormat(text) {
+    text = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, t, u) => {
+      const safe = u.replace(/"/g, '&quot;');
+      return `<a href="${safe}">${t}</a>`;
+    });
+
+    text = text.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+    text = text.replace(/_([^_\n]+)_/g, '<em>$1</em>');
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // Citation references: turn [1], [12], or runs like [1][2][3] into
+    // superscript links pointing at the matching source list entry.
+    text = text.replace(/(?:\[\d+\])+/g, (run) => {
+      const nums = run.match(/\d+/g);
+      const links = nums
+        .map(n => `<a href="#fn-${n}" id="ref-${n}">${n}</a>`)
+        .join(',');
+      return `<sup class="cite">${links}</sup>`;
+    });
+
+    return text;
+  }
+
+  function slugify(text) {
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-');
+  }
+
+  const headings = [];
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    if (line.trim() === '') { i++; continue; }
+
+    const hMatch = line.match(/^(#{1,6})\s+(.+)$/);
+    if (hMatch) {
+      const level = hMatch[1].length;
+      const text = hMatch[2].trim();
+      const id = slugify(text);
+      headings.push({ level, text, id });
+      const tag = `h${level}`;
+      html += `<${tag} id="${id}">${inlineFormat(text)}</${tag}>\n`;
+      i++; continue;
+    }
+
+    if (/^(\-{3,}|\*{3,}|_{3,})$/.test(line.trim())) {
+      html += '<hr>\n';
+      i++; continue;
+    }
+
+    if (line.startsWith('>')) {
+      let bqLines = [];
+      while (i < lines.length && (lines[i].startsWith('>') || lines[i].trim() === '')) {
+        bqLines.push(lines[i].replace(/^>\s?/, ''));
+        i++;
+      }
+      const inner = parseMarkdown(bqLines.join('\n')).html;
+      html += `<blockquote>${inner}</blockquote>\n`;
+      continue;
+    }
+
+    if (/^[\-\*\+]\s+/.test(line)) {
+      html += '<ul>\n';
+      while (i < lines.length && /^[\-\*\+]\s+/.test(lines[i])) {
+        html += `<li>${inlineFormat(lines[i].replace(/^[\-\*\+]\s+/, ''))}</li>\n`;
+        i++;
+      }
+      html += '</ul>\n';
+      continue;
+    }
+
+    if (/^\d+\.\s+/.test(line)) {
+      html += '<ol>\n';
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i])) {
+        html += `<li>${inlineFormat(lines[i].replace(/^\d+\.\s+/, ''))}</li>\n`;
+        i++;
+      }
+      html += '</ol>\n';
+      continue;
+    }
+
+    if (line.startsWith('```')) {
+      const lang = line.slice(3).trim();
+      let codeLines = [];
+      i++;
+      while (i < lines.length && !lines[i].startsWith('```')) {
+        codeLines.push(
+          lines[i]
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+        );
+        i++;
+      }
+      i++;
+      html += `<pre><code${lang ? ` class="language-${lang}"` : ''}>${codeLines.join('\n')}</code></pre>\n`;
+      continue;
+    }
+
+    let paraLines = [];
+    while (
+      i < lines.length &&
+      lines[i].trim() !== '' &&
+      !lines[i].match(/^#{1,6}\s/) &&
+      !lines[i].startsWith('>') &&
+      !lines[i].startsWith('```') &&
+      !/^[\-\*\+]\s+/.test(lines[i]) &&
+      !/^\d+\.\s+/.test(lines[i]) &&
+      !/^(\-{3,}|\*{3,}|_{3,})$/.test(lines[i].trim())
+    ) {
+      paraLines.push(lines[i]);
+      i++;
+    }
+    if (paraLines.length > 0) {
+      html += `<p>${inlineFormat(paraLines.join(' '))}</p>\n`;
+    }
+  }
+
+  return { html, headings, inlineFormat };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FRONT MATTER PARSER
+// ─────────────────────────────────────────────────────────────────────────────
+
+function parseFrontMatter(raw) {
+  const meta = {};
+  let body = raw;
+
+  const fmMatch = raw.match(/^---\r?\n([\s\S]+?)\r?\n---\r?\n([\s\S]*)$/);
+  if (fmMatch) {
+    const yamlBlock = fmMatch[1];
+    body = fmMatch[2];
+    yamlBlock.split('\n').forEach(line => {
+      const m = line.match(/^(\w+):\s*(.+)$/);
+      if (m) meta[m[1].trim()] = m[2].trim().replace(/^["']|["']$/g, '');
+    });
+  }
+
+  return { meta, body };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EXTRACT TITLE FROM CONTENT
+// ─────────────────────────────────────────────────────────────────────────────
+
+function extractTitleFromBody(body) {
+  const lines = body.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^#\s+(.+)$/);
+    if (m) {
+      const title = m[1].trim();
+      lines.splice(i, 1);
+      return { title, body: lines.join('\n') };
+    }
+  }
+  return { title: null, body };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EXTRACT SUBTITLE (first italic-only paragraph)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function extractSubtitle(body) {
+  const lines = body.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line === '') continue;
+    if (/^\*[^*].+[^*]\*$/.test(line) || /^_[^_].+[^_]_$/.test(line)) {
+      const subtitle = line.replace(/^\*|\*$|^_|_$/g, '');
+      lines.splice(i, 1);
+      return { subtitle, body: lines.join('\n') };
+    }
+    break;
+  }
+  return { subtitle: null, body };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EXTRACT + RENDER SOURCES (## Sources … [n] definition lines)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function extractSources(body) {
+  const m = body.match(/\n##\s+Sources\s*\n([\s\S]*)$/);
+  if (!m) return { body, sources: [] };
+
+  const mainBody = body.slice(0, m.index);
+  const block = m[1];
+
+  const sources = [];
+  block.split('\n').forEach(line => {
+    if (line.trim() === '') return;
+    const sm = line.match(/^\[(\d+)\]\s+(.*)$/);
+    if (sm) {
+      sources.push({ num: sm[1], text: sm[2] });
+    } else if (sources.length) {
+      // continuation of the previous entry
+      sources[sources.length - 1].text += ' ' + line.trim();
+    }
+  });
+
+  return { body: mainBody, sources };
+}
+
+function renderSources(sources, inlineFormat) {
+  if (!sources.length) return '';
+  let html = '<h2 id="sources">Sources</h2>\n<ol class="source-list">\n';
+  sources.forEach(s => {
+    html += `<li id="fn-${s.num}" value="${s.num}">${inlineFormat(s.text)} <a href="#ref-${s.num}" class="fn-back" aria-label="Back to citation">↩</a></li>\n`;
+  });
+  html += '</ol>\n';
+  return html;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATE DISPLAY
+// ─────────────────────────────────────────────────────────────────────────────
+
+function formatDate(dateStr) {
+  if (!dateStr) {
+    const now = new Date();
+    return now.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+  }
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr;
+  return d.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD RAIL NAV
+// ─────────────────────────────────────────────────────────────────────────────
+
+function buildRail(headings) {
+  const rail = document.getElementById('rail');
+  const railLinks = document.getElementById('rail-links');
+  const content = document.getElementById('content');
+
+  const navHeadings = headings.filter(h => h.level === 2 || h.level === 3);
+
+  if (navHeadings.length === 0) {
+    rail.classList.add('hidden');
+    content.classList.add('no-rail');
+    return;
+  }
+
+  rail.classList.remove('hidden');
+  content.classList.remove('no-rail');
+
+  let h2Count = 0;
+  navHeadings.forEach(h => {
+    if (h.level === 2) h2Count++;
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.className = 'rail-item' + (h.level === 3 ? ' h3' : '');
+    a.dataset.id = h.id;
+
+    if (h.level === 2) {
+      const num = document.createElement('span');
+      num.className = 'rail-num';
+      num.textContent = String(h2Count).padStart(2, '0');
+      a.appendChild(num);
+    }
+
+    const label = document.createElement('span');
+    label.textContent = h.text;
+    a.appendChild(label);
+
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.getElementById(h.id);
+      if (target) {
+        const top = target.getBoundingClientRect().top + window.scrollY - 82;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+
+    railLinks.appendChild(a);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ACTIVE RAIL ITEM (scroll-based)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function updateRailActive() {
+  const items = document.querySelectorAll('.rail-item[data-id]');
+  if (!items.length) return;
+
+  const headerH = 82;
+  let activeId = null;
+
+  items.forEach(item => {
+    const el = document.getElementById(item.dataset.id);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top;
+    if (top <= headerH + 40) activeId = item.dataset.id;
+  });
+
+  items.forEach(item => {
+    item.classList.toggle('active', item.dataset.id === activeId);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PROGRESS BAR
+// ─────────────────────────────────────────────────────────────────────────────
+
+const bar = document.getElementById('progress-bar');
+function updateProgress() {
+  const doc = document.documentElement;
+  const scrolled = doc.scrollTop || document.body.scrollTop;
+  const total = doc.scrollHeight - doc.clientHeight;
+  bar.style.transform = `scaleX(${total > 0 ? scrolled / total : 0})`;
+}
+
+window.addEventListener('scroll', () => {
+  updateProgress();
+  updateRailActive();
+}, { passive: true });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOAD AND RENDER
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function loadEssay(src) {
+  const content = document.getElementById('content');
+
+  let raw;
+  try {
+    const res = await fetch(src);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    raw = await res.text();
+  } catch (err) {
+    content.innerHTML = `
+      <div class="state-msg">
+        <p>Could not load <em>${src}</em>.</p>
+        <p style="margin-top:12px; font-size:15px;">
+          Make sure the file exists and is accessible from this page.<br>
+          If you're opening this file locally, try serving it from a local server.
+        </p>
+      </div>`;
+    document.title = 'Error — Wim Strydom';
+    return;
+  }
+
+  let { meta, body } = parseFrontMatter(raw);
+
+  // Pull the leading "# Title" and the italic subtitle out of the body
+  const extractedTitle = extractTitleFromBody(body);
+  if (extractedTitle.title && !meta.title) meta.title = extractedTitle.title;
+  body = extractedTitle.body;
+
+  if (!meta.subtitle) {
+    const extracted = extractSubtitle(body);
+    meta.subtitle = extracted.subtitle;
+    body = extracted.body;
+  }
+
+  // Defaults for this essay
+  if (!meta.title) meta.title = 'GLP-1s are a miracle';
+  if (!meta.date)  meta.date  = '2026-06-27';
+  if (!meta.eyebrow) meta.eyebrow = 'Essay';
+
+  // Split off the Sources section so its [n] definitions are rendered as a
+  // numbered reference list rather than as citation superscripts.
+  const sourceSplit = extractSources(body);
+  body = sourceSplit.body;
+
+  const { html: storyHtml, headings, inlineFormat } = parseMarkdown(body);
+
+  const sourcesHtml = renderSources(sourceSplit.sources, inlineFormat);
+  if (sourcesHtml) headings.push({ level: 2, text: 'Sources', id: 'sources' });
+
+  const pageTitle = meta.title;
+  document.title = `${pageTitle} — Wim Strydom`;
+
+  document.getElementById('header-date').textContent = formatDate(meta.date);
+
+  buildRail(headings);
+
+  const eyebrow = meta.eyebrow;
+  const dateDisplay = meta.date
+    ? new Date(meta.date).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+    : '';
+
+  content.innerHTML = `
+    <span class="page-eyebrow">${eyebrow}</span>
+    <h1 class="page-title">${pageTitle}</h1>
+    ${meta.subtitle ? `<p class="page-intro">${meta.subtitle}</p>` : ''}
+    ${dateDisplay ? `<p class="page-meta">${dateDisplay}</p>` : ''}
+    <div id="story-body" class="prose">${storyHtml}${sourcesHtml}</div>
+    <div class="story-footer">
+      <a href="../" class="footer-back">← all explorations</a>
+      <span>Wim Strydom</span>
+    </div>
+  `;
+
+  updateRailActive();
+  updateProgress();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ENTRY POINT
+// ─────────────────────────────────────────────────────────────────────────────
+
+(function init() {
+  const params = new URLSearchParams(window.location.search);
+  const essaySrc = params.get('essay') || '/explorations/glp1s-are-a-miracle/glp1s-are-a-miracle.md';
+  loadEssay(essaySrc);
+})();
+</script>
+</body>
+</html>
