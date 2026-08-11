@@ -194,7 +194,7 @@ scope.md                                                Site scope & roadmap doc
 definitions/index.html                                  Book 01 — Definitions (integrated about page; Philosophy linked out)
 definitions/philosophy/index.html                       Philosophy chapter — full dedicated page
 
-narratives/index.html                                   Book 02 — Narratives index (Stories + Poems)
+narratives/index.html                                   Book 02 — Narratives index (Stories + Poems) — HIDDEN (see Book 02 note)
 narratives/<slug>/index.html                            Individual narrative page
 narratives/<slug>/<Title>.md                            Narrative content (Markdown)
 
@@ -244,6 +244,8 @@ Integrated "about" page — a single self-contained narrative rather than a chap
 - Fully responsive — rail hidden on mobile
 
 ### Book 02 — Narratives
+
+**Currently hidden and unindexed.** The homepage Book 02 row uses the dim `m-book-name-dim` + `m-book-soon` treatment (no link), every page under `narratives/` carries `<meta name="robots" content="noindex">`, and `vercel.json` sends `X-Robots-Tag: noindex` for `/narratives/:path*`. The pages themselves remain deployed and reachable by direct URL. To un-hide: restore the homepage link (per "Adding new pages" step 3), remove the robots meta tags, and drop the `headers` block from `vercel.json`.
 
 #### Narratives index (`narratives/index.html`)
 Two-section list page. "Stories" section (Short Fiction) and "Poems" section (Poetry), each with its own label + divider + `<ul class="link-list">`. Entries are newest-first within each section.
